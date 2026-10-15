@@ -1,0 +1,601 @@
+/* =========================================================
+   OH LA LASH — RESEÑAS CLIENTE CSS
+   Design System: Oh La Lash Studio (#7c1db8 / #f6effb)
+   ========================================================= */
+
+/* Top Header */
+.resenas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.resenas-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.resenas-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: #f6effb;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(124, 29, 184, 0.12);
+}
+
+.resenas-header-left h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    color: #2a0d3e;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.resenas-header-left p {
+    color: #7a5a90;
+    font-size: 13px;
+    margin: 0;
+}
+
+.btn-nueva-resena {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #7c1db8 0%, #9b30c7 100%);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(124, 29, 184, 0.25);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-nueva-resena:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(124, 29, 184, 0.35);
+    color: #ffffff;
+}
+
+/* Metric Cards Grid */
+.resenas-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.stat-resena-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e8daf3;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 16px rgba(90, 18, 133, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-resena-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(90, 18, 133, 0.08);
+}
+
+.stat-resena-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-resena-icon.gold {
+    background: #fffbeb;
+    color: #f59e0b;
+}
+
+.stat-resena-icon.purple {
+    background: #f6effb;
+    color: #7c1db8;
+}
+
+.stat-resena-icon.green {
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+.stat-resena-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-resena-val {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2a0d3e;
+    line-height: 1.2;
+}
+
+.stat-resena-label {
+    font-size: 12px;
+    color: #7a5a90;
+    margin-top: 2px;
+}
+
+/* Section Containers */
+.resenas-section-box {
+    margin-bottom: 32px;
+}
+
+.resenas-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.resenas-section-title h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2a0d3e;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.resenas-section-title h2 i {
+    color: #7c1db8;
+}
+
+.badge-counter {
+    background: #f6effb;
+    color: #7c1db8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+/* Pending Appointments to Review Grid */
+.citas-pendientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+}
+
+.cita-calificar-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #f0e6f8;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 4px 14px rgba(90, 18, 133, 0.04);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.cita-calificar-card:hover {
+    border-color: #dcc8ee;
+    box-shadow: 0 8px 20px rgba(90, 18, 133, 0.08);
+}
+
+.cita-calificar-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #f59e0b, #fbbf24);
+}
+
+.cita-card-top {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.cita-service-img {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid #e8daf3;
+    flex-shrink: 0;
+}
+
+.cita-card-details h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin: 0 0 4px 0;
+}
+
+.cita-card-meta {
+    font-size: 12px;
+    color: #7a5a90;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cita-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cita-card-meta i {
+    color: #9b30c7;
+    font-size: 11px;
+}
+
+.btn-abrir-calificar {
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-abrir-calificar:hover {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+}
+
+/* Reviews List / Grid */
+.resenas-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+}
+
+.resena-card-item {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e8daf3;
+    padding: 22px;
+    box-shadow: 0 6px 20px rgba(90, 18, 133, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s;
+}
+
+.resena-card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(90, 18, 133, 0.08);
+}
+
+.resena-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.resena-service-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.resena-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #e8daf3;
+    flex-shrink: 0;
+}
+
+.resena-service-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin: 0 0 2px 0;
+}
+
+.resena-specialist {
+    font-size: 11px;
+    color: #7a5a90;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resena-stars-wrap {
+    color: #f59e0b;
+    font-size: 14px;
+    display: flex;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.resena-comentario-box {
+    background: #faf7fd;
+    border-radius: 14px;
+    padding: 14px 16px;
+    border-left: 3px solid #7c1db8;
+    color: #4b3658;
+    font-size: 13px;
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 14px;
+    position: relative;
+}
+
+.resena-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #9c82af;
+    border-top: 1px solid #f6effb;
+    padding-top: 12px;
+    margin-top: auto;
+}
+
+.resena-badge-verificada {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #10b981;
+    font-weight: 700;
+}
+
+/* Empty States */
+.resenas-empty-state {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px dashed #dcc8ee;
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.empty-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #f6effb;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+}
+
+.resenas-empty-state h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    color: #2a0d3e;
+    margin-bottom: 6px;
+}
+
+.resenas-empty-state p {
+    color: #7a5a90;
+    font-size: 13px;
+    max-width: 440px;
+    margin: 0 auto 20px;
+}
+
+/* Modal Nueva Reseña */
+.modal-resena-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 8, 48, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-resena-container {
+    background: #ffffff;
+    border-radius: 22px;
+    width: 100%;
+    max-width: 480px;
+    border: 1px solid #e8daf3;
+    box-shadow: 0 16px 40px rgba(90, 18, 133, 0.25);
+    overflow: hidden;
+    animation: modalPopIn 0.25s ease-out;
+}
+
+@keyframes modalPopIn {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-resena-header {
+    background: linear-gradient(135deg, #fbf8fd 0%, #f6effb 100%);
+    padding: 20px 24px;
+    border-bottom: 1px solid #e8daf3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-resena-header h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 17px;
+    color: #2a0d3e;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-resena-close {
+    background: none;
+    border: none;
+    color: #7a5a90;
+    font-size: 18px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-resena-close:hover {
+    background: #eedef7;
+    color: #2a0d3e;
+}
+
+.modal-resena-body {
+    padding: 24px;
+}
+
+.form-group-resena {
+    margin-bottom: 18px;
+}
+
+.form-group-resena label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4b236b;
+    margin-bottom: 6px;
+}
+
+.form-select-resena,
+.form-textarea-resena {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #dcc8ee;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #2a0d3e;
+    outline: none;
+    background: #ffffff;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.form-select-resena:focus,
+.form-textarea-resena:focus {
+    border-color: #7c1db8;
+    box-shadow: 0 0 0 3px rgba(124, 29, 184, 0.12);
+}
+
+.star-rating-selector {
+    display: flex;
+    gap: 10px;
+    font-size: 26px;
+    color: #d1d5db;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.star-rating-selector i {
+    transition: color 0.15s, transform 0.15s;
+}
+
+.star-rating-selector i.active,
+.star-rating-selector i.hovered {
+    color: #f59e0b;
+    transform: scale(1.1);
+}
+
+.rating-text-feedback {
+    font-size: 12px;
+    font-weight: 700;
+    color: #7c1db8;
+    margin-top: 6px;
+    min-height: 18px;
+}
+
+.modal-resena-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.btn-modal-cancel {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid #dcc8ee;
+    background: #ffffff;
+    color: #7a5a90;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-modal-submit {
+    padding: 10px 22px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7c1db8 0%, #9b30c7 100%);
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(124, 29, 184, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-modal-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(124, 29, 184, 0.3);
+}
+
+@media (max-width: 768px) {
+    .resenas-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .resenas-list-grid,
+    .citas-pendientes-grid {
+        grid-template-columns: 1fr;
+    }
+}

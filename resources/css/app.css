@@ -1,0 +1,1576 @@
+/* =========================================================
+    welcome blade inicion
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+@import './footer.css';
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --morado-oscuro: #4b126f;
+    --morado: #711fa0;
+    --morado-medio: #8629b5;
+    --morado-claro: #a83bd0;
+
+    --lavanda: #f7f0fb;
+    --lavanda-2: #f2e7f8;
+    --borde: #e4ccef;
+
+    --dorado: #dcae4f;
+    --dorado-claro: #f1d28a;
+
+    --texto: #382044;
+    --texto-suave: #77627f;
+
+    --blanco: #ffffff;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background:
+        radial-gradient(circle at 10% 20%, rgba(196, 117, 232, .15), transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(154, 63, 194, .10), transparent 25%),
+        #f7f2fa;
+
+    color: var(--texto);
+}
+
+
+/* =========================================================
+   FONDO
+   ========================================================= */
+
+.login-page-body {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 28px;
+
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+/* figuras decorativas del fondo */
+
+.bg-shape {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bg-shape-1 {
+    width: 380px;
+    height: 380px;
+
+    top: -230px;
+    left: -180px;
+
+    background: rgba(190, 104, 225, .12);
+}
+
+.bg-shape-2 {
+    width: 420px;
+    height: 420px;
+
+    bottom: -280px;
+    right: -200px;
+
+    background: rgba(121, 44, 160, .10);
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+.container {
+    width: min(1250px, 100%);
+
+    min-height: 820px;
+
+    display: grid;
+    grid-template-columns: 44% 56%;
+
+    background: white;
+
+    border-radius: 28px;
+
+    overflow: hidden;
+
+    position: relative;
+    z-index: 2;
+
+    box-shadow:
+        0 30px 80px rgba(76, 25, 105, .18),
+        0 8px 25px rgba(76, 25, 105, .08);
+}
+
+
+/* =========================================================
+   PANEL IZQUIERDO
+   ========================================================= */
+
+.left-panel {
+    position: relative;
+
+    min-height: 820px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 60px 50px;
+
+    color: white;
+
+    background:
+        radial-gradient(circle at 35% 18%,
+            rgba(190, 87, 240, .85) 0%,
+            rgba(144, 44, 181, .55) 28%,
+            transparent 55%),
+        linear-gradient(145deg,
+            #481067 0%,
+            #631785 38%,
+            #7d249e 70%,
+            #54126f 100%);
+}
+
+
+/* círculo decorativo grande */
+
+.left-panel::before {
+    content: "";
+
+    position: absolute;
+
+    width: 570px;
+    height: 570px;
+
+    top: -300px;
+    left: -230px;
+
+    border: 1px solid rgba(255, 255, 255, .13);
+
+    border-radius: 50%;
+}
+
+
+/* segundo círculo */
+
+.left-panel::after {
+    content: "";
+
+    position: absolute;
+
+    width: 460px;
+    height: 460px;
+
+    bottom: -270px;
+    right: -200px;
+
+    border: 1px solid rgba(255, 255, 255, .12);
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo {
+    position: relative;
+    z-index: 3;
+
+    margin-bottom: 34px;
+}
+
+.logo img {
+    width: 210px;
+    max-width: 100%;
+
+    display: block;
+
+    filter:
+        drop-shadow(0 8px 10px rgba(0, 0, 0, .15));
+}
+
+
+/* =========================================================
+   LINEA DORADA
+   ========================================================= */
+
+.linea {
+    width: 175px;
+    height: 2px;
+
+    margin-bottom: 28px;
+
+    position: relative;
+    z-index: 3;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            var(--dorado),
+            var(--dorado-claro),
+            var(--dorado),
+            transparent);
+}
+
+
+/* =========================================================
+   TEXTO PRESENTACION
+   ========================================================= */
+
+.texto-presentacion {
+    position: relative;
+    z-index: 3;
+
+    max-width: 460px;
+}
+
+.texto-presentacion h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+
+    font-size: clamp(34px, 3.1vw, 48px);
+
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    margin-bottom: 18px;
+}
+
+.texto-presentacion h2 span {
+    display: block;
+
+    color: #e4c6f4;
+
+    font-style: italic;
+
+    font-weight: 600;
+}
+
+.texto-presentacion p {
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    color: rgba(255, 255, 255, .88);
+
+    max-width: 390px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   DECORACION CENTRAL
+   ========================================================= */
+
+.corona-deco {
+    width: 66px;
+    height: 66px;
+
+    margin-top: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+    z-index: 3;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255, 255, 255, .25);
+
+    background: rgba(255, 255, 255, .10);
+
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, .05),
+        0 10px 25px rgba(35, 0, 50, .12);
+}
+
+.corona-deco i {
+    font-size: 23px;
+
+    color: #f2c75d;
+
+    filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, .15));
+}
+
+
+/* =========================================================
+   DESTELLOS GENERADOS POR JAVASCRIPT
+   ========================================================= */
+
+.sparkle {
+    position: absolute;
+
+    background: var(--dorado-claro);
+
+    border-radius: 50%;
+
+    opacity: .65;
+
+    box-shadow:
+        0 0 8px rgba(241, 210, 138, .75);
+
+    animation:
+        sparkleAnimation 3s ease-in-out infinite;
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+@keyframes sparkleAnimation {
+
+    0%,
+    100% {
+        opacity: .15;
+        transform: scale(.6);
+    }
+
+    50% {
+        opacity: .85;
+        transform: scale(1.25);
+    }
+}
+
+
+/* =========================================================
+   PANEL DERECHO
+   ========================================================= */
+
+.right-panel {
+    min-width: 0;
+
+    background:
+        radial-gradient(circle at 90% 15%,
+            rgba(214, 176, 230, .16),
+            transparent 30%),
+        linear-gradient(180deg,
+            #ffffff 0%,
+            #fffaff 55%,
+            #faf4fd 100%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 55px 65px;
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   CAJA DEL FORMULARIO
+   ========================================================= */
+
+.login-box {
+    width: 100%;
+    max-width: 620px;
+
+    margin: auto;
+}
+
+.registro-box {
+    padding: 5px 0;
+}
+
+
+/* =========================================================
+   BIENVENIDA
+   ========================================================= */
+
+.bienvenida {
+    display: flex;
+    justify-content: center;
+
+    margin-bottom: 20px;
+}
+
+.bienvenida span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 38px;
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    background: #f1e1f9;
+
+    color: #7d27a3;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    box-shadow:
+        0 5px 15px rgba(124, 38, 162, .06);
+}
+
+
+/* =========================================================
+   TITULO
+   ========================================================= */
+
+.login-box h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+
+    color: #321340;
+
+    text-align: center;
+
+    font-size: clamp(38px, 4vw, 52px);
+
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+}
+
+.subtitulo {
+    text-align: center;
+
+    color: var(--texto-suave);
+
+    font-size: 16px;
+
+    margin-bottom: 23px;
+}
+
+
+/* =========================================================
+   DECORACION CON CORONA
+   ========================================================= */
+
+.decoracion {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-bottom: 27px;
+}
+
+.decoracion span {
+    height: 1px;
+
+    width: 125px;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            #dfc99c);
+}
+
+.decoracion span:last-child {
+    background:
+        linear-gradient(90deg,
+            #dfc99c,
+            transparent);
+}
+
+.decoracion i {
+    color: #d5a63f;
+
+    font-size: 16px;
+
+    filter:
+        drop-shadow(0 2px 2px rgba(180, 120, 30, .12));
+}
+
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+form {
+    width: 100%;
+}
+
+label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #382044;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CAMPOS EN FILA
+   ========================================================= */
+
+.row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+.col {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   GRUPOS DE INPUT
+   ========================================================= */
+
+.input-group {
+    width: 100%;
+
+    min-height: 52px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.input-group>i:not(.eye) {
+    position: absolute;
+
+    left: 17px;
+
+    color: #8b2db1;
+
+    font-size: 16px;
+
+    z-index: 2;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   INPUTS Y SELECTS
+   ========================================================= */
+
+.input-group input,
+.input-group select {
+    width: 100%;
+
+    height: 52px;
+
+    border: 1px solid var(--borde);
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(135deg,
+            #fcf8fe,
+            #f9f2fc);
+
+    color: #42244e;
+
+    font-family: 'DM Sans', sans-serif;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        background .25s ease,
+        transform .2s ease;
+}
+
+
+/* input con icono */
+
+.input-group input {
+    padding: 0 48px;
+}
+
+
+/* select */
+
+.input-group select {
+    padding: 0 17px;
+
+    appearance: none;
+
+    cursor: pointer;
+}
+
+
+/* select que tiene icono */
+
+.input-group:has(select)>i:not(.eye) {
+    left: 17px;
+}
+
+.input-group:has(select) select {
+    padding-left: 48px;
+}
+
+
+/* flecha del select */
+
+.input-group:has(select)::after {
+    content: "\f107";
+
+    font-family: "Font Awesome 6 Free";
+
+    font-weight: 900;
+
+    position: absolute;
+
+    right: 17px;
+
+    color: #8b2db1;
+
+    pointer-events: none;
+}
+
+
+/* placeholder */
+
+.input-group input::placeholder {
+    color: #ad9ab5;
+}
+
+
+/* focus */
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #9a36bd;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 4px rgba(154, 54, 189, .10),
+        0 8px 20px rgba(107, 29, 140, .06);
+}
+
+
+/* =========================================================
+   FECHA DE NACIMIENTO
+   ========================================================= */
+
+.fecha-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1.5fr 1fr;
+
+    gap: 12px;
+
+    margin-bottom: 2px;
+}
+
+.fecha-row .input-group {
+    margin-bottom: 18px;
+}
+
+.fecha-row select {
+    padding-left: 15px;
+}
+
+
+/* =========================================================
+   OJO CONTRASEÑA
+   ========================================================= */
+
+.input-group .eye {
+    position: absolute;
+
+    right: 17px;
+
+    left: auto;
+
+    color: #85648e;
+
+    cursor: pointer;
+
+    z-index: 3;
+
+    transition: color .2s ease;
+}
+
+.input-group .eye:hover {
+    color: #7b21a3;
+}
+
+
+/* =========================================================
+   BOTÓN
+   ========================================================= */
+
+.btn {
+    width: 100%;
+
+    height: 54px;
+
+    margin-top: 5px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(135deg,
+            #9d31ca 0%,
+            #79209f 100%);
+
+    color: white;
+
+    font-family: 'DM Sans', sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    box-shadow:
+        0 10px 22px rgba(124, 31, 163, .22);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(135deg,
+            #a938d2 0%,
+            #8125a8 100%);
+
+    box-shadow:
+        0 14px 28px rgba(124, 31, 163, .30);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn i {
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   LINK DE LOGIN
+   ========================================================= */
+
+.login-link {
+    text-align: center;
+
+    margin-top: 20px;
+
+    color: #806d87;
+
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #7e21a5;
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: color .2s ease;
+}
+
+.login-link a:hover {
+    color: #a137c5;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.right-panel::-webkit-scrollbar {
+    width: 7px;
+}
+
+.right-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.right-panel::-webkit-scrollbar-thumb {
+    background: #d7b8e1;
+
+    border-radius: 10px;
+}
+
+.right-panel::-webkit-scrollbar-thumb:hover {
+    background: #b985c7;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .login-page-body {
+        padding: 15px;
+    }
+
+    .container {
+        grid-template-columns: 40% 60%;
+
+        min-height: 850px;
+    }
+
+    .left-panel {
+        padding: 45px 30px;
+    }
+
+    .right-panel {
+        padding: 45px 40px;
+    }
+
+    .texto-presentacion h2 {
+        font-size: 36px;
+    }
+
+    .logo img {
+        width: 180px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET PEQUEÑA
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .login-page-body {
+        padding: 0;
+
+        align-items: stretch;
+    }
+
+    .container {
+        width: 100%;
+
+        min-height: 100vh;
+
+        border-radius: 0;
+
+        display: flex;
+        flex-direction: column;
+    }
+
+    .left-panel {
+        min-height: 360px;
+
+        padding: 40px 25px;
+    }
+
+    .right-panel {
+        flex: 1;
+
+        padding: 45px 30px;
+
+        align-items: flex-start;
+    }
+
+    .logo {
+        margin-bottom: 20px;
+    }
+
+    .logo img {
+        width: 170px;
+    }
+
+    .linea {
+        margin-bottom: 18px;
+    }
+
+    .texto-presentacion h2 {
+        font-size: 34px;
+    }
+
+    .texto-presentacion p {
+        font-size: 14px;
+    }
+
+    .corona-deco {
+        margin-top: 20px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - CELULAR
+   ========================================================= */
+
+@media (max-width: 550px) {
+
+    .left-panel {
+        min-height: 320px;
+
+        padding: 30px 20px;
+    }
+
+    .logo img {
+        width: 145px;
+    }
+
+    .texto-presentacion h2 {
+        font-size: 29px;
+    }
+
+    .texto-presentacion p {
+        font-size: 13px;
+
+        line-height: 1.5;
+    }
+
+    .corona-deco {
+        width: 52px;
+        height: 52px;
+
+        margin-top: 17px;
+    }
+
+    .corona-deco i {
+        font-size: 18px;
+    }
+
+    .right-panel {
+        padding: 35px 20px;
+    }
+
+    .login-box h1 {
+        font-size: 35px;
+    }
+
+    .subtitulo {
+        font-size: 14px;
+    }
+
+    .decoracion {
+        gap: 10px;
+    }
+
+    .decoracion span {
+        width: 70px;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+
+        gap: 0;
+
+        margin-bottom: 0;
+    }
+
+    .fecha-row {
+        grid-template-columns: 1fr 1.4fr 1fr;
+
+        gap: 8px;
+    }
+
+    .input-group input,
+    .input-group select {
+        height: 50px;
+    }
+
+}
+
+
+/* =========================================================
+   CELULARES MUY PEQUEÑOS
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .left-panel {
+        min-height: 290px;
+    }
+
+    .texto-presentacion h2 {
+        font-size: 26px;
+    }
+
+    .texto-presentacion p {
+        font-size: 12px;
+    }
+
+    .login-box h1 {
+        font-size: 31px;
+    }
+
+    .right-panel {
+        padding: 30px 16px;
+    }
+
+}
+
+
+/* =========================================================
+   LASHAPP - ESTILO LANDING PAGE (WELCOME)
+   ========================================================= */
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(75, 18, 111, 0.05);
+}
+
+.navbar .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar .logo-icon img {
+    width: 120px;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(113, 31, 160, 0.2));
+}
+
+.navbar .logo h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--morado-oscuro);
+    margin: 0;
+    line-height: 1;
+}
+
+.navbar .logo span {
+    font-size: 11px;
+    color: var(--texto-suave);
+    font-weight: 500;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar nav a {
+    text-decoration: none;
+    color: var(--texto);
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--dorado);
+    transition: all 0.3s ease;
+}
+
+.navbar nav a:hover::after,
+.navbar nav a.activo::after {
+    width: 100%;
+}
+
+.navbar nav a:hover,
+.navbar nav a.activo {
+    color: var(--morado);
+}
+
+.navbar .acciones {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.conexion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.conexion span {
+    width: 8px;
+    height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #4caf50;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* Hero Section */
+.hero {
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 50px 3%;
+    position: relative;
+    max-width: 1300px;
+    /* Reducido para que no se estire a los lados */
+    margin: 0 auto;
+}
+
+.hero-text {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.etiqueta {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #f1e1f9;
+    color: #8629b5;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(40px, 4.5vw, 65px);
+    color: #2d1a36;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero h1 strong {
+    color: #a83bd0;
+    background: none;
+    -webkit-text-fill-color: initial;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: clamp(15px, 1.2vw, 17px);
+    color: #6b5c73;
+    margin-bottom: 35px;
+    line-height: 1.6;
+}
+
+/* Botones */
+.botones {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.btn-principal,
+.btn-secundario {
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-principal {
+    background: #8e37cb;
+    color: white;
+}
+
+.btn-principal:hover {
+    background: #7a2cb3;
+    transform: translateY(-2px);
+}
+
+.btn-secundario {
+    background: white;
+    color: #8e37cb;
+    border: 1px solid #8e37cb;
+}
+
+.btn-secundario:hover {
+    background: #fdfafb;
+    transform: translateY(-2px);
+}
+
+/* Decoraciones */
+.hero .decoracion {
+    position: absolute;
+    font-size: 30px;
+    color: #f1d28a;
+    opacity: 0.8;
+    animation: float 6s ease-in-out infinite;
+}
+
+.hero .decoracion1 {
+    top: 10%;
+    left: 20px;
+}
+
+.hero .decoracion2 {
+    bottom: 20%;
+    left: 40px;
+    font-size: 40px;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(15deg);
+    }
+
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
+/* =========================================================
+   SECCIÓN: TARJETA DE FUNCIONES
+   ========================================================= */
+.tarjeta {
+    flex: 1.3;
+    max-width: 850px;
+    background: white;
+    border-radius: 20px;
+    padding: 25px 40px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 10px 40px rgba(75, 18, 111, 0.05);
+    border: 1px solid rgba(113, 31, 160, 0.05);
+}
+
+.tarjeta h2 {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #2d1a36;
+    margin-bottom: 5px;
+}
+
+.tarjeta .linea {
+    width: 40px;
+    height: 3px;
+    background: #8e37cb;
+    margin: 0 auto 15px auto;
+    border-radius: 3px;
+}
+
+.funciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 30px;
+}
+
+.funcion {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.funcion .icono {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #f1e1f9;
+    color: #4b126f;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.funcion h3 {
+    font-family: 'Poppins', 'DM Sans', sans-serif;
+    font-size: 16px;
+    color: #2d1a36;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.funcion p {
+    font-size: 13px;
+    color: #6b5c73;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   SECCIÓN: INDICADORES (CONTACTO)
+   ========================================================= */
+.indicadores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #391459;
+    color: white;
+    margin: 20px 5% 50px 5%;
+    border-radius: 20px;
+    padding: 35px 50px;
+    box-shadow: 0 15px 30px rgba(57, 20, 89, 0.2);
+}
+
+.indicador {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    flex: 1;
+    justify-content: center;
+}
+
+.indicador:last-child {
+    border-right: none;
+}
+
+.indicador-icono {
+    font-size: 32px;
+    color: var(--lavanda);
+    background: rgba(255, 255, 255, 0.1);
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.indicador div {
+    display: flex;
+    flex-direction: column;
+}
+
+.indicador strong {
+    font-size: 18px;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 0.5px;
+}
+
+.indicador span {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* =========================================================
+   SECCIÓN: MÓDULOS
+   ========================================================= */
+.seccion-modulos {
+    padding: 40px 5% 80px 5%;
+    text-align: center;
+}
+
+.seccion-modulos h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--morado-oscuro);
+    margin-bottom: 15px;
+}
+
+.seccion-modulos .subrayado {
+    width: 50px;
+    height: 3px;
+    background: var(--dorado);
+    margin: 0 auto 40px auto;
+    border-radius: 3px;
+}
+
+.modulos {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.modulo {
+    background: white;
+    border-radius: 15px;
+    padding: 25px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.modulo:hover {
+    box-shadow: 0 15px 30px rgba(113, 31, 160, 0.1);
+    transform: translateY(-5px);
+}
+
+.modulo-icono {
+    width: 45px;
+    height: 45px;
+    background: var(--lavanda);
+    color: var(--morado);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.modulo span {
+    font-weight: 600;
+    color: var(--texto);
+    font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+    .hero {
+        flex-direction: column;
+        padding-top: 60px;
+    }
+
+    .hero-text {
+        text-align: center;
+        max-width: 100%;
+    }
+
+    .botones {
+        justify-content: center;
+    }
+
+    .indicadores {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .indicador {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        padding-bottom: 20px;
+        width: 100%;
+    }
+
+    .indicador:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .modulos {
+        flex-wrap: wrap;
+    }
+
+    .modulo {
+        flex: 1 1 calc(33.333% - 20px);
+    }
+}
+
+
+/* =========================================================
+    welcome blade  fin 
+   ========================================================= */

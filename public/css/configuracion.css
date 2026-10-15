@@ -1,0 +1,457 @@
+/* =========================================================
+   LASHAPP — MÓDULO DE CONFIGURACIÓN DEL SISTEMA
+   Replica exacta del diseño de LashApp Studio
+   ========================================================= */
+
+.config-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* ── Fila Superior ── */
+.config-top-grid {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* ── Fila Inferior ── */
+.config-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* ── Tarjetas Estándar ── */
+.cfg-card {
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid var(--borde, #dcc8ee);
+    box-shadow: var(--sombra, 0 8px 24px rgba(90, 18, 133, 0.08));
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cfg-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--texto, #2a0d3e);
+    margin: 0 0 20px 0;
+}
+
+.cfg-card-title i {
+    color: #7c1db8;
+    font-size: 17px;
+}
+
+/* ── Información del Negocio Layout ── */
+.negocio-layout {
+    display: grid;
+    grid-template-columns: 1fr 190px;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.negocio-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cfg-row-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.cfg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cfg-field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--texto, #2a0d3e);
+}
+
+.cfg-field input,
+.cfg-field select,
+.cfg-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1.5px solid var(--borde, #dcc8ee);
+    background: #ffffff;
+    color: var(--texto, #2a0d3e);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.cfg-field input:focus,
+.cfg-field select:focus,
+.cfg-field textarea:focus {
+    border-color: #7c1db8;
+    box-shadow: 0 0 0 3px rgba(124, 29, 184, 0.1);
+}
+
+/* ── Caja de Logo del Negocio ── */
+.logo-box-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.logo-box-wrapper label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--texto, #2a0d3e);
+    margin-bottom: 8px;
+}
+
+.logo-display-card {
+    width: 140px;
+    height: 140px;
+    border-radius: 20px;
+    border: 1.5px solid #ebdcf5;
+    background: #fbf7fe;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(124, 29, 184, 0.05);
+    margin-bottom: 12px;
+}
+
+.logo-display-card i {
+    font-size: 38px;
+    color: #7c1db8;
+}
+
+.logo-display-card span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #4a2862;
+}
+
+.btn-cambiar-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 16px;
+    border: 1.5px solid #dcc8ee;
+    background: #ffffff;
+    color: #6b4d79;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color .2s, border-color .2s;
+}
+
+.btn-cambiar-logo:hover {
+    background: #f5eafc;
+    border-color: #7c1db8;
+    color: #7c1db8;
+}
+
+.logo-formats-hint {
+    font-size: 10.5px;
+    color: #8f799c;
+    margin-top: 6px;
+}
+
+/* ── Botón Guardar Cambios ── */
+.btn-guardar-cambios-p {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #7c1db8, #5a1285);
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(124, 29, 184, 0.25);
+    transition: transform .2s, box-shadow .2s;
+    font-family: inherit;
+    align-self: flex-start;
+}
+
+.btn-guardar-cambios-p:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 29, 184, 0.35);
+}
+
+/* ── Configuración Rápida (Lista de accesos) ── */
+.quick-config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quick-cfg-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1.5px solid #f0e6f8;
+    background: #faf6fd;
+    text-decoration: none;
+    transition: transform .2s, border-color .2s, background-color .2s;
+}
+
+.quick-cfg-item:hover {
+    background: #ffffff;
+    border-color: #dcc8ee;
+    transform: translateX(4px);
+}
+
+.quick-cfg-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quick-cfg-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f3e8ff;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.quick-cfg-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-cfg-text strong {
+    font-size: 13px;
+    color: var(--texto, #2a0d3e);
+}
+
+.quick-cfg-text span {
+    font-size: 11px;
+    color: var(--texto-sec, #7a5a90);
+}
+
+.quick-cfg-arrow {
+    color: #b59ec4;
+    font-size: 13px;
+}
+
+/* ── Toggle Switches (Preferencias) ── */
+.cfg-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f6edf9;
+}
+
+.cfg-toggle-row:last-child {
+    border-bottom: none;
+}
+
+.cfg-toggle-row span {
+    font-size: 13px;
+    color: var(--texto, #2a0d3e);
+    font-weight: 500;
+}
+
+.switch-pill {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch-pill input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-pill {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #e5d8ee;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider-pill:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider-pill {
+    background-color: #7c1db8;
+}
+
+input:checked + .slider-pill:before {
+    transform: translateX(20px);
+}
+
+/* ── Copia de Seguridad y Datos ── */
+.backup-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 18px;
+}
+
+.backup-date-line {
+    display: flex;
+    justify-content: space-between;
+    color: var(--texto-sec, #7a5a90);
+}
+
+.backup-date-line strong {
+    color: var(--texto, #2a0d3e);
+}
+
+.btn-backup-now {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 18px;
+    border-radius: 14px;
+    border: 1.5px solid #dcc8ee;
+    background: #ffffff;
+    color: #7c1db8;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color .2s;
+    margin-bottom: 22px;
+}
+
+.btn-backup-now:hover {
+    background: #fbf7fe;
+    border-color: #7c1db8;
+}
+
+.danger-zone {
+    border-top: 1px solid #f6edf9;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.danger-zone h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #dc2626;
+}
+
+.danger-zone p {
+    margin: 0 0 8px 0;
+    font-size: 11px;
+    color: #8f799c;
+    line-height: 1.4;
+}
+
+.btn-danger-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 18px;
+    border-radius: 14px;
+    border: none;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity .2s;
+}
+
+.btn-danger-reset:hover {
+    opacity: 0.9;
+}
+
+.btn-danger-delete {
+    background: transparent;
+    border: none;
+    color: #dc2626;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: opacity .2s;
+}
+
+.btn-danger-delete:hover {
+    text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+    .config-top-grid {
+        grid-template-columns: 1fr;
+    }
+    .config-bottom-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .config-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+    .negocio-layout {
+        grid-template-columns: 1fr;
+    }
+    .cfg-row-two {
+        grid-template-columns: 1fr;
+    }
+}

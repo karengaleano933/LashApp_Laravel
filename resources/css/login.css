@@ -1,0 +1,998 @@
+/* ==================================================
+   CONFIGURACIÓN GENERAL
+================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    background: linear-gradient(
+        135deg,
+        #f3e8ff 0%,
+        #e9d5ff 50%,
+        #fdfaff 100%
+    );
+}
+
+
+/* ==================================================
+   PÁGINA LOGIN
+================================================== */
+
+.login-page {
+
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            #ead8ff,
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 90% 80%,
+            #f1ddff,
+            transparent 30%
+        ),
+
+        #faf7fd;
+
+    color: #35144e;
+
+    overflow: hidden;
+}
+
+
+
+/* ==================================================
+   DECORACIONES
+================================================== */
+
+.decoracion-fondo {
+
+    position: fixed;
+
+    color: #d7b36b;
+
+    font-size: 35px;
+
+    opacity: .5;
+
+    pointer-events: none;
+}
+
+
+.estrella1 {
+
+    top: 8%;
+
+    left: 5%;
+
+}
+
+
+.estrella2 {
+
+    top: 20%;
+
+    right: 6%;
+
+    font-size: 25px;
+
+}
+
+
+.estrella3 {
+
+    bottom: 10%;
+
+    left: 48%;
+
+    font-size: 22px;
+
+}
+
+
+
+/* ==================================================
+   CONTENEDOR PRINCIPAL
+================================================== */
+
+.login-container {
+    width: 92%;
+    max-width: 1250px;
+
+    min-height: 650px;
+    max-height: 90vh;
+
+    display: grid;
+    grid-template-columns: 45% 55%;
+
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+
+    box-shadow:
+        0 25px 70px rgba(83, 35, 117, .18);
+
+    border: 1px solid #eadcf4;
+}
+
+
+/* ==================================================
+   PANEL IZQUIERDO
+================================================== */
+
+.panel-izquierdo {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 20% 20%,
+            #b56be4,
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 80% 80%,
+            #542078,
+            transparent 40%
+        ),
+
+        linear-gradient(
+            145deg,
+            #3a1256,
+            #6c238e,
+            #8d39b9
+        );
+}
+
+
+
+/* Decoración de fondo */
+
+.panel-izquierdo::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 450px;
+
+    height: 450px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255,255,255,.12);
+
+    top: -150px;
+
+    left: -150px;
+}
+
+
+.panel-izquierdo::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 500px;
+
+    height: 500px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(255,255,255,.10);
+
+    bottom: -250px;
+
+    right: -200px;
+}
+
+
+
+/* ==================================================
+   CONTENIDO IZQUIERDO
+================================================== */
+
+.contenido-izquierdo {
+
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+
+    padding: 40px;
+}
+
+
+
+/* ==================================================
+   LOGO
+================================================== */
+
+.logo img {
+
+    width: 250px;
+
+    max-width: 100%;
+
+    filter:
+        drop-shadow(
+            0 10px 20px rgba(0,0,0,.25)
+        );
+}
+
+
+
+/* ==================================================
+   LÍNEA DORADA
+================================================== */
+
+.linea-dorada {
+
+    width: 180px;
+
+    height: 2px;
+
+    margin: 20px auto;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            #d9b775,
+            transparent
+        );
+}
+
+
+
+/* ==================================================
+   TEXTO IZQUIERDO
+================================================== */
+
+.contenido-izquierdo h2 {
+
+    color: white;
+
+    font-family:
+        'Playfair Display',
+        serif;
+
+    font-size: 32px;
+
+    margin-bottom: 12px;
+}
+
+
+.contenido-izquierdo h2 span {
+
+    display: block;
+
+    color: #dcbaf7;
+
+    font-style: italic;
+
+    font-size: 38px;
+}
+
+
+.contenido-izquierdo p {
+
+    color: rgba(255,255,255,.82);
+
+    font-size: 15px;
+
+    line-height: 1.7;
+
+    max-width: 380px;
+
+    margin: auto;
+}
+
+
+
+/* ==================================================
+   ICONO
+================================================== */
+
+.icono-pestanas {
+
+    width: 65px;
+
+    height: 65px;
+
+    margin: 30px auto 0;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #e0bd72;
+
+    background:
+        rgba(255,255,255,.12);
+
+    border: 1px solid
+        rgba(255,255,255,.2);
+
+    font-size: 25px;
+}
+
+
+
+/* ==================================================
+   PANEL DERECHO
+================================================== */
+
+.panel-derecho {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px 30px;
+
+    overflow-y: auto;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #fcf8ff
+        );
+}
+
+
+
+/* ==================================================
+   CAJA LOGIN
+================================================== */
+
+.login-box {
+
+    width: 100%;
+
+    max-width: 460px;
+
+    padding: 0;
+}
+
+
+
+/* ==================================================
+   ENCABEZADO
+================================================== */
+
+.encabezado-login {
+
+    text-align: center;
+}
+
+
+.etiqueta-login {
+
+    display: inline-block;
+
+    padding: 5px 12px;
+
+    border-radius: 20px;
+
+    background: #f1e2fc;
+
+    color: #7225a2;
+
+    font-size: 12px;
+
+    margin-bottom: 8px;
+}
+
+
+.encabezado-login h1 {
+
+    font-family:
+        'Playfair Display',
+        serif;
+
+    font-size: 32px;
+
+    color: #35144e;
+
+    margin-bottom: 4px;
+}
+
+
+.encabezado-login p {
+
+    color: #71667a;
+
+    font-size: 13px;
+}
+
+
+
+/* ==================================================
+   DECORACIÓN LOGIN
+================================================== */
+
+.decoracion-login {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin: 12px 0;
+}
+
+
+.decoracion-login span {
+
+    width: 80px;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            #d4b16c
+        );
+}
+
+
+.decoracion-login span:last-child {
+
+    background:
+        linear-gradient(
+            to left,
+            transparent,
+            #d4b16c
+        );
+}
+
+
+.decoracion-login i {
+
+    color: #c59b55;
+
+    font-size: 15px;
+}
+
+
+
+/* ==================================================
+   CAMPOS
+================================================== */
+
+.campo {
+
+    margin-bottom: 12px;
+}
+
+
+.campo label {
+
+    display: block;
+
+    color: #45384e;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    margin-bottom: 5px;
+}
+
+
+
+/* ==================================================
+   INPUT
+================================================== */
+
+.input-group {
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    background: #faf6fd;
+
+    border: 1px solid #dfcbea;
+
+    border-radius: 10px;
+
+    transition: .3s;
+}
+
+
+.input-group:focus-within {
+
+    border-color: #9236c9;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(146,54,201,.10);
+}
+
+
+.input-group > i:first-child {
+
+    width: 45px;
+
+    text-align: center;
+
+    color: #7926a6;
+
+    font-size: 15px;
+}
+
+
+.input-group input {
+
+    flex: 1;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #3d2949;
+
+    font-family: 'Poppins';
+
+    font-size: 13px;
+}
+
+
+.input-group input::placeholder {
+
+    color: #a49aa9;
+}
+
+
+.input-group .ojo {
+
+    width: 40px;
+
+    text-align: center;
+
+    color: #8c7298;
+
+    cursor: pointer;
+}
+
+
+.input-group .ojo:hover {
+
+    color: #7424a2;
+}
+
+
+
+/* ==================================================
+   OPCIONES
+================================================== */
+
+.opciones {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+
+    font-size: 12px;
+}
+
+
+.recordar {
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin: 0 !important;
+
+    color: #665b6d !important;
+
+    font-weight: 400 !important;
+}
+
+
+.recordar input {
+
+    accent-color: #8d31bf;
+
+    cursor: pointer;
+}
+
+
+.opciones a {
+
+    color: #7626a1;
+
+    text-decoration: none;
+
+    font-weight: 500;
+}
+
+
+.opciones a:hover {
+
+    text-decoration: underline;
+}
+
+
+
+/* ==================================================
+   BOTÓN PRINCIPAL
+================================================== */
+
+.btn-principal {
+
+    width: 100%;
+
+    height: 44px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #8e2fc4,
+            #70229e
+        );
+
+    color: white;
+
+    font-family: 'Poppins';
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+    box-shadow:
+        0 6px 16px
+        rgba(112,34,158,.22);
+}
+
+
+.btn-principal:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px
+        rgba(112,34,158,.30);
+}
+
+
+
+/* ==================================================
+   BOTÓN SECUNDARIO
+================================================== */
+
+.btn-secundario {
+
+    width: 100%;
+
+    height: 44px;
+
+    margin-top: 8px;
+
+    border-radius: 10px;
+
+    background: white;
+
+    border: 1.5px solid #8e2fc4;
+
+    color: #70229e;
+
+    font-family: 'Poppins';
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+
+.btn-secundario:hover {
+
+    background: #f7edfc;
+
+    transform: translateY(-2px);
+}
+
+
+
+/* ==================================================
+   SEPARADOR
+================================================== */
+
+.separador {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 14px 0 10px;
+}
+
+
+.separador span {
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #e5d9ea;
+}
+
+
+.separador p {
+
+    color: #918694;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+
+
+/* ==================================================
+   REDES SOCIALES
+================================================== */
+
+.social {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+}
+
+
+.social a {
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f5edfa;
+
+    color: #662095;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    transition: .3s;
+}
+
+
+.social a:hover {
+
+    background: #7626a1;
+
+    color: white;
+
+    transform: translateY(-3px);
+}
+
+
+
+/* ==================================================
+   VOLVER
+================================================== */
+
+.volver {
+
+    text-align: center;
+
+    margin-top: 10px;
+}
+
+
+.volver a {
+
+    color: #7626a1;
+
+    text-decoration: none;
+
+    font-weight: 500;
+
+    font-size: 12px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.volver a:hover {
+
+    text-decoration: underline;
+}
+
+
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@media (max-width: 900px) {
+
+    body.login-page {
+        padding: 15px;
+        align-items: center;
+        overflow-y: auto;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 520px;
+        grid-template-columns: 1fr;
+        min-height: auto;
+        max-height: none;
+        border-radius: 24px;
+        margin: 20px 0;
+    }
+
+    .panel-izquierdo {
+        padding: 30px 20px;
+        min-height: 200px;
+    }
+
+    .contenido-izquierdo {
+        padding: 10px;
+    }
+
+    .logo img {
+        width: 180px;
+    }
+
+    .contenido-izquierdo h2 {
+        font-size: 22px;
+    }
+
+    .contenido-izquierdo p {
+        font-size: 13px;
+    }
+
+    .icono-pestanas {
+        display: none;
+    }
+
+    .panel-derecho {
+        padding: 35px 25px;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+@media (max-width: 550px) {
+
+    body.login-page {
+        padding: 10px;
+    }
+
+    .login-container {
+        width: 100%;
+        border-radius: 20px;
+        margin: 10px 0;
+    }
+
+    .panel-izquierdo {
+        padding: 20px 15px;
+        min-height: 160px;
+    }
+
+    .logo img {
+        width: 140px;
+    }
+
+    .linea-dorada {
+        margin: 10px auto;
+        width: 100px;
+    }
+
+    .contenido-izquierdo h2 {
+        font-size: 19px;
+    }
+
+    .contenido-izquierdo p {
+        font-size: 12px;
+    }
+
+    .panel-derecho {
+        padding: 25px 18px;
+    }
+
+    .encabezado-login h1 {
+        font-size: 28px;
+    }
+
+    .opciones {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
