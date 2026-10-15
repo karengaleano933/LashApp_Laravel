@@ -43,5 +43,7 @@ composer require laravel/boost --dev
 php artisan boost:install
 ```
 
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
+## Workflow Rules
+
+- **Automatic GitHub Sync**: After completing each modification or feature requested by the user, automatically stage all changes (`git add .`), create a clear semantic commit, and push directly to GitHub (`git push origin main`).
 </laravel-boost-guidelines>
