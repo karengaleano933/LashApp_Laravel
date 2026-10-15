@@ -41,7 +41,7 @@
         </div>
 
         @if(isset($citasSinResena) && $citasSinResena->count() > 0)
-            <button type="button" class="btn-nueva-resena" onclick="abrirModalCalificar()">
+            <button type="button" id="btnTopCalificarCita" class="btn-nueva-resena" onclick="abrirModalCalificar()">
                 <i class="fa-solid fa-pen-to-square"></i> Calificar Cita
             </button>
         @endif
@@ -128,7 +128,7 @@
                             </div>
                         </div>
 
-                        <button type="button" class="btn-abrir-calificar" onclick="abrirModalCalificar({{ $citaPendiente->id }}, '{{ addslashes($servName) }}', '{{ addslashes($profName) }}')">
+                        <button type="button" id="btnCalificarCita{{ $citaPendiente->id }}" class="btn-abrir-calificar" onclick="abrirModalCalificar({{ $citaPendiente->id }}, '{{ addslashes($servName) }}', '{{ addslashes($profName) }}')">
                             <i class="fa-solid fa-star"></i> Calificar esta cita
                         </button>
                     </div>
