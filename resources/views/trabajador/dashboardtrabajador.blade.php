@@ -1,6 +1,5 @@
-@include('layouts.header', ['titulo' => 'Mi Panel'])
-@include('layouts.sidebaradmin')
-@vite(['resources/css/dashboardtrabajador.css'])
+@include('layouts.header_trabajador', ['titulo' => 'Mi Panel'])
+@include('layouts.sidebar_trabajador')
 
 @php
     // Fallback de inicialización en caso de llamada directa a la vista
