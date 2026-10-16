@@ -373,9 +373,10 @@
 
 .calendario-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+    width: 100%;
 }
 
 .calendario-header h3 {
@@ -391,12 +392,18 @@
 .cal-nav {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    background: #fcf9fe;
+    border: 1px solid #ebdcf5;
+    border-radius: 12px;
+    padding: 4px 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cal-nav button {
-    background: #f4ecfa;
-    border: none;
+    background: #ffffff;
+    border: 1px solid #ebdcf5;
     color: var(--morado, #7c1db8);
     width: 28px;
     height: 28px;
@@ -405,20 +412,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background .2s;
+    transition: all .2s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(124, 29, 184, 0.05);
 }
 
 .cal-nav button:hover {
     background: var(--morado, #7c1db8);
     color: #ffffff;
+    border-color: var(--morado, #7c1db8);
 }
 
 #calMesAnio {
     font-size: 13px;
     font-weight: 700;
     color: var(--texto, #2a0d3e);
-    min-width: 110px;
     text-align: center;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
 }
 
 .cal-grid-names {
