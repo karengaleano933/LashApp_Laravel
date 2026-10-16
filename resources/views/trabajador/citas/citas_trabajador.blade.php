@@ -174,24 +174,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <!-- TABLA PRÓXIMAS CITAS (COLUMNA IZQUIERDA) -->
         <div class="citas-tabla-card">
-            <div class="citas-tabla-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3><i class="fa-solid fa-calendar-check"></i> Próximas citas</h3>
+            <div class="citas-tabla-header">
+                <div class="tabla-header-title">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <h3>Próximas Citas</h3>
+                </div>
+                <span class="badge-total-citas">{{ count($proximasCitas ?? []) }} registradas</span>
             </div>
 
-            <!-- Barra de Mostrar registros y Buscar -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px; font-size:13px; color:#7a5a90;">
-                <div>
-                    Mostrar 
-                    <select id="selectRegistros" style="padding:4px 8px; border-radius:8px; border:1px solid #dcc8ee; color:#2a0d3e; outline:none;">
+            <!-- Toolbar: Mostrar registros y Buscar -->
+            <div class="tabla-toolbar">
+                <div class="toolbar-registros">
+                    <span>Mostrar</span>
+                    <select id="selectRegistros">
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                     </select>
-                    registros
+                    <span>registros</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <label for="buscarTabla">Buscar:</label>
-                    <input type="text" id="buscarTabla" style="padding:6px 12px; border-radius:20px; border:1px solid #dcc8ee; background:#fbf8fe; outline:none; font-size:13px;" placeholder="Filtrar citas...">
+                <div class="toolbar-buscar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="buscarTabla" placeholder="Buscar por cliente, servicio...">
                 </div>
             </div>
 
@@ -228,14 +232,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 data-fecha="{{ $fechaCita }}">
                                 <td>
                                     <div class="cliente-cell">
-                                        <div class="cliente-avatar-badge">
-                                            {{ $inicial }}
-                                        </div>
-                                        <strong style="margin-left:8px;">{{ $clienteNombre }}</strong>
+                                        <div class="cliente-avatar-badge">{{ $inicial }}</div>
+                                        <strong title="{{ $clienteNombre }}">{{ $clienteNombre }}</strong>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="servicio-pill">
+                                    <span class="servicio-pill" title="{{ $servicioNombre }}">
                                         <i class="fa-solid fa-spa"></i> {{ $servicioNombre }}
                                     </span>
                                 </td>
@@ -250,8 +252,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="profesional-pill">
-                                        <i class="fa-solid fa-user-tie" style="color:#7c1db8;"></i> {{ $profesional }}
+                                    <span class="profesional-pill" title="{{ $profesional }}">
+                                        <i class="fa-solid fa-user-tie"></i> {{ $profesional }}
                                     </span>
                                 </td>
                                 <td>
@@ -269,8 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" style="text-align:center; padding:40px; color:#9070a8;">
-                                    No hay citas registradas en tu agenda.
+                                <td colspan="7" class="tabla-vacia-msg">
+                                    <i class="fa-regular fa-calendar-xmark"></i>
+                                    <p>No hay citas registradas en tu agenda.</p>
                                 </td>
                             </tr>
                         @endforelse
@@ -279,19 +282,18 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
 
             <!-- Paginación y contador -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; flex-wrap:wrap; gap:10px; font-size:13px; color:#7a5a90;">
-                <div id="infoPaginacion">
+            <div class="citas-tabla-footer">
+                <div id="infoPaginacion" class="info-paginacion-txt">
                     Mostrando {{ count($proximasCitas ?? []) }} registros
                 </div>
-            </div>
-
-            <div class="citas-tabla-footer" style="margin-top:20px; display:flex; gap:12px;">
-                <button type="button" class="btn-ver-todas" onclick="limpiarFiltros()" style="padding:10px 20px; border-radius:25px; border:1px solid #7c1db8; background:#fff; color:#7c1db8; font-weight:700; cursor:pointer;">
-                    Ver todas las citas
-                </button>
-                <button type="button" class="btn-cancelar-sel" onclick="limpiarFiltros()" style="padding:10px 20px; border-radius:25px; border:1px solid #dcc8ee; background:#fff; color:#7a5a90; font-weight:600; cursor:pointer;">
-                    Limpiar Filtros
-                </button>
+                <div class="tabla-footer-actions">
+                    <button type="button" class="btn-ver-todas" onclick="limpiarFiltros()">
+                        <i class="fa-solid fa-arrows-rotate"></i> Ver todas las citas
+                    </button>
+                    <button type="button" class="btn-cancelar-sel" onclick="limpiarFiltros()">
+                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -354,104 +356,158 @@ document.addEventListener('DOMContentLoaded', function() {
 </div> <!-- Cierre de .page-content -->
 
 <!-- ══════════════════ MODAL NUEVA CITA ══════════════════ -->
-<div id="modalNuevaCita" class="modal-lash-overlay">
+<div id="modalNuevaCita" class="modal-lash-overlay" aria-hidden="true" role="dialog" aria-labelledby="modalTitulo">
     <div class="modal-lash-contenido">
+        
+        <!-- CABECERA DEL MODAL -->
         <div class="modal-lash-header">
-            <div class="modal-lash-titulo">
-                <i class="fa-solid fa-calendar-plus"></i>
-                <span>Nueva Cita</span>
+            <div class="modal-lash-header-left">
+                <div class="modal-lash-icon-badge">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                </div>
+                <div>
+                    <h2 class="modal-lash-titulo" id="modalTitulo">Nueva Cita</h2>
+                    <p class="modal-lash-subtitulo">Programa una cita para tus clientes</p>
+                </div>
             </div>
-            <button type="button" class="modal-lash-cerrar" id="cerrarNuevaCita" aria-label="Cerrar">&times;</button>
+            <button type="button" class="modal-lash-cerrar" id="cerrarNuevaCita" aria-label="Cerrar modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
 
-        <form action="{{ route('citas.store') }}" method="POST">
+        <!-- FORMULARIO -->
+        <form action="{{ route('citas.store') }}" method="POST" class="modal-lash-form" id="formNuevaCita">
             @csrf
             <div class="modal-lash-body">
                 <div class="modal-lash-grid">
 
+                    <!-- CLIENTE -->
                     <div class="modal-lash-campo">
-                        <label for="id_cliente">Cliente</label>
-                        <select name="id_cliente" id="id_cliente" required>
-                            <option value="">Seleccione un cliente</option>
-                            @foreach ($listaClientes ?? [] as $c)
-                                @php
-                                    $cId = is_array($c) ? ($c['id_cliente'] ?? $c['id'] ?? '') : ($c->id_cliente ?? $c->id ?? '');
-                                    $cNom = is_array($c) ? ($c['nombre_completo'] ?? '') : ($c->nombre_completo ?? '');
-                                @endphp
-                                <option value="{{ $cId }}">{{ $cNom }}</option>
-                            @endforeach
-                        </select>
+                        <label for="id_cliente">
+                            <i class="fa-solid fa-user"></i> Cliente <span class="required">*</span>
+                        </label>
+                        <div class="input-icon-wrap">
+                            <select name="id_cliente" id="id_cliente" required>
+                                <option value="" disabled selected>Seleccione un cliente...</option>
+                                @foreach ($listaClientes ?? [] as $c)
+                                    @php
+                                        $cId = is_array($c) ? ($c['id_cliente'] ?? $c['id'] ?? '') : ($c->id_cliente ?? $c->id ?? '');
+                                        $cNom = is_array($c) ? ($c['nombre_completo'] ?? '') : ($c->nombre_completo ?? '');
+                                    @endphp
+                                    <option value="{{ $cId }}">{{ $cNom }}</option>
+                                @endforeach
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
+                    <!-- SERVICIO -->
                     <div class="modal-lash-campo">
-                        <label for="id_servicio">Servicio</label>
-                        <select name="id_servicio" id="id_servicio" required>
-                            <option value="">Seleccione un servicio</option>
-                            @foreach ($listaServicios ?? [] as $s)
-                                @php
-                                    $sId = is_array($s) ? ($s['id_servicio'] ?? $s['id'] ?? '') : ($s->id_servicio ?? $s->id ?? '');
-                                    $sNom = is_array($s) ? ($s['nombre'] ?? '') : ($s->nombre ?? '');
-                                    $sPrecio = is_array($s) ? ($s['precio'] ?? 0) : ($s->precio ?? 0);
-                                @endphp
-                                <option value="{{ $sId }}">{{ $sNom }} - ${{ number_format($sPrecio, 0, ',', '.') }}</option>
-                            @endforeach
-                        </select>
+                        <label for="id_servicio">
+                            <i class="fa-solid fa-spa"></i> Servicio <span class="required">*</span>
+                        </label>
+                        <div class="input-icon-wrap">
+                            <select name="id_servicio" id="id_servicio" required>
+                                <option value="" disabled selected>Seleccione un servicio...</option>
+                                @foreach ($listaServicios ?? [] as $s)
+                                    @php
+                                        $sId = is_array($s) ? ($s['id_servicio'] ?? $s['id'] ?? '') : ($s->id_servicio ?? $s->id ?? '');
+                                        $sNom = is_array($s) ? ($s['nombre'] ?? '') : ($s->nombre ?? '');
+                                        $sPrecio = is_array($s) ? ($s['precio'] ?? 0) : ($s->precio ?? 0);
+                                    @endphp
+                                    <option value="{{ $sId }}">{{ $sNom }} &mdash; ${{ number_format($sPrecio, 0, ',', '.') }}</option>
+                                @endforeach
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
+                    <!-- PROFESIONAL -->
                     <div class="modal-lash-campo">
-                        <label for="id_trabajador">Profesional</label>
-                        <select name="id_trabajador" id="id_trabajador" required>
-                            @foreach ($listaTrabajadores ?? [] as $tr)
-                                @php
-                                    $trId = is_array($tr) ? ($tr['id_trabajador'] ?? $tr['id'] ?? '') : ($tr->id_trabajador ?? $tr->id ?? '');
-                                    $trNom = is_array($tr) ? ($tr['nombre_completo'] ?? '') : ($tr->nombre_completo ?? '');
-                                @endphp
-                                <option value="{{ $trId }}" {{ ($trId == ($id_trabajador ?? 0)) ? 'selected' : '' }}>
-                                    {{ $trNom }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <label for="id_trabajador">
+                            <i class="fa-solid fa-user-tie"></i> Profesional <span class="required">*</span>
+                        </label>
+                        <div class="input-icon-wrap">
+                            <select name="id_trabajador" id="id_trabajador" required>
+                                @foreach ($listaTrabajadores ?? [] as $tr)
+                                    @php
+                                        $trId = is_array($tr) ? ($tr['id_trabajador'] ?? $tr['id'] ?? '') : ($tr->id_trabajador ?? $tr->id ?? '');
+                                        $trNom = is_array($tr) ? ($tr['nombre_completo'] ?? '') : ($tr->nombre_completo ?? '');
+                                    @endphp
+                                    <option value="{{ $trId }}" {{ ($trId == ($id_trabajador ?? 0)) ? 'selected' : '' }}>
+                                        {{ $trNom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
+                    <!-- FECHA -->
                     <div class="modal-lash-campo">
-                        <label for="fecha_cita">Fecha</label>
+                        <label for="fecha_cita">
+                            <i class="fa-solid fa-calendar-day"></i> Fecha de la cita <span class="required">*</span>
+                        </label>
                         <input type="date" name="fecha_cita" id="fecha_cita" value="{{ $hoy ?? date('Y-m-d') }}" required>
                     </div>
 
+                    <!-- HORA -->
                     <div class="modal-lash-campo">
-                        <label for="hora_inicio">Hora</label>
+                        <label for="hora_inicio">
+                            <i class="fa-solid fa-clock"></i> Hora de inicio <span class="required">*</span>
+                        </label>
                         <input type="time" name="hora_inicio" id="hora_inicio" value="09:00" required>
                     </div>
 
+                    <!-- ESTADO -->
                     <div class="modal-lash-campo">
-                        <label for="estado">Estado</label>
-                        <select name="estado" id="estado">
-                            <option value="pendiente">Pendiente</option>
-                            <option value="confirmado">Confirmada</option>
-                            <option value="finalizado">Completada</option>
-                        </select>
+                        <label for="estado">
+                            <i class="fa-solid fa-circle-info"></i> Estado <span class="required">*</span>
+                        </label>
+                        <div class="input-icon-wrap">
+                            <select name="estado" id="estado">
+                                <option value="pendiente" selected>🟡 Pendiente</option>
+                                <option value="confirmado">🟢 Confirmada</option>
+                                <option value="finalizado">🟣 Completada</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
+                    <!-- MÉTODO DE PAGO -->
                     <div class="modal-lash-campo">
-                        <label for="metodo_pago">Método de Pago</label>
-                        <select name="metodo_pago" id="metodo_pago">
-                            <option value="efectivo">Efectivo</option>
-                            <option value="transferencia">Transferencia</option>
-                            <option value="tarjeta">Tarjeta</option>
-                        </select>
+                        <label for="metodo_pago">
+                            <i class="fa-solid fa-credit-card"></i> Método de Pago <span class="required">*</span>
+                        </label>
+                        <div class="input-icon-wrap">
+                            <select name="metodo_pago" id="metodo_pago">
+                                <option value="efectivo" selected>💵 Efectivo</option>
+                                <option value="transferencia">📱 Transferencia</option>
+                                <option value="tarjeta">💳 Tarjeta</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-chevron"></i>
+                        </div>
                     </div>
 
                 </div>
 
-                <div class="modal-lash-campo full">
-                    <label for="observaciones">Observaciones</label>
-                    <textarea name="observaciones" id="observaciones" rows="3" placeholder="Notas sobre el servicio o cliente..."></textarea>
+                <!-- OBSERVACIONES -->
+                <div class="modal-lash-campo modal-lash-completo" style="margin-top: 14px;">
+                    <label for="observaciones">
+                        <i class="fa-solid fa-comment-dots"></i> Observaciones o notas adicionales
+                    </label>
+                    <textarea name="observaciones" id="observaciones" rows="3" placeholder="Detalles sobre el diseño, alergias o notas adicionales del cliente (opcional)..."></textarea>
                 </div>
             </div>
 
+            <!-- FOOTER DEL MODAL -->
             <div class="modal-lash-footer">
-                <button type="button" class="btn-secundario" id="cancelarNuevaCita">Cancelar</button>
-                <button type="submit" class="btn-primario">Guardar Cita</button>
+                <button type="button" class="modal-lash-btn-cancelar" id="cancelarNuevaCita">
+                    Cancelar
+                </button>
+                <button type="submit" class="modal-lash-btn-agendar">
+                    <i class="fa-solid fa-calendar-check"></i> Guardar Cita
+                </button>
             </div>
         </form>
     </div>
@@ -467,24 +523,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCerrar  = document.getElementById('cerrarNuevaCita');
     const btnCancel  = document.getElementById('cancelarNuevaCita');
 
-    if (btnAbrir && modalNueva) {
-        btnAbrir.addEventListener('click', () => modalNueva.classList.add('activo'));
-    }
-    if (btnCerrar && modalNueva) {
-        btnCerrar.addEventListener('click', () => modalNueva.classList.remove('activo'));
-    }
-    if (btnCancel && modalNueva) {
-        btnCancel.addEventListener('click', () => modalNueva.classList.remove('activo'));
+    function abrirModal() {
+        if (modalNueva) {
+            modalNueva.classList.add('activo');
+            modalNueva.setAttribute('aria-hidden', 'false');
+        }
     }
 
-    // ── Filtrar Tabla en Tiempo Real ──
-    const buscarTabla    = document.getElementById('buscarTabla');
-    const buscarCita     = document.getElementById('buscarCita');
-    const filtroProf     = document.getElementById('filtroProfesional');
-    const filtroEst      = document.getElementById('filtroEstado');
-    const filtroFec      = document.getElementById('filtroFecha');
-    const tbody          = document.getElementById('citasTbody');
-    const filas          = tbody ? tbody.querySelectorAll('tr') : [];
+    function cerrarModal() {
+        if (modalNueva) {
+            modalNueva.classList.remove('activo');
+            modalNueva.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    if (btnAbrir)  btnAbrir.addEventListener('click', abrirModal);
+    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
+    if (btnCancel) btnCancel.addEventListener('click', cerrarModal);
+
+    // Cerrar al dar clic fuera del contenido o con tecla Escape
+    if (modalNueva) {
+        modalNueva.addEventListener('click', function(e) {
+            if (e.target === modalNueva) cerrarModal();
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalNueva && modalNueva.classList.contains('activo')) {
+            cerrarModal();
+        }
+    });
+
+    // ── Filtrar Tabla en Tiempo Real y Paginación ──
+    const buscarTabla     = document.getElementById('buscarTabla');
+    const buscarCita      = document.getElementById('buscarCita');
+    const filtroProf      = document.getElementById('filtroProfesional');
+    const filtroEst       = document.getElementById('filtroEstado');
+    const filtroFec       = document.getElementById('filtroFecha');
+    const selectRegistros = document.getElementById('selectRegistros');
+    const infoPaginacion  = document.getElementById('infoPaginacion');
+    const tbody           = document.getElementById('citasTbody');
+    const filas           = tbody ? Array.from(tbody.querySelectorAll('tr[data-cliente]')) : [];
 
     function filtrar() {
         const queryT = (buscarTabla ? buscarTabla.value : '').toLowerCase().trim();
@@ -494,13 +573,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const prof = (filtroProf ? filtroProf.value : '').toLowerCase().trim();
         const est  = (filtroEst ? filtroEst.value : '').toLowerCase().trim();
         const fec  = (filtroFec ? filtroFec.value : '').trim();
+        const limite = selectRegistros ? parseInt(selectRegistros.value, 10) : 10;
+
+        let coincidentes = 0;
 
         filas.forEach(row => {
-            const cliente = (row.getAttribute('data-cliente') || '').toLowerCase();
-            const servicio = (row.getAttribute('data-servicio') || '').toLowerCase();
+            const cliente     = (row.getAttribute('data-cliente') || '').toLowerCase();
+            const servicio    = (row.getAttribute('data-servicio') || '').toLowerCase();
             const profesional = (row.getAttribute('data-profesional') || '').toLowerCase();
-            const estado = (row.getAttribute('data-estado') || '').toLowerCase();
-            const fecha = (row.getAttribute('data-fecha') || '').trim();
+            const estado      = (row.getAttribute('data-estado') || '').toLowerCase();
+            const fecha       = (row.getAttribute('data-fecha') || '').trim();
 
             const matchQuery = !query || cliente.includes(query) || servicio.includes(query);
             const matchProf  = !prof || profesional.includes(prof);
@@ -508,27 +590,38 @@ document.addEventListener('DOMContentLoaded', function() {
             const matchFec   = !fec || fecha === fec;
 
             if (matchQuery && matchProf && matchEst && matchFec) {
-                row.style.display = '';
+                coincidentes++;
+                row.style.display = coincidentes <= limite ? '' : 'none';
             } else {
                 row.style.display = 'none';
             }
         });
+
+        if (infoPaginacion) {
+            const mostrados = Math.min(coincidentes, limite);
+            infoPaginacion.textContent = `Mostrando ${mostrados} de ${coincidentes} registros`;
+        }
     }
 
-    if (buscarTabla) buscarTabla.addEventListener('input', filtrar);
-    if (buscarCita) buscarCita.addEventListener('input', filtrar);
-    if (filtroProf) filtroProf.addEventListener('change', filtrar);
-    if (filtroEst) filtroEst.addEventListener('change', filtrar);
-    if (filtroFec) filtroFec.addEventListener('change', filtrar);
+    if (buscarTabla)     buscarTabla.addEventListener('input', filtrar);
+    if (buscarCita)      buscarCita.addEventListener('input', filtrar);
+    if (filtroProf)      filtroProf.addEventListener('change', filtrar);
+    if (filtroEst)       filtroEst.addEventListener('change', filtrar);
+    if (filtroFec)       filtroFec.addEventListener('change', filtrar);
+    if (selectRegistros) selectRegistros.addEventListener('change', filtrar);
 
     window.limpiarFiltros = function() {
-        if (buscarTabla) buscarTabla.value = '';
-        if (buscarCita) buscarCita.value = '';
-        if (filtroProf) filtroProf.value = '';
-        if (filtroEst) filtroEst.value = '';
-        if (filtroFec) filtroFec.value = '';
+        if (buscarTabla)     buscarTabla.value = '';
+        if (buscarCita)      buscarCita.value = '';
+        if (filtroProf)      filtroProf.value = '';
+        if (filtroEst)       filtroEst.value = '';
+        if (filtroFec)       filtroFec.value = '';
+        if (selectRegistros) selectRegistros.value = '10';
         filtrar();
     };
+
+    // Aplicar límite inicial
+    filtrar();
 
     // ── Mini Calendario ──
     const calGrid    = document.getElementById('calGrid');

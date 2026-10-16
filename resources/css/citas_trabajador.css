@@ -1,18 +1,21 @@
 /* =========================================================
    LASHAPP — CITAS TRABAJADOR STYLES
+   Diseño ultra-pulido, adaptable sin scrollbars horizontales
+   y modal con acabados modernos de alta gama.
    ========================================================= */
 
-/* Grid Principal de Citas */
+/* ── Grid Principal de Citas ── */
 .citas-main-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 330px;
-    gap: 22px;
+    grid-template-columns: minmax(0, 1fr) 285px;
+    gap: 18px;
     align-items: start;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* Tarjeta de la Tabla */
+/* ── Tarjeta de la Tabla ── */
 .citas-tabla-card {
     min-width: 0 !important;
     max-width: 100%;
@@ -21,140 +24,394 @@
     border: 1px solid #dcc8ee;
     box-shadow: 0 8px 24px rgba(90, 18, 133, 0.06);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+.citas-tabla-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0e6f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+}
+
+.tabla-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tabla-header-title i {
+    color: #7c1db8;
+    font-size: 17px;
+}
+
+.tabla-header-title h3 {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin: 0;
+}
+
+.badge-total-citas {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #7c1db8;
+    background: #f4eafc;
+    padding: 4px 12px;
+    border-radius: 14px;
+    border: 1px solid #ebd6f7;
+}
+
+/* ── Toolbar de la Tabla (Registros y Búsqueda) ── */
+.tabla-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #faf7fc;
+    border-bottom: 1px solid #f3e9f8;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #7a5a90;
+}
+
+.toolbar-registros {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.toolbar-registros select {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #dcc8ee;
+    color: #2a0d3e;
+    background: #ffffff;
+    outline: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.toolbar-registros select:focus {
+    border-color: #7c1db8;
+}
+
+.toolbar-buscar {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.toolbar-buscar i {
+    position: absolute;
+    left: 11px;
+    color: #9d83b1;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.toolbar-buscar input {
+    padding: 6px 12px 6px 32px;
+    border-radius: 20px;
+    border: 1px solid #dcc8ee;
+    background: #ffffff;
+    outline: none;
+    font-size: 12.5px;
+    color: #2a0d3e;
+    width: 190px;
+    transition: all 0.2s ease;
+}
+
+.toolbar-buscar input:focus {
+    border-color: #7c1db8;
+    width: 220px;
+    box-shadow: 0 0 0 3px rgba(124, 29, 184, 0.08);
+}
+
+/* ── Contenedor y Tabla Adaptable sin Scrollbar ── */
 .table-responsive {
     width: 100%;
     max-width: 100%;
-    overflow-x: auto !important;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 0 16px 16px;
+    padding: 4px 14px 10px;
+    box-sizing: border-box;
+    /* Ocultar barra de desplazamiento tosca */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(124, 29, 184, 0.2) transparent;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #ebd8f8;
+    border-radius: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #c5a4e4;
 }
 
 .citas-table {
     width: 100%;
-    min-width: 680px;
+    min-width: 0 !important;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .citas-table th, 
 .citas-table td {
-    padding: 12px 10px !important;
+    padding: 10px 7px !important;
     vertical-align: middle;
+    box-sizing: border-box;
 }
 
 .citas-table th {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 700;
     color: #7a5a90;
     background: #fbf7fe;
     border-bottom: 1px solid #dcc8ee;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     white-space: nowrap;
 }
 
 .citas-table td {
-    border-bottom: 1px solid #f4eaf8;
-    font-size: 13px;
+    border-bottom: 1px solid #f6edf9;
+    font-size: 12.5px;
     color: #2a0d3e;
 }
 
-.citas-table tbody tr:hover {
+.citas-table tbody tr:hover td {
     background: #faf4fd;
 }
 
-/* Avatar Badge */
+/* Celda Cliente con Avatar compacto */
+.cliente-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.cliente-cell strong {
+    font-size: 12.5px;
+    color: #2a0d3e;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
 .cliente-avatar-badge {
     background: linear-gradient(135deg, #9b30c7, #7c1db8);
-    color: #fff;
-    width: 34px;
-    height: 34px;
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(124, 29, 184, 0.25);
 }
 
-/* Pills */
+/* Pills y Badges Compactos */
 .servicio-pill {
-    background: #f0e6f8;
+    background: #f3e9fa;
     color: #7c1db8;
-    padding: 5px 12px;
-    border-radius: 20px;
+    padding: 4px 9px;
+    border-radius: 16px;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 11.5px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid #edd4f8;
 }
 
 .hora-badge, .fecha-badge {
     color: #7a5a90;
-    font-size: 12px;
+    font-size: 11.5px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
+}
+
+.hora-badge i, .fecha-badge i {
+    font-size: 11px;
+    color: #9a78b3;
 }
 
 .profesional-pill {
     color: #2a0d3e;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
+    max-width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profesional-pill i {
+    color: #7c1db8;
+    font-size: 11.5px;
 }
 
 /* Badges de Estado */
 .estado-badge {
     display: inline-block;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11.5px;
+    padding: 3.5px 9px;
+    border-radius: 14px;
+    font-size: 10.5px;
     font-weight: 700;
     text-align: center;
     white-space: nowrap;
+    letter-spacing: 0.2px;
 }
 
-.estado-badge.estado-pendiente  { background: #fef3c7; color: #92400e; }
+.estado-badge.estado-pendiente  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 .estado-badge.estado-confirmada,
-.estado-badge.estado-confirmado { background: #d1fae5; color: #065f46; }
+.estado-badge.estado-confirmado { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
 .estado-badge.estado-cancelada,
-.estado-badge.estado-cancelado  { background: #fee2e2; color: #991b1b; }
+.estado-badge.estado-cancelado  { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 .estado-badge.estado-completada,
 .estado-badge.estado-completado,
-.estado-badge.estado-finalizado { background: #e0e7ff; color: #3730a3; }
+.estado-badge.estado-finalizado { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
 
 /* Botón Acción Cancelar */
 .btn-accion.btn-cancelar {
     background: #fee2e2;
     color: #dc2626;
-    border: none;
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
+    border: 1px solid #fca5a5;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all .2s ease;
-    font-size: 13px;
+    font-size: 11.5px;
 }
 
 .btn-accion.btn-cancelar:hover {
     background: #dc2626;
     color: #ffffff;
     transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.28);
 }
 
-/* Mini Calendario Celda */
+.tabla-vacia-msg {
+    text-align: center;
+    padding: 36px 20px !important;
+    color: #8f6da8;
+}
+
+.tabla-vacia-msg i {
+    font-size: 32px;
+    color: #dcc8ee;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.tabla-vacia-msg p {
+    margin: 0;
+    font-weight: 500;
+    font-size: 13.5px;
+}
+
+/* ── Footer de la Tabla ── */
+.citas-tabla-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-top: 1px solid #f3e9f8;
+    background: #faf7fc;
+}
+
+.info-paginacion-txt {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #7a5a90;
+}
+
+.tabla-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-ver-todas {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 15px;
+    border-radius: 20px;
+    border: 1px solid #7c1db8;
+    background: #ffffff;
+    color: #7c1db8;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-ver-todas:hover {
+    background: #7c1db8;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 29, 184, 0.2);
+}
+
+.btn-cancelar-sel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 15px;
+    border-radius: 20px;
+    border: 1px solid #dcc8ee;
+    background: #ffffff;
+    color: #7a5a90;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancelar-sel:hover {
+    background: #f4ecf8;
+    color: #2a0d3e;
+    border-color: #c4a7df;
+}
+
+/* ── Mini Calendario Celda ── */
 .cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -167,12 +424,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 600;
     color: #2a0d3e;
     border-radius: 8px;
     cursor: pointer;
-    transition: background .15s;
+    transition: all .15s ease;
 }
 
 .cal-cell:hover:not(.cal-empty) {
@@ -191,18 +448,338 @@
     visibility: hidden;
 }
 
-/* Responsividad */
-@media (max-width: 1100px) {
+/* =========================================================
+   MODAL NUEVA CITA — ESTILOS ULTRA PREMIUM
+   ========================================================= */
+.modal-lash-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(22, 6, 33, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    box-sizing: border-box;
+}
+
+.modal-lash-overlay.activo {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.modal-lash-contenido {
+    background: #ffffff;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 630px;
+    box-shadow: 0 25px 60px -10px rgba(42, 13, 62, 0.4), 0 0 0 1px rgba(124, 29, 184, 0.1);
+    overflow: hidden;
+    transform: scale(0.93) translateY(18px);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+}
+
+.modal-lash-overlay.activo .modal-lash-contenido {
+    transform: scale(1) translateY(0);
+}
+
+/* Cabecera del Modal */
+.modal-lash-header {
+    background: linear-gradient(135deg, #7c1db8 0%, #9b30c7 60%, #b342e0 100%);
+    color: #ffffff;
+    padding: 20px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 18px rgba(124, 29, 184, 0.22);
+}
+
+.modal-lash-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.modal-lash-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+
+.modal-lash-titulo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.modal-lash-subtitulo {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 2px 0 0 0;
+    font-weight: 400;
+}
+
+.modal-lash-cerrar {
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-size: 15px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.22s ease;
+    flex-shrink: 0;
+}
+
+.modal-lash-cerrar:hover {
+    background: rgba(255, 255, 255, 0.32);
+    transform: rotate(90deg);
+}
+
+/* Formulario y Contenido */
+.modal-lash-form {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0;
+}
+
+.modal-lash-body {
+    padding: 22px 26px;
+    overflow-y: auto;
+    max-height: calc(88vh - 145px);
+}
+
+.modal-lash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 18px;
+}
+
+.modal-lash-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-lash-campo.full,
+.modal-lash-completo {
+    grid-column: 1 / -1;
+}
+
+.modal-lash-campo label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2a0d3e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.2px;
+}
+
+.modal-lash-campo label i {
+    color: #7c1db8;
+    font-size: 12px;
+}
+
+.modal-lash-campo label .required {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* Inputs, Selects con chevrons y Textareas */
+.input-icon-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.input-icon-wrap select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 36px !important;
+}
+
+.select-chevron {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9a7cb2;
+    font-size: 11px;
+    pointer-events: none;
+    transition: transform 0.2s;
+}
+
+.modal-lash-campo input,
+.modal-lash-campo select,
+.modal-lash-campo textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #e2d2f2;
+    font-size: 13px;
+    font-family: 'DM Sans', Arial, sans-serif;
+    color: #2a0d3e;
+    background: #fcf9fe;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.modal-lash-campo input:hover,
+.modal-lash-campo select:hover,
+.modal-lash-campo textarea:hover {
+    border-color: #ba8fe3;
+    background: #ffffff;
+}
+
+.modal-lash-campo input:focus,
+.modal-lash-campo select:focus,
+.modal-lash-campo textarea:focus {
+    border-color: #7c1db8;
+    background: #ffffff;
+    box-shadow: 0 0 0 3.5px rgba(124, 29, 184, 0.12);
+}
+
+.modal-lash-campo textarea {
+    resize: vertical;
+    min-height: 65px;
+    line-height: 1.4;
+}
+
+/* Footer del Modal y Botones Elegantes */
+.modal-lash-footer {
+    padding: 15px 26px;
+    background: #fbf7fd;
+    border-top: 1px solid #f0e6f8;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-lash-btn-cancelar,
+.btn-secundario {
+    background: #ffffff !important;
+    border: 1.5px solid #dcc8ee !important;
+    color: #7a5a90 !important;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 22px !important;
+    border-radius: 25px !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.modal-lash-btn-cancelar:hover,
+.btn-secundario:hover {
+    background: #f3ecf8 !important;
+    border-color: #c4a7df !important;
+    color: #2a0d3e !important;
+    transform: translateY(-1px);
+}
+
+.modal-lash-btn-agendar,
+.btn-primario {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 9px 24px !important;
+    border-radius: 25px !important;
+    border: none !important;
+    background: linear-gradient(135deg, #9b30c7 0%, #76209b 100%) !important;
+    color: #ffffff !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 16px rgba(118, 32, 155, 0.26) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.modal-lash-btn-agendar:hover,
+.btn-primario:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 9px 22px rgba(118, 32, 155, 0.36) !important;
+}
+
+.modal-lash-btn-agendar:active,
+.btn-primario:active {
+    transform: translateY(0) !important;
+}
+
+/* ── Responsividad Inteligente ── */
+@media (max-width: 1180px) {
     .citas-main-grid {
         grid-template-columns: 1fr;
     }
-    .citas-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
-@media (max-width: 600px) {
-    .citas-cards {
+@media (max-width: 768px) {
+    .modal-lash-contenido {
+        border-radius: 18px;
+    }
+    .modal-lash-header {
+        padding: 16px 20px;
+    }
+    .modal-lash-body {
+        padding: 18px 20px;
+    }
+    .modal-lash-grid {
         grid-template-columns: 1fr;
+        gap: 13px;
+    }
+    .modal-lash-footer {
+        padding: 14px 20px;
+        flex-direction: column-reverse;
+    }
+    .modal-lash-btn-cancelar,
+    .modal-lash-btn-agendar,
+    .btn-secundario,
+    .btn-primario {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+    .citas-tabla-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-ver-todas,
+    .btn-cancelar-sel {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
     }
 }
