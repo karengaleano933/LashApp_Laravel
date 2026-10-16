@@ -13,8 +13,9 @@
         $inicioSemana = \Carbon\Carbon::now()->startOfWeek()->format('Y-m-d');
         $finSemana = \Carbon\Carbon::now()->endOfWeek()->format('Y-m-d');
 
+        $tieneCitasAsignadas = ($id_trabajador > 0) && \App\Models\Cita::where('trabajador_id', $id_trabajador)->exists();
         $citasBase = \App\Models\Cita::query();
-        if ($id_trabajador > 0) {
+        if ($tieneCitasAsignadas) {
             $citasBase->where('trabajador_id', $id_trabajador);
         }
 
@@ -28,13 +29,6 @@
             ->orderBy('fecha', 'asc')
             ->orderBy('hora_inicio', 'asc')
             ->get();
-
-        if ($citasQuery->isEmpty()) {
-            $citasQuery = \App\Models\Cita::with(['cliente.user', 'trabajador.user', 'servicio'])
-                ->orderBy('fecha', 'asc')
-                ->orderBy('hora_inicio', 'asc')
-                ->get();
-        }
 
         $estadoMap = [
             'pendiente' => 'Pendiente',
@@ -350,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="Cancelada">Cancelada</option>
                         <option value="Completada">Completada</option>
                     </select>
-                    <input type="date" id="filtroFecha" class="filtro-select" value="{{ $hoy ?? date('Y-m-d') }}">
+                    <input type="date" id="filtroFecha" class="filtro-select" value="" title="Filtrar por fecha">
                 </div>
             </div>
 
@@ -544,15 +538,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
         calMesAnio.textContent = `${nombresMeses[month]} ${year}`;
 
-        const firstDayIndex = new Date(year, month, 1).getDay();
-        const startDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+        const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
         const totalDays = new Date(year, month + 1, 0).getDate();
 
         calGrid.innerHTML = '';
 
-        for (let i = 0; i < startDay; i++) {
+        for (let i = 0; i < firstDay; i++) {
             const emptyCell = document.createElement('div');
-            emptyCell.className = 'cal-day empty';
+            emptyCell.className = 'cal-cell cal-empty';
             calGrid.appendChild(emptyCell);
         }
 
@@ -560,16 +553,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         for (let d = 1; d <= totalDays; d++) {
             const dayCell = document.createElement('div');
-            dayCell.className = 'cal-day';
+            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+            dayCell.className = 'cal-cell' + (isToday ? ' cal-today' : '');
             dayCell.textContent = d;
-
-            if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                dayCell.classList.add('hoy');
-                dayCell.style.background = '#7c1db8';
-                dayCell.style.color = '#fff';
-                dayCell.style.borderRadius = '50%';
-            }
-
             calGrid.appendChild(dayCell);
         }
     }

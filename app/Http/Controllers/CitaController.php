@@ -36,8 +36,10 @@ class CitaController extends Controller
             $inicioSemana = Carbon::now()->startOfWeek()->format('Y-m-d');
             $finSemana = Carbon::now()->endOfWeek()->format('Y-m-d');
 
+            $tieneCitasAsignadas = ($id_trabajador > 0) && Cita::where('trabajador_id', $id_trabajador)->exists();
+
             $citasBase = Cita::query();
-            if ($id_trabajador > 0) {
+            if ($tieneCitasAsignadas) {
                 $citasBase->where('trabajador_id', $id_trabajador);
             }
 
@@ -51,13 +53,6 @@ class CitaController extends Controller
                 ->orderBy('fecha', 'asc')
                 ->orderBy('hora_inicio', 'asc')
                 ->get();
-
-            if ($proximasCitasModel->isEmpty()) {
-                $proximasCitasModel = Cita::with(['cliente.user', 'trabajador.user', 'servicio'])
-                    ->orderBy('fecha', 'asc')
-                    ->orderBy('hora_inicio', 'asc')
-                    ->get();
-            }
 
             $estadoMap = [
                 'pendiente' => 'Pendiente',
