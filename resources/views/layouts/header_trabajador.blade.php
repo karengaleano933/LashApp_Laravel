@@ -53,15 +53,15 @@
             </a>
 
             <p class="menu-title">GESTIÓN</p>
-            <a href="{{ route('citas.index') }}" class="menu-item">
+            <a href="{{ route('trabajador.horario') }}" class="menu-item {{ request()->routeIs('trabajador.horario*') ? 'active' : '' }}">
                 <i class="fa-solid fa-clock"></i><span>Mi horario</span>
             </a>
-            <a href="{{ route('resenas.index') }}" class="menu-item {{ request()->routeIs('resenas.*') ? 'active' : '' }}">
+            <a href="{{ route('trabajador.resenas') }}" class="menu-item {{ request()->routeIs('*resenas*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star"></i><span>Reseñas</span>
             </a>
 
             <p class="menu-title">CUENTA</p>
-            <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+            <a href="{{ route('trabajador.perfil') }}" class="menu-item {{ request()->routeIs('trabajador.perfil*') || request()->routeIs('profile.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-user"></i><span>Mi perfil</span>
             </a>
         </nav>

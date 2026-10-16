@@ -1,14 +1,416 @@
 /* =========================================================
-   LASHAPP — PERFIL TRABAJADOR STYLES
+   LASHAPP — PERFIL TRABAJADOR / ESPECIALISTA STYLES
    ========================================================= */
 
-@import url('../../cliente/css/perfil.css');
+:root {
+    --lash-primary: #7c1db8;
+    --lash-primary-dark: #5a1285;
+    --lash-primary-light: #f0e6f8;
+    --lash-primary-subtle: #fbf8fe;
+    --lash-text: #2a0d3e;
+    --lash-muted: #7a5a90;
+    --lash-border: #e8daf3;
+    --lash-card-bg: #ffffff;
+    --lash-gold: #c9a84c;
+    --lash-radius: 20px;
+    --lash-shadow: 0 8px 25px rgba(90, 18, 133, 0.05);
+}
 
-.perfil-header {
+.perfil-page-container {
+    padding: 24px 30px 40px;
+}
+
+/* ══════════════════════════════════════════════════════
+   BANNER SUPERIOR DEL ESPECIALISTA
+   ══════════════════════════════════════════════════════ */
+.perfil-hero-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fcf7fe 100%);
+    border: 1px solid var(--lash-border);
+    border-radius: var(--lash-radius);
+    padding: 28px;
+    box-shadow: var(--lash-shadow);
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.perfil-hero-card::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(124, 29, 184, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.perfil-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+/* Avatar con botón de cámara */
+.perfil-avatar-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+}
+
+.perfil-avatar-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(90, 18, 133, 0.15);
+}
+
+.perfil-avatar-placeholder {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c1db8 0%, #a238db 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    border: 3px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(90, 18, 133, 0.15);
+}
+
+.btn-cambiar-foto {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--lash-primary);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-cambiar-foto:hover {
+    transform: scale(1.1);
+    background: var(--lash-primary-dark);
+}
+
+.perfil-hero-info h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    color: var(--lash-text);
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.perfil-hero-info p {
+    font-size: 13px;
+    color: var(--lash-muted);
+    margin: 0 0 8px 0;
+}
+
+.perfil-badges-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge-especialidad {
+    background: var(--lash-primary-light);
+    color: var(--lash-primary);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-activo {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Métricas del Hero */
+.perfil-hero-metrics {
+    display: flex;
+    gap: 20px;
+    background: #ffffff;
+    padding: 14px 22px;
+    border-radius: 16px;
+    border: 1px solid var(--lash-border);
+    box-shadow: 0 4px 14px rgba(90, 18, 133, 0.03);
+}
+
+.metric-pill-item {
+    text-align: center;
+}
+
+.metric-pill-item:not(:last-child) {
+    padding-right: 20px;
+    border-right: 1px solid #f0e6f8;
+}
+
+.metric-pill-val {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--lash-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.metric-pill-lbl {
+    font-size: 11px;
+    color: var(--lash-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* ══════════════════════════════════════════════════════
+   TABS DE NAVEGACIÓN DEL PERFIL
+   ══════════════════════════════════════════════════════ */
+.perfil-nav-tabs {
+    display: flex;
+    gap: 12px;
     margin-bottom: 24px;
+    border-bottom: 1.5px solid var(--lash-border);
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.perfil-tab-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--lash-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.perfil-tab-btn:hover {
+    color: var(--lash-primary);
+    background: #fbf8fe;
 }
 
 .perfil-tab-btn.active {
-    border-bottom: 3px solid #7c1db8;
-    color: #7c1db8;
+    background: var(--lash-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(124, 29, 184, 0.2);
+}
+
+/* ══════════════════════════════════════════════════════
+   PANELES Y FORMULARIOS
+   ══════════════════════════════════════════════════════ */
+.perfil-tab-panel {
+    display: none;
+    animation: fadeInTab 0.25s ease-out;
+}
+
+.perfil-tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-card {
+    background: #ffffff;
+    border: 1px solid var(--lash-border);
+    border-radius: var(--lash-radius);
+    padding: 28px;
+    box-shadow: var(--lash-shadow);
+    margin-bottom: 24px;
+}
+
+.perfil-card-header {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f8f2fc;
+}
+
+.perfil-card-header h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    color: var(--lash-text);
+    margin: 0 0 4px 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.perfil-card-header p {
+    font-size: 12.5px;
+    color: var(--lash-muted);
+    margin: 0;
+}
+
+.form-grid-perfil {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.form-group-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group-perfil.full-width {
+    grid-column: span 2;
+}
+
+.form-group-perfil label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--lash-text);
+}
+
+.form-group-perfil input,
+.form-group-perfil textarea,
+.form-group-perfil select {
+    padding: 11px 16px;
+    border: 1.5px solid var(--lash-border);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--lash-text);
+    outline: none;
+    background: #ffffff;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group-perfil input:focus,
+.form-group-perfil textarea:focus,
+.form-group-perfil select:focus {
+    border-color: var(--lash-primary);
+    box-shadow: 0 0 0 3px rgba(124, 29, 184, 0.1);
+}
+
+.form-group-perfil input[readonly] {
+    background: #fbf8fe;
+    color: #8f72a5;
+    cursor: not-allowed;
+}
+
+.perfil-form-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-guardar-perfil {
+    background: linear-gradient(135deg, #7c1db8 0%, #9e33d4 100%);
+    color: #ffffff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(124, 29, 184, 0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-guardar-perfil:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(124, 29, 184, 0.35);
+}
+
+/* Card de Próxima Cita */
+.proxima-cita-box {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #fdfafd;
+    border: 1px solid var(--lash-border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 10px;
+}
+
+.proxima-cita-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid var(--lash-border);
+}
+
+.proxima-cita-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: var(--lash-text);
+}
+
+.proxima-cita-info p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--lash-muted);
+}
+
+@media (max-width: 900px) {
+    .perfil-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .perfil-hero-metrics {
+        width: 100%;
+        justify-content: space-around;
+    }
+    .form-grid-perfil {
+        grid-template-columns: 1fr;
+    }
+    .form-group-perfil.full-width {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .perfil-page-container {
+        padding: 16px;
+    }
+    .perfil-hero-left {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }

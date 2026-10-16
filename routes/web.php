@@ -171,6 +171,23 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/servicios/{id}', [\App\Http\Controllers\ServicioController::class, 'destroy'])->name('servicios.destroy');
 });
 
+// Portal Trabajador: Horario, Reseñas y Perfil
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\TrabajadorController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/trabajador/horario', [HorarioController::class, 'index'])->name('trabajador.horario');
+    Route::post('/trabajador/horario', [HorarioController::class, 'store'])->name('trabajador.horario.store');
+    Route::delete('/trabajador/horario/{id}', [HorarioController::class, 'destroy'])->name('trabajador.horario.destroy');
+
+    Route::get('/trabajador/resenas', [\App\Http\Controllers\ResenaController::class, 'index'])->name('trabajador.resenas');
+
+    Route::get('/trabajador/perfil', [TrabajadorController::class, 'perfil'])->name('trabajador.perfil');
+    Route::post('/trabajador/perfil/actualizar', [TrabajadorController::class, 'updatePerfil'])->name('trabajador.perfil.update');
+    Route::post('/trabajador/perfil/foto', [TrabajadorController::class, 'updateFoto'])->name('trabajador.perfil.foto');
+    Route::post('/trabajador/perfil/password', [TrabajadorController::class, 'updatePassword'])->name('trabajador.perfil.password');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

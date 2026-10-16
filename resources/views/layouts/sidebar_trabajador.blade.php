@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 <div class="user-profile-dropdown-menu">
-                    <a href="{{ route('profile.edit') }}" class="up-item">
+                    <a href="{{ route('trabajador.perfil') }}" class="up-item">
                         <i class="fa-solid fa-id-badge"></i>
                         <span>Mi Perfil</span>
                     </a>
@@ -68,11 +68,15 @@
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Mis Citas</span>
                     </a>
+                    <a href="{{ route('trabajador.horario') }}" class="up-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Mi Horario</span>
+                    </a>
                     <a href="{{ route('servicios.index') }}" class="up-item">
                         <i class="fa-solid fa-spa"></i>
                         <span>Servicios</span>
                     </a>
-                    <a href="{{ route('resenas.index') }}" class="up-item">
+                    <a href="{{ route('trabajador.resenas') }}" class="up-item">
                         <i class="fa-solid fa-star"></i>
                         <span>Reseñas</span>
                     </a>
@@ -102,17 +106,22 @@
                 <div class="qs-item-info"><strong>Mis Citas</strong><span>Gestionar agenda y citas programadas</span></div>
                 <span class="qs-badge">Citas</span>
             </a>
+            <a href="{{ route('trabajador.horario') }}" class="quicksearch-item" data-text="horario disponibilidad turnos horas">
+                <i class="fa-solid fa-clock"></i>
+                <div class="qs-item-info"><strong>Mi Horario</strong><span>Configurar turnos y disponibilidad</span></div>
+                <span class="qs-badge">Horario</span>
+            </a>
             <a href="{{ route('servicios.index') }}" class="quicksearch-item" data-text="servicios catalogo tratamientos pestanas">
                 <i class="fa-solid fa-spa"></i>
                 <div class="qs-item-info"><strong>Servicios</strong><span>Catálogo de servicios disponibles</span></div>
                 <span class="qs-badge">Servicios</span>
             </a>
-            <a href="{{ route('resenas.index') }}" class="quicksearch-item" data-text="resenas opiniones comentarios calificaciones">
+            <a href="{{ route('trabajador.resenas') }}" class="quicksearch-item" data-text="resenas opiniones comentarios calificaciones">
                 <i class="fa-solid fa-star"></i>
                 <div class="qs-item-info"><strong>Reseñas</strong><span>Opiniones y calificaciones recibidas</span></div>
                 <span class="qs-badge">Reseñas</span>
             </a>
-            <a href="{{ route('profile.edit') }}" class="quicksearch-item" data-text="perfil configuracion cuenta seguridad">
+            <a href="{{ route('trabajador.perfil') }}" class="quicksearch-item" data-text="perfil configuracion cuenta seguridad">
                 <i class="fa-solid fa-user-gear"></i>
                 <div class="qs-item-info"><strong>Mi Perfil</strong><span>Editar datos personales y contraseña</span></div>
                 <span class="qs-badge">Perfil</span>

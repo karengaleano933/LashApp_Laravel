@@ -14,10 +14,20 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
+        $user = $request->user();
+
+        if ($user && (int)$user->role_id === 2) {
+            return redirect()->route('trabajador.perfil');
+        }
+
+        if ($user && (int)$user->role_id === 3) {
+            return redirect()->route('cliente.perfil');
+        }
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
         ]);
     }
 

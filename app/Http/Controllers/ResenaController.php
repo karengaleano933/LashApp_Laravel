@@ -13,6 +13,61 @@ class ResenaController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+
+        // Si el usuario es trabajador (rol 2), cargar vista especializada de trabajador
+        if ($user && (int)$user->role_id === 2) {
+            $trabajador = $user->trabajador ?? \App\Models\Trabajador::where('user_id', $user->id)->first();
+            $trabajadorId = $trabajador?->id;
+
+            $query = Resena::with(['cliente.user', 'cita.servicio', 'cita.trabajador.user']);
+            if ($trabajadorId) {
+                $query->whereHas('cita', function ($q) use ($trabajadorId) {
+                    $q->where('trabajador_id', $trabajadorId);
+                });
+            }
+
+            $resenas = $query->orderByDesc('fecha_resena')->orderByDesc('id')->get();
+
+            // Si aún no tiene reseñas específicas de sus citas, mostrar las del salón para enriquecer la vista
+            if ($resenas->isEmpty()) {
+                $resenas = Resena::with(['cliente.user', 'cita.servicio', 'cita.trabajador.user'])
+                    ->orderByDesc('fecha_resena')
+                    ->orderByDesc('id')
+                    ->get();
+            }
+
+            $totalResenas = $resenas->count();
+            $promedioCalificacion = $totalResenas > 0 ? round($resenas->avg('calificacion'), 1) : 5.0;
+
+            $positivas = $resenas->where('calificacion', '>=', 4)->count();
+            $neutras = $resenas->where('calificacion', 3)->count();
+            $negativas = $resenas->where('calificacion', '<=', 2)->count();
+
+            $c5 = $resenas->where('calificacion', 5)->count();
+            $c4 = $resenas->where('calificacion', 4)->count();
+            $c3 = $resenas->where('calificacion', 3)->count();
+            $c2 = $resenas->where('calificacion', 2)->count();
+            $c1 = $resenas->where('calificacion', 1)->count();
+
+            $pct5 = $totalResenas > 0 ? round(($c5 / $totalResenas) * 100, 1) : 0;
+            $pct4 = $totalResenas > 0 ? round(($c4 / $totalResenas) * 100, 1) : 0;
+            $pct3 = $totalResenas > 0 ? round(($c3 / $totalResenas) * 100, 1) : 0;
+            $pct2 = $totalResenas > 0 ? round(($c2 / $totalResenas) * 100, 1) : 0;
+            $pct1 = $totalResenas > 0 ? round(($c1 / $totalResenas) * 100, 1) : 0;
+
+            return view('trabajador.resenas.resenas_trabajador', compact(
+                'resenas',
+                'totalResenas',
+                'promedioCalificacion',
+                'positivas',
+                'neutras',
+                'negativas',
+                'c5', 'c4', 'c3', 'c2', 'c1',
+                'pct5', 'pct4', 'pct3', 'pct2', 'pct1'
+            ));
+        }
+
         $resenas = Resena::with(['cliente.user', 'cita.servicio'])
             ->orderByDesc('fecha_resena')
             ->orderByDesc('id')
