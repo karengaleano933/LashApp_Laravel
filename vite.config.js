@@ -26,6 +26,7 @@ export default defineConfig({
                 'resources/css/historilacliente.css',
                 'resources/css/resenascliente.css',
                 'resources/css/perfilcliente.css',
+                'resources/css/dashboardtrabajador.css',
             ],
             refresh: true,
         }),

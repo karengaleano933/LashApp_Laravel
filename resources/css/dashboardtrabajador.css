@@ -1,0 +1,282 @@
+/* =========================================================
+   LASHAPP — DASHBOARD TRABAJADOR STYLES
+   ========================================================= */
+
+
+.trabajador-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.card-design-sparkle {
+    position: relative;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #e8daf3;
+    box-shadow: 0 6px 20px rgba(90,18,133,0.04);
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.card-design-sparkle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(90,18,133,0.08);
+}
+
+.card-design-sparkle::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-image: radial-gradient(#c9a84c 0.75px, transparent 0.75px), radial-gradient(#7c1db8 0.75px, #ffffff 0.75px);
+    background-size: 15px 15px;
+    background-position: 0 0, 7.5px 7.5px;
+    opacity: 0.04;
+    pointer-events: none;
+}
+
+.card-sparkle-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid #dcc8ee;
+    background: #fbf8fe;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.card-sparkle-title {
+    font-size: 13px;
+    color: #7a5a90;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.card-sparkle-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin-bottom: 6px;
+}
+
+.card-sparkle-sub {
+    font-size: 11px;
+    color: #10b981;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Tabla Próximas Citas */
+.table-citas-wrap {
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 10px;
+    display: block;
+}
+
+.table-citas-custom {
+    width: 100%;
+    min-width: 580px !important;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+
+.table-citas-custom th {
+    text-align: left;
+    padding: 10px 12px;
+    color: #7a5a90;
+    font-weight: 600;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 13px;
+    border-bottom: 1px solid #f0e6f8;
+    white-space: nowrap;
+}
+
+.table-citas-custom td {
+    padding: 12px;
+    color: #2a0d3e;
+    border-bottom: 1px solid #f8f2fc;
+    white-space: nowrap;
+}
+
+.table-citas-custom tr:hover td {
+    background: #fcf9fe;
+}
+
+.badge-pill-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.badge-pill-status.confirmada { background: #d1fae5; color: #065f46; }
+.badge-pill-status.pendiente  { background: #fef3c7; color: #92400e; }
+.badge-pill-status.cancelada  { background: #fee2e2; color: #991b1b; }
+.badge-pill-status.completada { background: #e0e7ff; color: #3730a3; }
+
+/* Servicios Populares con barras de progreso */
+.popular-services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.popular-service-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.service-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid #dcc8ee;
+    background: #fbf8fe;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.service-info-flex {
+    flex: 1;
+}
+
+.service-title-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin-bottom: 6px;
+}
+
+.progress-bar-wrap {
+    width: 100%;
+    height: 8px;
+    background: #f0e6f8;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9b30c7, #7c1db8);
+    border-radius: 10px;
+}
+
+.service-percent-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: #7a5a90;
+    width: 38px;
+    text-align: right;
+}
+
+@media(max-width: 1100px) {
+    .trabajador-grid-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media(max-width: 600px) {
+    .trabajador-grid-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .card-design-sparkle {
+        padding: 14px 12px;
+    }
+    .card-sparkle-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    .card-sparkle-value {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+    .card-sparkle-title {
+        font-size: 11px;
+    }
+    .card-sparkle-sub {
+        font-size: 10px;
+    }
+
+    /* Transformación de Tabla a Tarjetas en Celulares */
+    .table-citas-wrap {
+        overflow: visible !important;
+        display: block !important;
+    }
+    .table-citas-custom,
+    .table-citas-custom thead,
+    .table-citas-custom tbody,
+    .table-citas-custom th,
+    .table-citas-custom td,
+    .table-citas-custom tr {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    .table-citas-custom thead {
+        display: none !important;
+    }
+    .table-citas-custom tr {
+        background: #faf7fc;
+        border: 1px solid #e8daf3;
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 12px rgba(90,18,133,0.03);
+    }
+    .table-citas-custom td {
+        padding: 5px 0 !important;
+        border-bottom: 1px dashed #f0e6f8 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        font-size: 12px !important;
+        white-space: normal !important;
+        text-align: right !important;
+    }
+    .table-citas-custom td:last-child {
+        border-bottom: none !important;
+    }
+    .table-citas-custom td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #7a5a90;
+        font-size: 11px;
+        text-transform: uppercase;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+}
+
+@media(max-width: 480px) {
+    .popular-service-item {
+        gap: 10px;
+    }
+    .service-icon-box {
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
+    }
+}
+
+

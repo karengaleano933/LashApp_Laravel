@@ -19,6 +19,10 @@ Route::get('/cliente/dashboard', [DashboardController::class, 'dashboardCliente'
     ->middleware(['auth'])
     ->name('cliente.dashboard');
 
+Route::get('/trabajador/dashboard', [DashboardController::class, 'dashboardTrabajador'])
+    ->middleware(['auth'])
+    ->name('trabajador.dashboard');
+
 Route::get('/cliente/catalogo', function () {
     $categorias = \App\Models\Categoria::where('estado', 'activo')->get();
     $servicios = \App\Models\Servicio::with('categoria')->where('estado', 'activo')->get();
