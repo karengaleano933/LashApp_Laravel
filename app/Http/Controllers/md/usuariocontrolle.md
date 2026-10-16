@@ -37,11 +37,37 @@ public function index()
 Esta función se ejecuta cuando entro al módulo de **Usuarios**. Lo que hago aquí es:
 
 1. **Traigo todos los usuarios:** Con `User::with('role')->get()` me traigo la lista de todas las personas registradas junto con su rol.
-2. **Saco las cuentas para las tarjetas de arriba:**
-   - Cuento cuántos usuarios hay en total (`$usuariosTotales`).
-   - Cuento cuántos están activos (`$usuariosActivos`) y cuántos inactivos (`$usuariosInactivos`).
-   - Cuento cuántos son administradores (`$administradores`), cuántos son trabajadoras (`$trabajadores`) y cuántos son clientes (`$clientes`).
-3. **Mando todo a la vista:** Con `return view('admin.gusuarios.gusuarios', compact(...))` le paso toda esa información a la pantalla para que se pinten las tarjetas con los números y la tabla con los usuarios.
+2. **Hago los conteos estadísticos para las tarjetas:**
+   Aquí tengo este bloque de código donde saco todas las cuentas matemáticas del negocio:
+
+   ```php
+   // Conteos estadísticos
+   $usuariosTotales = $usuarios->count();
+   $usuariosActivos = User::where('estado', 'activo')->count();
+   $usuariosInactivos = User::where('estado', 'inactivo')->count();
+   $administradores = User::where('role_id', 1)->count();
+   $trabajadores = User::where('role_id', 2)->count();
+   $clientes = User::where('role_id', 3)->count();
+   ```
+
+   **¿Para qué sirve cada una de estas líneas?**
+   * **`$usuariosTotales = $usuarios->count();`**  
+     Como en la línea anterior ya traje a todos los usuarios en la variable `$usuarios`, con `->count()` el sistema simplemente cuenta cuántos registros hay en total (por ejemplo: 20 usuarios). Ese número lo pongo en la tarjeta principal de *"Total Usuarios"*.
+   * **`$usuariosActivos = User::where('estado', 'activo')->count();`**  
+     Aquí voy a la base de datos y le digo: *"Filtra y busca solo a los usuarios que en su columna `estado` tengan la palabra `'activo'` y cuéntalos"*. Así sé cuántas personas pueden entrar y usar el sistema en este momento.
+   * **`$usuariosInactivos = User::where('estado', 'inactivo')->count();`**  
+     Es exactamente lo mismo pero buscando a los que dicen `'inactivo'`. Esto me sirve para saber cuántas cuentas están apagadas, pausadas o suspendidas.
+   * **`$administradores = User::where('role_id', 1)->count();`**  
+     Aquí busco específicamente a los que tienen `role_id` igual a **1** (que es el rol de Administrador). Me dice cuántas personas tienen acceso total al panel de control.
+   * **`$trabajadores = User::where('role_id', 2)->count();`**  
+     Aquí busco a los que tienen `role_id` igual a **2** (el rol de Trabajador / Especialista). Esto me da el número exacto de empleadas o lashistas que tengo registradas en mi equipo.
+   * **`$clientes = User::where('role_id', 3)->count();`**  
+     Aquí busco a los que tienen `role_id` igual a **3** (el rol de Cliente). Me cuenta cuántas clientas registradas tiene mi estudio de belleza.
+
+   > **¿Por qué hago estos conteos aquí?**  
+   > Porque en la parte de arriba de mi pantalla tengo tarjeticas y badges con esos números resumen. Si no los calculara aquí, la pantalla no sabría qué números mostrar. Así mi controlador hace todas las cuentas y se las entrega ya listas a la vista.
+
+3. **Mando todo a la vista:** Con `return view('admin.gusuarios.gusuarios', compact(...))` le paso toda esa lista de usuarios y cada uno de los números calculados a la pantalla para que se pinten las tarjetas y la tabla con los datos reales.
 
 ---
 
