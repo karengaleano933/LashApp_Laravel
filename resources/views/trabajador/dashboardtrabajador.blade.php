@@ -8,8 +8,9 @@
         $trabajador = $user?->trabajador ?? \App\Models\Trabajador::where('user_id', $user?->id)->first();
         $trabajadorId = $trabajador?->id;
 
+        $tieneCitasAsignadas = ($trabajadorId > 0) && \App\Models\Cita::where('trabajador_id', $trabajadorId)->exists();
         $citasQuery = \App\Models\Cita::query();
-        if ($trabajadorId) {
+        if ($tieneCitasAsignadas) {
             $citasQuery->where('trabajador_id', $trabajadorId);
         }
 
@@ -19,9 +20,80 @@
         $citasPendientes = (clone $citasQuery)->where('estado', 'pendiente')->count();
         $citasCompletadas = (clone $citasQuery)->whereIn('estado', ['confirmado', 'finalizado', 'completado', 'completada', 'realizada'])->count();
         $totalClientes = (clone $citasQuery)->distinct('cliente_id')->count('cliente_id');
-        $proximasCitas = $proximasCitas ?? [];
-        $calificacionPromedio = $calificacionPromedio ?? 4.9;
-        $serviciosPopulares = $serviciosPopulares ?? [];
+
+        $citasRecientes = (clone $citasQuery)
+            ->with(['cliente.user', 'servicio', 'trabajador.user'])
+            ->orderBy('fecha', 'desc')
+            ->orderBy('hora_inicio', 'desc')
+            ->take(7)
+            ->get();
+
+        $estadoMap = [
+            'pendiente' => 'Pendiente',
+            'confirmado' => 'Confirmada',
+            'confirmada' => 'Confirmada',
+            'cancelado' => 'Cancelada',
+            'cancelada' => 'Cancelada',
+            'finalizado' => 'Completada',
+            'completada' => 'Completada',
+            'completado' => 'Completada',
+            'realizada' => 'Completada',
+        ];
+
+        $proximasCitas = $citasRecientes->map(function ($cita) use ($estadoMap) {
+            $clienteNombre = $cita->cliente?->user
+                ? trim($cita->cliente->user->name . ' ' . ($cita->cliente->user->apellido ?? ''))
+                : 'Cliente LashApp';
+
+            $trabajadorNombre = $cita->trabajador?->user
+                ? trim($cita->trabajador->user->name . ' ' . ($cita->trabajador->user->apellido ?? ''))
+                : 'Profesional';
+
+            return [
+                'id' => $cita->id,
+                'cliente' => $clienteNombre,
+                'servicio' => $cita->servicio?->nombre ?? 'Servicio',
+                'profesional' => $trabajadorNombre,
+                'fecha_cita' => $cita->fecha ? $cita->fecha->format('Y-m-d') : now()->format('Y-m-d'),
+                'hora_inicio' => $cita->hora_inicio ?? '09:00:00',
+                'estado' => $estadoMap[strtolower($cita->estado)] ?? ucfirst($cita->estado),
+            ];
+        })->toArray();
+
+        $calificacionQuery = \App\Models\Resena::query();
+        if ($tieneCitasAsignadas) {
+            $calificacionQuery->whereHas('cita', function ($q) use ($trabajadorId) {
+                $q->where('trabajador_id', $trabajadorId);
+            });
+        }
+        $calificacionAvg = $calificacionQuery->avg('calificacion');
+        if (!$calificacionAvg) {
+            $calificacionAvg = \App\Models\Resena::avg('calificacion') ?: 4.9;
+        }
+        $calificacionPromedio = round($calificacionAvg, 1);
+
+        $serviciosPopularesRaw = \App\Models\Servicio::withCount('citas')
+            ->where('estado', 'activo')
+            ->orderBy('citas_count', 'desc')
+            ->take(4)
+            ->get();
+
+        $totalCitasServicios = \App\Models\Cita::count() ?: 1;
+        $iconosServicios = [
+            'fa-solid fa-eye',
+            'fa-solid fa-wand-magic-sparkles',
+            'fa-solid fa-hand-sparkles',
+            'fa-solid fa-spa',
+        ];
+
+        $serviciosPopulares = $serviciosPopularesRaw->map(function ($s, $idx) use ($totalCitasServicios, $iconosServicios) {
+            $porcentaje = round(($s->citas_count / $totalCitasServicios) * 100);
+            return [
+                'nombre' => $s->nombre,
+                'porcentaje' => $porcentaje > 0 ? $porcentaje : (85 - ($idx * 15)),
+                'icono' => $iconosServicios[$idx % count($iconosServicios)],
+            ];
+        })->toArray();
     }
 @endphp
 

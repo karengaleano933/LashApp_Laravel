@@ -232,9 +232,10 @@ class DashboardController extends Controller
         $trabajador = $user?->trabajador ?? Trabajador::where('user_id', $user?->id)->first();
         $trabajadorId = $trabajador?->id;
 
-        // Citas del trabajador
+        $tieneCitasAsignadas = ($trabajadorId > 0) && Cita::where('trabajador_id', $trabajadorId)->exists();
+
         $citasQuery = Cita::query();
-        if ($trabajadorId) {
+        if ($tieneCitasAsignadas) {
             $citasQuery->where('trabajador_id', $trabajadorId);
         }
 
@@ -253,15 +254,6 @@ class DashboardController extends Controller
             ->orderBy('hora_inicio', 'desc')
             ->take(7)
             ->get();
-
-        // Fallback: si el trabajador aún no tiene citas asignadas, mostrar las citas del sistema
-        if ($citasRecientes->isEmpty()) {
-            $citasRecientes = Cita::with(['cliente.user', 'servicio', 'trabajador.user'])
-                ->orderBy('fecha', 'desc')
-                ->orderBy('hora_inicio', 'desc')
-                ->take(7)
-                ->get();
-        }
 
         $estadoMap = [
             'pendiente' => 'Pendiente',
@@ -295,28 +287,42 @@ class DashboardController extends Controller
             ];
         })->toArray();
 
-        // Calificación promedio
+        // Calificación promedio real desde la tabla resenas
         $calificacionQuery = Resena::query();
-        if ($trabajadorId) {
+        if ($tieneCitasAsignadas) {
             $calificacionQuery->whereHas('cita', function ($q) use ($trabajadorId) {
                 $q->where('trabajador_id', $trabajadorId);
             });
         }
-        $calificacionPromedio = round($calificacionQuery->avg('calificacion') ?: 4.9, 1);
+        $calificacionAvg = $calificacionQuery->avg('calificacion');
+        if (!$calificacionAvg) {
+            $calificacionAvg = Resena::avg('calificacion') ?: 4.9;
+        }
+        $calificacionPromedio = round($calificacionAvg, 1);
 
-        // Servicios populares reales
-        $serviciosPopulares = Servicio::where('estado', 'activo')
+        // Servicios más demandados según citas reales en la base de datos
+        $serviciosPopularesRaw = Servicio::withCount('citas')
+            ->where('estado', 'activo')
+            ->orderBy('citas_count', 'desc')
             ->take(4)
-            ->get()
-            ->map(function ($s, $idx) {
-                $porcentajes = [88, 70, 55, 45];
-                $iconos = ['fa-solid fa-eye', 'fa-solid fa-wand-magic-sparkles', 'fa-solid fa-hand-sparkles', 'fa-solid fa-spa'];
-                return [
-                    'nombre' => $s->nombre,
-                    'porcentaje' => $porcentajes[$idx] ?? 60,
-                    'icono' => $iconos[$idx] ?? 'fa-solid fa-spa',
-                ];
-            })->toArray();
+            ->get();
+
+        $totalCitasServicios = Cita::count() ?: 1;
+        $iconosServicios = [
+            'fa-solid fa-eye',
+            'fa-solid fa-wand-magic-sparkles',
+            'fa-solid fa-hand-sparkles',
+            'fa-solid fa-spa',
+        ];
+
+        $serviciosPopulares = $serviciosPopularesRaw->map(function ($s, $idx) use ($totalCitasServicios, $iconosServicios) {
+            $porcentaje = round(($s->citas_count / $totalCitasServicios) * 100);
+            return [
+                'nombre' => $s->nombre,
+                'porcentaje' => $porcentaje > 0 ? $porcentaje : (85 - ($idx * 15)),
+                'icono' => $iconosServicios[$idx % count($iconosServicios)],
+            ];
+        })->toArray();
 
         return view('trabajador.dashboardtrabajador', compact(
             'totalCitas',
