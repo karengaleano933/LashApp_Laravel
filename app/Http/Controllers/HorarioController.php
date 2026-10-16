@@ -42,13 +42,9 @@ class HorarioController extends Controller
             ->orderBy('hora_inicio', 'asc')
             ->get();
 
-        // Si el trabajador aún no tiene horarios registrados, podemos vincularle los horarios existentes en la base de datos
-        if ($horarios->isEmpty() && $trabajadorId) {
-            $horariosGenerales = Horario::whereNull('trabajador_id')->orWhere('trabajador_id', 0)->get();
-            if ($horariosGenerales->isNotEmpty()) {
-                Horario::whereIn('id', $horariosGenerales->pluck('id'))->update(['trabajador_id' => $trabajadorId]);
-                $horarios = Horario::where('trabajador_id', $trabajadorId)->withCount('citas')->orderBy('fecha', 'desc')->orderBy('hora_inicio', 'asc')->get();
-            }
+        // Si el trabajador aún no tiene horarios registrados propios, mostrar los horarios generales del salón
+        if ($horarios->isEmpty()) {
+            $horarios = Horario::withCount('citas')->orderBy('fecha', 'desc')->orderBy('hora_inicio', 'asc')->get();
         }
 
         $totalHorarios = $horarios->count();
