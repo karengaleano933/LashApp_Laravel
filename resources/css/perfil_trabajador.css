@@ -1,0 +1,14 @@
+/* =========================================================
+   LASHAPP — PERFIL TRABAJADOR STYLES
+   ========================================================= */
+
+@import url('../../cliente/css/perfil.css');
+
+.perfil-header {
+    margin-bottom: 24px;
+}
+
+.perfil-tab-btn.active {
+    border-bottom: 3px solid #7c1db8;
+    color: #7c1db8;
+}

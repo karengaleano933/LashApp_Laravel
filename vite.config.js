@@ -28,6 +28,7 @@ export default defineConfig({
                 'resources/css/perfilcliente.css',
                 'resources/css/dashboardtrabajador.css',
                 'resources/css/citas_trabajador.css',
+                'resources/css/servicio_trabajador.css',
             ],
             refresh: true,
         }),

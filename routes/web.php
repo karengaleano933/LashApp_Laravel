@@ -162,6 +162,15 @@ Route::get('/admin/citas', [CitaController::class, 'index'])->middleware(['auth'
 Route::post('/admin/citas', [CitaController::class, 'store'])->middleware(['auth'])->name('citas.store');
 Route::get('/admin/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth'])->name('citas.cancelar');
 
+// Gestión de Servicios (Admin y Trabajador)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/servicios', [\App\Http\Controllers\ServicioController::class, 'index'])->name('servicios.index');
+    Route::get('/trabajador/servicios', [\App\Http\Controllers\ServicioController::class, 'index'])->name('trabajador.servicios');
+    Route::post('/admin/servicios', [\App\Http\Controllers\ServicioController::class, 'store'])->name('servicios.store');
+    Route::put('/admin/servicios/{id}', [\App\Http\Controllers\ServicioController::class, 'update'])->name('servicios.update');
+    Route::delete('/admin/servicios/{id}', [\App\Http\Controllers\ServicioController::class, 'destroy'])->name('servicios.destroy');
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -182,12 +191,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/listausuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
     Route::put('/admin/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
     Route::delete('/admin/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
-
-    // Gestión de Servicios
-    Route::get('/admin/servicios', [ServicioController::class, 'index'])->name('servicios.index');
-    Route::post('/admin/servicios', [ServicioController::class, 'store'])->name('servicios.store');
-    Route::put('/admin/servicios/{id}', [ServicioController::class, 'update'])->name('servicios.update');
-    Route::delete('/admin/servicios/{id}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
 
     // Gestión de Pagos
     Route::get('/admin/pagos', [PagoController::class, 'index'])->name('pagos.index');

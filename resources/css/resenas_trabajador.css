@@ -1,0 +1,238 @@
+/* =========================================================
+   LASHAPP — RESEÑAS TRABAJADOR STYLES
+   ========================================================= */
+
+@import url('../../admin/css/dashboard.css');
+
+.resenas-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.card-design-sparkle {
+    position: relative;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid #e8daf3;
+    box-shadow: 0 6px 20px rgba(90,18,133,0.04);
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.card-design-sparkle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(90,18,133,0.08);
+}
+
+.card-design-sparkle::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-image: radial-gradient(#c9a84c 0.75px, transparent 0.75px), radial-gradient(#7c1db8 0.75px, #ffffff 0.75px);
+    background-size: 15px 15px;
+    background-position: 0 0, 7.5px 7.5px;
+    opacity: 0.04;
+    pointer-events: none;
+}
+
+.card-sparkle-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid #dcc8ee;
+    background: #fbf8fe;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.card-sparkle-title {
+    font-size: 12px;
+    color: #7a5a90;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.card-sparkle-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #2a0d3e;
+    margin-bottom: 6px;
+}
+
+.card-sparkle-sub {
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Tabs de navegación */
+.resenas-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #f0e6f8;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.tab-pill-item {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #7a5a90;
+    transition: background .2s, color .2s;
+}
+
+.tab-pill-item.active {
+    background: #f0e6f8;
+    color: #7c1db8;
+}
+
+/* Lista de reseñas */
+.resenas-list-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.resena-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 12px;
+    border-bottom: 1px solid #f8f2fc;
+    font-size: 13px;
+    transition: background .2s;
+}
+
+.resena-row-item:hover {
+    background: #fcf9fe;
+}
+
+.resena-user-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.resena-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e8daf3;
+    color: #7c1db8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.resena-content-box {
+    flex: 1;
+}
+
+.resena-stars-gold {
+    color: #f59e0b;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.resena-comment-text {
+    color: #2a0d3e;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.resena-meta-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+}
+
+.resena-date-text {
+    color: #7a5a90;
+    font-size: 11px;
+}
+
+.resena-source-icon {
+    font-size: 16px;
+}
+
+.resena-source-icon.instagram { color: #c026a0; }
+.resena-source-icon.google    { color: #ea4335; }
+.resena-source-icon.facebook  { color: #1877f2; }
+.resena-source-icon.whatsapp  { color: #25d366; }
+
+/* Donut chart estrellas */
+.stars-legend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    font-size: 12px;
+}
+
+.stars-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #2a0d3e;
+}
+
+/* Acciones en la barra lateral */
+.action-btn-outlined {
+    padding: 10px 18px;
+    border-radius: 25px;
+    border: 1px solid #7c1db8;
+    background: #fff;
+    color: #7c1db8;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+}
+
+.action-btn-filled {
+    padding: 10px 18px;
+    border-radius: 25px;
+    border: none;
+    background: #7c1db8;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(124,29,184,0.3);
+}
+
+@media(max-width: 1200px) {
+    .resenas-cards-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media(max-width: 700px) {
+    .resenas-cards-grid { grid-template-columns: 1fr; }
+}

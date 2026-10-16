@@ -14,7 +14,8 @@ class ServicioController extends Controller
      */
     public function index()
     {
-        $servicios = Servicio::with('categoria')->get();
+        $user = auth()->user();
+        $servicios = Servicio::with('categoria')->withCount('citas')->get();
         $categorias = Categoria::all();
 
         // Estadísticas
@@ -23,13 +24,33 @@ class ServicioController extends Controller
         $totalCategorias = $categorias->count();
         $serviciosInact = Servicio::where('estado', 'inactivo')->count();
 
+        // Servicios destacados por cantidad de citas
+        $serviciosDestacados = Servicio::with('categoria')
+            ->withCount('citas')
+            ->orderBy('citas_count', 'desc')
+            ->take(4)
+            ->get();
+
+        if ($user && $user->role_id === 2) {
+            return view('trabajador.servicios.servicios_trabajador', compact(
+                'servicios',
+                'categorias',
+                'totalServicios',
+                'serviciosActivos',
+                'totalCategorias',
+                'serviciosInact',
+                'serviciosDestacados'
+            ));
+        }
+
         return view('admin.servicios.servicios', compact(
             'servicios',
             'categorias',
             'totalServicios',
             'serviciosActivos',
             'totalCategorias',
-            'serviciosInact'
+            'serviciosInact',
+            'serviciosDestacados'
         ));
     }
 
