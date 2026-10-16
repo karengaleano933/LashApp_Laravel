@@ -740,7 +740,7 @@
 }
 
 /* ── Responsividad Inteligente ── */
-@media (max-width: 1180px) {
+@media (max-width: 1240px) {
     .citas-main-grid {
         grid-template-columns: 1fr;
     }
