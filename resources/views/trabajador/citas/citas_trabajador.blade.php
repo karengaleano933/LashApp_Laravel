@@ -2,6 +2,386 @@
 @include('layouts.sidebar_trabajador')
 @vite(['resources/css/citas.css', 'resources/css/citas_trabajador.css'])
 
+<style>
+/* ── Corrección de Toolbar y Tabla sin Scrollbar ── */
+.citas-main-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 285px !important;
+    gap: 18px !important;
+    align-items: start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.citas-tabla-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    border: 1px solid #dcc8ee !important;
+    box-shadow: 0 8px 24px rgba(90, 18, 133, 0.06) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.citas-tabla-header {
+    padding: 16px 20px !important;
+    border-bottom: 1px solid #f0e6f8 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: #ffffff !important;
+}
+
+.tabla-header-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.tabla-header-title i {
+    color: #7c1db8 !important;
+    font-size: 17px !important;
+}
+
+.tabla-header-title h3 {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #2a0d3e !important;
+    margin: 0 !important;
+}
+
+.badge-total-citas {
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    color: #7c1db8 !important;
+    background: #f4eafc !important;
+    padding: 4px 12px !important;
+    border-radius: 14px !important;
+    border: 1px solid #ebd6f7 !important;
+}
+
+/* ── Toolbar de la Tabla ── */
+.tabla-toolbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 11px 20px !important;
+    background: #faf7fc !important;
+    border-bottom: 1px solid #f3e9f8 !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    font-size: 12.5px !important;
+    color: #7a5a90 !important;
+    box-sizing: border-box !important;
+}
+
+.toolbar-registros {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12.5px !important;
+    color: #7a5a90 !important;
+}
+
+.toolbar-registros select {
+    padding: 5px 10px !important;
+    border-radius: 8px !important;
+    border: 1px solid #dcc8ee !important;
+    color: #2a0d3e !important;
+    background: #ffffff !important;
+    outline: none !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+.toolbar-buscar {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.toolbar-buscar i {
+    position: absolute !important;
+    left: 11px !important;
+    color: #9d83b1 !important;
+    font-size: 12px !important;
+    pointer-events: none !important;
+}
+
+.toolbar-buscar input {
+    padding: 6px 14px 6px 32px !important;
+    border-radius: 20px !important;
+    border: 1px solid #dcc8ee !important;
+    background: #ffffff !important;
+    outline: none !important;
+    font-size: 12.5px !important;
+    color: #2a0d3e !important;
+    width: 210px !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+}
+
+.toolbar-buscar input:focus {
+    border-color: #7c1db8 !important;
+    box-shadow: 0 0 0 3px rgba(124, 29, 184, 0.08) !important;
+}
+
+/* ── Contenedor y Tabla Adaptable sin Scrollbar ── */
+.table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 4px 16px 12px !important;
+    box-sizing: border-box !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(124, 29, 184, 0.2) transparent !important;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 4px !important;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #ebd8f8 !important;
+    border-radius: 6px !important;
+}
+
+.citas-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+    table-layout: auto !important;
+}
+
+.citas-table th, 
+.citas-table td {
+    padding: 10px 7px !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+}
+
+.citas-table th {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #7a5a90 !important;
+    background: #fbf7fe !important;
+    border-bottom: 1px solid #dcc8ee !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
+    white-space: nowrap !important;
+}
+
+.citas-table td {
+    border-bottom: 1px solid #f6edf9 !important;
+    font-size: 12.5px !important;
+    color: #2a0d3e !important;
+}
+
+.citas-table tbody tr:hover td {
+    background: #faf4fd !important;
+}
+
+/* Celda Cliente con Avatar compacto */
+.cliente-cell {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+}
+
+.cliente-cell strong {
+    font-size: 12.5px !important;
+    color: #2a0d3e !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+}
+
+.cliente-avatar-badge {
+    background: linear-gradient(135deg, #9b30c7, #7c1db8) !important;
+    color: #ffffff !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-weight: 700 !important;
+    font-size: 11.5px !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 6px rgba(124, 29, 184, 0.25) !important;
+}
+
+/* Pills y Badges Compactos */
+.servicio-pill {
+    background: #f3e9fa !important;
+    color: #7c1db8 !important;
+    padding: 3.5px 8px !important;
+    border-radius: 16px !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    max-width: 140px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    border: 1px solid #edd4f8 !important;
+}
+
+.hora-badge, .fecha-badge {
+    color: #7a5a90 !important;
+    font-size: 11px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+}
+
+.hora-badge i, .fecha-badge i {
+    font-size: 10.5px !important;
+    color: #9a78b3 !important;
+}
+
+.profesional-pill {
+    color: #2a0d3e !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    max-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.profesional-pill i {
+    color: #7c1db8 !important;
+    font-size: 11px !important;
+}
+
+/* Badges de Estado */
+.estado-badge {
+    display: inline-block !important;
+    padding: 3.5px 8px !important;
+    border-radius: 14px !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.2px !important;
+}
+
+.estado-badge.estado-pendiente  { background: #fef3c7 !important; color: #92400e !important; border: 1px solid #fde68a !important; }
+.estado-badge.estado-confirmada,
+.estado-badge.estado-confirmado { background: #d1fae5 !important; color: #065f46 !important; border: 1px solid #a7f3d0 !important; }
+.estado-badge.estado-cancelada,
+.estado-badge.estado-cancelado  { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fecaca !important; }
+.estado-badge.estado-completada,
+.estado-badge.estado-completado,
+.estado-badge.estado-finalizado { background: #ede9fe !important; color: #5b21b6 !important; border: 1px solid #ddd6fe !important; }
+
+/* Botón Acción Cancelar */
+.btn-accion.btn-cancelar {
+    background: #fee2e2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fca5a5 !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all .2s ease !important;
+    font-size: 11.5px !important;
+}
+
+.btn-accion.btn-cancelar:hover {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+    transform: scale(1.08) !important;
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.28) !important;
+}
+
+/* ── Footer de la Tabla ── */
+.citas-tabla-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 20px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    border-top: 1px solid #f3e9f8 !important;
+    background: #faf7fc !important;
+}
+
+.info-paginacion-txt {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #7a5a90 !important;
+}
+
+.tabla-footer-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+.btn-ver-todas {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    border: 1px solid #7c1db8 !important;
+    background: #ffffff !important;
+    color: #7c1db8 !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-ver-todas:hover {
+    background: #7c1db8 !important;
+    color: #ffffff !important;
+}
+
+.btn-cancelar-sel {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    border: 1px solid #dcc8ee !important;
+    background: #ffffff !important;
+    color: #7a5a90 !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-cancelar-sel:hover {
+    background: #f4ecf8 !important;
+    color: #2a0d3e !important;
+}
+
+@media (max-width: 1240px) {
+    .citas-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
 @php
     // Fallback de inicialización para carga directa o en pruebas
     if (!isset($citasHoy)) {
