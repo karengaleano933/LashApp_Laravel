@@ -352,4 +352,4 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cargar badge silenciosamente al inicio
     cargarNotificaciones();
 });
-</script>
+</script>   

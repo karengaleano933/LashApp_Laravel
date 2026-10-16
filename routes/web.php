@@ -23,6 +23,10 @@ Route::get('/trabajador/dashboard', [DashboardController::class, 'dashboardTraba
     ->middleware(['auth'])
     ->name('trabajador.dashboard');
 
+Route::get('/trabajador/citas', [CitaController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('trabajador.citas');
+
 Route::get('/cliente/catalogo', function () {
     $categorias = \App\Models\Categoria::where('estado', 'activo')->get();
     $servicios = \App\Models\Servicio::with('categoria')->where('estado', 'activo')->get();

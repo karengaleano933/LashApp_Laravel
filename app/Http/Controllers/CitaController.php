@@ -27,6 +27,106 @@ class CitaController extends Controller
             return view('Clientes.agendarcitas', compact('servicios'));
         }
 
+        // Si el usuario es Trabajador (role_id 2), mostrar la vista de citas_trabajador
+        if ($user && $user->role_id === 2) {
+            $trabajador = $user->trabajador ?? Trabajador::where('user_id', $user->id)->first();
+            $id_trabajador = $trabajador?->id ?? 0;
+
+            $hoy = Carbon::today()->format('Y-m-d');
+            $inicioSemana = Carbon::now()->startOfWeek()->format('Y-m-d');
+            $finSemana = Carbon::now()->endOfWeek()->format('Y-m-d');
+
+            $citasBase = Cita::query();
+            if ($id_trabajador > 0) {
+                $citasBase->where('trabajador_id', $id_trabajador);
+            }
+
+            $citasHoy = (clone $citasBase)->whereDate('fecha', $hoy)->count();
+            $citasSemana = (clone $citasBase)->whereBetween('fecha', [$inicioSemana, $finSemana])->count();
+            $citasComplet = (clone $citasBase)->whereIn('estado', ['finalizado', 'completado', 'completada', 'realizada'])->count();
+            $citasCancelad = (clone $citasBase)->whereIn('estado', ['cancelado', 'cancelada'])->count();
+
+            $proximasCitasModel = (clone $citasBase)
+                ->with(['cliente.user', 'trabajador.user', 'servicio'])
+                ->orderBy('fecha', 'asc')
+                ->orderBy('hora_inicio', 'asc')
+                ->get();
+
+            if ($proximasCitasModel->isEmpty()) {
+                $proximasCitasModel = Cita::with(['cliente.user', 'trabajador.user', 'servicio'])
+                    ->orderBy('fecha', 'asc')
+                    ->orderBy('hora_inicio', 'asc')
+                    ->get();
+            }
+
+            $estadoMap = [
+                'pendiente' => 'Pendiente',
+                'confirmado' => 'Confirmada',
+                'confirmada' => 'Confirmada',
+                'cancelado' => 'Cancelada',
+                'cancelada' => 'Cancelada',
+                'finalizado' => 'Completada',
+                'completado' => 'Completada',
+                'completada' => 'Completada',
+                'realizada' => 'Completada',
+            ];
+
+            $proximasCitas = $proximasCitasModel->map(function ($cita) use ($estadoMap) {
+                $clienteNombre = $cita->cliente?->user
+                    ? trim($cita->cliente->user->name . ' ' . ($cita->cliente->user->apellido ?? ''))
+                    : 'Cliente';
+
+                $trabajadorNombre = $cita->trabajador?->user
+                    ? trim($cita->trabajador->user->name . ' ' . ($cita->trabajador->user->apellido ?? ''))
+                    : 'Profesional';
+
+                return [
+                    'id_cita' => $cita->id,
+                    'cliente' => $clienteNombre,
+                    'servicio' => $cita->servicio?->nombre ?? 'Servicio',
+                    'hora_inicio' => $cita->hora_inicio,
+                    'fecha_cita' => $cita->fecha ? $cita->fecha->format('Y-m-d') : date('Y-m-d'),
+                    'profesional' => $trabajadorNombre,
+                    'estado' => $estadoMap[strtolower($cita->estado)] ?? ucfirst($cita->estado),
+                ];
+            })->toArray();
+
+            $listaClientes = Cliente::with('user')->get()->map(function ($c) {
+                return [
+                    'id_cliente' => $c->id,
+                    'nombre_completo' => $c->user ? trim($c->user->name . ' ' . $c->user->apellido) : 'Cliente #' . $c->id,
+                ];
+            })->toArray();
+
+            $listaServicios = Servicio::where('estado', 'activo')->get()->map(function ($s) {
+                return [
+                    'id_servicio' => $s->id,
+                    'nombre' => $s->nombre,
+                    'precio' => $s->precio,
+                ];
+            })->toArray();
+
+            $listaTrabajadores = Trabajador::where('estado', 'activo')->with('user')->get()->map(function ($t) {
+                return [
+                    'id_trabajador' => $t->id,
+                    'nombre_completo' => $t->user ? trim($t->user->name . ' ' . $t->user->apellido) : 'Profesional #' . $t->id,
+                ];
+            })->toArray();
+
+            return view('trabajador.citas.citas_trabajador', compact(
+                'citasHoy',
+                'citasSemana',
+                'citasComplet',
+                'citasCancelad',
+                'proximasCitas',
+                'listaClientes',
+                'listaServicios',
+                'listaTrabajadores',
+                'id_trabajador',
+                'hoy'
+            ));
+        }
+
         $hoy = Carbon::today()->format('Y-m-d');
         $inicioSemana = Carbon::now()->startOfWeek();
         $finSemana = Carbon::now()->endOfWeek();

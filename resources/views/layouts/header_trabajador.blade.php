@@ -85,4 +85,4 @@
     </aside>
 
     <!-- Contenido principal que se cerrará en el footer -->
-    <div class="main-content-wrapper">
+    <div class="main-content-wrapper">  
