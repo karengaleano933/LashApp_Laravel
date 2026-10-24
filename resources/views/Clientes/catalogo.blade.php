@@ -2,7 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Catálogo de Servicios'])
 @include('layouts.sidebarcliente')
 
-@vite(['resources/css/catalogoclient.css'])
+@vite([
+    'resources/css/catalogoclient.css',
+    'resources/js/modules/clientes/catalogo.js'
+])
 
 @php
     // Preparar listado de servicios para el catálogo
@@ -364,173 +367,7 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCRIPTS DE INTERACTIVIDAD DEL CATÁLOGO
-══════════════════════════════════════════ -->
-<script>
-    let categoriaActiva = 'todas';
-
-    // Filtrar por categoría (Tabs superiores)
-    function filtrarPorCategoria(categoria, boton) {
-        categoriaActiva = categoria;
-
-        // Actualizar estado activo en los botones de pestañas
-        document.querySelectorAll('.cat-tab-item').forEach(btn => btn.classList.remove('active'));
-        if (boton) {
-            boton.classList.add('active');
-        }
-
-        filtrarServicios();
-    }
-
-    // Filtrar servicios en vivo (Texto + Categoría + Precio)
-    function filtrarServicios() {
-        const inputBuscar = document.getElementById('buscarServicioInput');
-        const query = inputBuscar ? inputBuscar.value.toLowerCase().trim() : '';
-
-        const selectPrecio = document.getElementById('precioSelect');
-        const rangoPrecio = selectPrecio ? selectPrecio.value : 'todos';
-
-        const cards = document.querySelectorAll('#catCardsGrid .cat-card-item');
-        let visibles = 0;
-
-        cards.forEach(card => {
-            const nombre = (card.getAttribute('data-nombre') || '').toLowerCase();
-            const categoria = (card.getAttribute('data-categoria') || '').toLowerCase();
-            const precio = parseFloat(card.getAttribute('data-precio') || '0');
-
-            // 1. Coincidencia de texto
-            const coincideTexto = !query || nombre.includes(query) || categoria.includes(query);
-
-            // 2. Coincidencia de categoría
-            const coincideCategoria = (categoriaActiva === 'todas') || categoria.includes(categoriaActiva);
-
-            // 3. Coincidencia de precio
-            let coincidePrecio = true;
-            if (rangoPrecio === '0-100') {
-                coincidePrecio = precio <= 100000;
-            } else if (rangoPrecio === '100-200') {
-                coincidePrecio = precio > 100000 && precio <= 200000;
-            } else if (rangoPrecio === '200+') {
-                coincidePrecio = precio > 200000;
-            }
-
-            if (coincideTexto && coincideCategoria && coincidePrecio) {
-                card.style.display = '';
-                visibles++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Actualizar contador y mensaje de sin resultados
-        const counter = document.getElementById('totalServiciosCount');
-        if (counter) counter.textContent = visibles;
-
-        const noResults = document.getElementById('noResultsMsg');
-        if (noResults) {
-            noResults.style.display = (visibles === 0) ? 'block' : 'none';
-        }
-    }
-
-    function filtrarPorPrecio() {
-        filtrarServicios();
-    }
-
-    // Ordenar servicios
-    function ordenarServicios() {
-        const select = document.getElementById('ordenarSelect');
-        if (!select) return;
-
-        const criterio = select.value;
-        const grid = document.getElementById('catCardsGrid');
-        const cards = Array.from(grid.querySelectorAll('.cat-card-item'));
-
-        cards.sort((a, b) => {
-            const precioA = parseFloat(a.getAttribute('data-precio') || '0');
-            const precioB = parseFloat(b.getAttribute('data-precio') || '0');
-            const popA = parseFloat(a.getAttribute('data-popularidad') || '0');
-            const popB = parseFloat(b.getAttribute('data-popularidad') || '0');
-            const nomA = (a.getAttribute('data-nombre') || '').toLowerCase();
-            const nomB = (b.getAttribute('data-nombre') || '').toLowerCase();
-
-            if (criterio === 'menor_precio') {
-                return precioA - precioB;
-            } else if (criterio === 'mayor_precio') {
-                return precioB - precioA;
-            } else if (criterio === 'nombre_asc') {
-                return nomA.localeCompare(nomB);
-            } else {
-                // Más populares por defecto
-                return popB - popA;
-            }
-        });
-
-        // Reinsertar ordenados conservando el contenedor de estado vacío
-        const noResults = document.getElementById('noResultsMsg');
-        cards.forEach(card => grid.appendChild(card));
-        if (noResults) grid.appendChild(noResults);
-    }
-
-    // Alternar vista entre Grid y Lista
-    function cambiarVista(tipo) {
-        const grid = document.getElementById('catCardsGrid');
-        const btnGrid = document.getElementById('btnViewGrid');
-        const btnList = document.getElementById('btnViewList');
-
-        if (!grid) return;
-
-        if (tipo === 'list') {
-            grid.classList.add('list-view');
-            btnList.classList.add('active');
-            btnGrid.classList.remove('active');
-        } else {
-            grid.classList.remove('list-view');
-            btnGrid.classList.add('active');
-            btnList.classList.remove('active');
-        }
-    }
-
-    // Toggle de favoritos con feedback visual
-    function toggleFavorito(button, nombreServicio) {
-        button.classList.toggle('active');
-        const icon = button.querySelector('i');
-        const esFavorito = button.classList.contains('active');
-
-        if (esFavorito) {
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid');
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: `"${nombreServicio}" añadido a favoritos`,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            }
-        } else {
-            icon.classList.remove('fa-solid');
-            icon.classList.add('fa-regular');
-        }
-    }
-
-    // Limpiar todos los filtros
-    function limpiarFiltros() {
-        const inputBuscar = document.getElementById('buscarServicioInput');
-        if (inputBuscar) inputBuscar.value = '';
-
-        const selectPrecio = document.getElementById('precioSelect');
-        if (selectPrecio) selectPrecio.value = 'todos';
-
-        const selectOrdenar = document.getElementById('ordenarSelect');
-        if (selectOrdenar) selectOrdenar.value = 'populares';
-
-        const tabTodas = document.querySelector('.cat-tab-item[data-categoria="todas"]');
-        filtrarPorCategoria('todas', tabTodas);
-    }
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/catalogo.js -->
 
 @include('layouts.footer')
 

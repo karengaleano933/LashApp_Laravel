@@ -2,7 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Mi Perfil'])
 @include('layouts.sidebarcliente')
 
-@vite(['resources/css/perfilcliente.css'])
+@vite([
+    'resources/css/perfilcliente.css',
+    'resources/js/modules/clientes/perfilcliente.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -426,62 +429,7 @@
 
 </div>
 
-<script>
-function togglePasswordForm() {
-    const wrap = document.getElementById('formPasswordWrap');
-    if (wrap) {
-        wrap.style.display = (wrap.style.display === 'none' || wrap.style.display === '') ? 'block' : 'none';
-        if (wrap.style.display === 'block') {
-            wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    }
-}
-
-function confirmarEliminarCuenta() {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: '¿Desactivar tu cuenta?',
-            text: "Tu usuario quedará inactivo y tu sesión se cerrará inmediatamente. ¿Deseas continuar?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Sí, desactivar cuenta',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('formEliminarCuenta').submit();
-            }
-        });
-    } else {
-        if (confirm('¿Estás seguro de que deseas desactivar tu cuenta?')) {
-            document.getElementById('formEliminarCuenta').submit();
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.perfil-tab-btn');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-
-            const tabTarget = this.getAttribute('data-tab');
-            if (tabTarget === 'info') {
-                document.getElementById('sec-info')?.scrollIntoView({ behavior: 'smooth' });
-            } else if (tabTarget === 'preferencias') {
-                document.getElementById('sec-preferencias')?.scrollIntoView({ behavior: 'smooth' });
-            } else if (tabTarget === 'seguridad') {
-                document.getElementById('sec-seguridad')?.scrollIntoView({ behavior: 'smooth' });
-                togglePasswordForm();
-            } else if (tabTarget === 'acciones') {
-                document.getElementById('sec-acciones')?.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-});
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/perfilcliente.js -->
 
 @include('layouts.footer')
 

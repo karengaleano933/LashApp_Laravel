@@ -2,7 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Mis Reseñas'])
 @include('layouts.sidebarcliente')
 
-@vite(['resources/css/resenascliente.css'])
+@vite([
+    'resources/css/resenascliente.css',
+    'resources/js/modules/clientes/resenas.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -281,91 +284,7 @@
     </div>
 </div>
 
-<script>
-const ratingTexts = {
-    1: 'Muy insatisfecha (1 de 5)',
-    2: 'Podría mejorar (2 de 5)',
-    3: 'Buena experiencia (3 de 5)',
-    4: 'Muy buena atención (4 de 5)',
-    5: '¡Excelente servicio! (5 de 5)'
-};
-
-function abrirModalCalificar(citaId = null, servicioNombre = '', especialistaNombre = '') {
-    const modal = document.getElementById('modalResenaOverlay');
-    const select = document.getElementById('modalSelectCita');
-    if (citaId && select) {
-        select.value = citaId;
-    }
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-}
-
-function cerrarModalCalificar() {
-    const modal = document.getElementById('modalResenaOverlay');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('#starRatingSelector i');
-    const inputVal = document.getElementById('inputCalificacionEstrellas');
-    const feedbackText = document.getElementById('ratingTextFeedback');
-    let currentScore = 5;
-
-    function updateStars(score) {
-        stars.forEach(star => {
-            const val = parseInt(star.getAttribute('data-val'));
-            if (val <= score) {
-                star.className = 'fa-solid fa-star active';
-            } else {
-                star.className = 'fa-regular fa-star';
-            }
-        });
-        if (feedbackText) {
-            feedbackText.textContent = ratingTexts[score] || (score + ' de 5');
-        }
-    }
-
-    stars.forEach(star => {
-        star.addEventListener('mouseenter', function() {
-            const val = parseInt(this.getAttribute('data-val'));
-            stars.forEach(s => {
-                const sVal = parseInt(s.getAttribute('data-val'));
-                if (sVal <= val) {
-                    s.className = 'fa-solid fa-star hovered';
-                } else {
-                    s.className = 'fa-regular fa-star';
-                }
-            });
-            if (feedbackText) {
-                feedbackText.textContent = ratingTexts[val] || '';
-            }
-        });
-
-        star.addEventListener('mouseleave', function() {
-            updateStars(currentScore);
-        });
-
-        star.addEventListener('click', function() {
-            currentScore = parseInt(this.getAttribute('data-val'));
-            if (inputVal) inputVal.value = currentScore;
-            updateStars(currentScore);
-        });
-    });
-
-    // Cerrar modal al hacer clic en el overlay
-    const overlay = document.getElementById('modalResenaOverlay');
-    if (overlay) {
-        overlay.addEventListener('click', function(e) {
-            if (e.target === this) {
-                cerrarModalCalificar();
-            }
-        });
-    }
-});
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/resenas.js -->
 
 @include('layouts.footer')
 

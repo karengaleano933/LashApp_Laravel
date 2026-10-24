@@ -2,7 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Historial de Citas'])
 @include('layouts.sidebarcliente')
 
-@vite(['resources/css/historilacliente.css'])
+@vite([
+    'resources/css/historilacliente.css',
+    'resources/js/modules/clientes/historial.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -348,153 +351,7 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCRIPTS DE FILTRADO, ORDEN Y PDF
-══════════════════════════════════════════ -->
-<script>
-let tabActiva = 'todos';
-
-// 1. Filtrar por Pestañas Principales (Todos, Citas, Servicios, Pagos)
-function filtrarHistorialTab(tipo, btn) {
-    tabActiva = tipo;
-    document.querySelectorAll('.hist-tab-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-
-    // Sincronizar el select de tipo en la barra lateral
-    const tipoSelect = document.getElementById('filterTipoSelect');
-    if (tipoSelect) tipoSelect.value = tipo;
-
-    aplicarFiltrosYOrden();
-}
-
-function sincronizarTipoConTab(tipo) {
-    tabActiva = tipo;
-    document.querySelectorAll('.hist-tab-btn').forEach(b => {
-        if (b.getAttribute('data-tab') === tipo) {
-            b.classList.add('active');
-        } else {
-            b.classList.remove('active');
-        }
-    });
-    aplicarFiltrosYOrden();
-}
-
-// 2. Aplicar todos los filtros combinados y ordenación en el DOM
-function aplicarFiltrosYOrden() {
-    const container = document.getElementById('histListContainer');
-    const emptyState = document.getElementById('histEmptyState');
-    if (!container) return;
-
-    const cards = Array.from(container.querySelectorAll('.hist-card-item'));
-    const fechaQuery = (document.getElementById('filterFechaInput')?.value || '').toLowerCase().trim();
-    const servicioFiltro = document.getElementById('filterServicioSelect')?.value || 'todos';
-    const profesionalFiltro = document.getElementById('filterProfesionalSelect')?.value || 'todas';
-    const orden = document.getElementById('ordenarHistorialSelect')?.value || 'recientes';
-
-    let visibles = 0;
-
-    cards.forEach(card => {
-        const cardTipo = card.getAttribute('data-tipo') || '';
-        const cardServicio = card.getAttribute('data-servicio') || '';
-        const cardProfesional = card.getAttribute('data-profesional') || '';
-        const cardFecha = card.getAttribute('data-fecha') || '';
-        const cardText = card.textContent.toLowerCase();
-
-        // 1. Condición de Pestaña / Tipo
-        let matchTab = true;
-        if (tabActiva === 'citas') {
-            matchTab = card.getAttribute('data-tiene-cita') === '1' || cardTipo === 'citas';
-        } else if (tabActiva === 'servicios') {
-            matchTab = card.getAttribute('data-tiene-servicio') === '1' || cardTipo === 'servicios';
-        } else if (tabActiva === 'pagos') {
-            matchTab = card.getAttribute('data-tiene-pago') === '1' || cardTipo === 'pagos';
-        }
-
-        // 2. Condición de Fecha
-        let matchFecha = !fechaQuery || cardFecha.includes(fechaQuery) || cardText.includes(fechaQuery);
-
-        // 3. Condición de Servicio
-        let matchServicio = (servicioFiltro === 'todos' || cardServicio.includes(servicioFiltro) || servicioFiltro.includes(cardServicio));
-
-        // 4. Condición de Profesional
-        let matchProfesional = (profesionalFiltro === 'todas' || cardProfesional.includes(profesionalFiltro) || profesionalFiltro.includes(cardProfesional));
-
-        if (matchTab && matchFecha && matchServicio && matchProfesional) {
-            card.style.display = 'flex';
-            visibles++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    // Ordenar elementos en el DOM
-    cards.sort((a, b) => {
-        const fechaA = new Date(a.getAttribute('data-fecha') || '1970-01-01').getTime();
-        const fechaB = new Date(b.getAttribute('data-fecha') || '1970-01-01').getTime();
-        const precioA = parseFloat(a.getAttribute('data-precio') || 0);
-        const precioB = parseFloat(b.getAttribute('data-precio') || 0);
-
-        if (orden === 'recientes') return fechaB - fechaA;
-        if (orden === 'antiguos') return fechaA - fechaB;
-        if (orden === 'mayor_precio') return precioB - precioA;
-        if (orden === 'menor_precio') return precioA - precioB;
-        return 0;
-    });
-
-    cards.forEach(card => container.appendChild(card));
-
-    if (emptyState) {
-        emptyState.style.display = (visibles === 0) ? 'block' : 'none';
-    }
-}
-
-// 3. Resetear Filtros a Valores Predeterminados
-function resetFiltros() {
-    tabActiva = 'todos';
-    document.querySelectorAll('.hist-tab-btn').forEach(b => {
-        if (b.getAttribute('data-tab') === 'todos') b.classList.add('active');
-        else b.classList.remove('active');
-    });
-
-    const fechaInput = document.getElementById('filterFechaInput');
-    if (fechaInput) fechaInput.value = '';
-
-    const tipoSelect = document.getElementById('filterTipoSelect');
-    if (tipoSelect) tipoSelect.value = 'todos';
-
-    const servSelect = document.getElementById('filterServicioSelect');
-    if (servSelect) servSelect.value = 'todos';
-
-    const profSelect = document.getElementById('filterProfesionalSelect');
-    if (profSelect) profSelect.value = 'todas';
-
-    const ordSelect = document.getElementById('ordenarHistorialSelect');
-    if (ordSelect) ordSelect.value = 'recientes';
-
-    aplicarFiltrosYOrden();
-}
-
-// 4. Descargar o Imprimir Historial en PDF
-function descargarHistorialPDF() {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Generando Reporte PDF',
-            text: 'Se abrirá la vista de impresión optimizada para guardar tu historial en PDF.',
-            icon: 'info',
-            confirmButtonColor: '#7c1db8',
-            confirmButtonText: 'Imprimir / Guardar PDF',
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.print();
-            }
-        });
-    } else {
-        window.print();
-    }
-}
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/historial.js -->
 
 @include('layouts.footer')
 

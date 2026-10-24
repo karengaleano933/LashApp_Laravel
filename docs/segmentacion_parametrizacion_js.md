@@ -33,6 +33,14 @@ resources/js/
     ├── auth/
     │   ├── login.js                # Login y alternancia de contraseña
     │   └── register.js             # Registro, efectos visuales y visibilidad de contraseña
+    ├── clientes/
+    │   ├── agendarcitas.js         # Selección interactiva de servicio/especialista, calendario mensual, franjas horarias, checkout con tarjeta y submit AJAX
+    │   ├── catalogo.js             # Filtros reactivos (categoría, texto, precios), ordenación DOM y favoritos
+    │   ├── dashboardcliente.js     # Modal de horarios y agenda en vivo, filtros y scroll lock
+    │   ├── historial.js            # Pestañas combinadas, filtros por fecha/profesional, ordenación y PDF
+    │   ├── miscitas.js             # Pestañas de estado, mini-calendario sincronizado con BD, detalles y cancelación
+    │   ├── perfilcliente.js        # Tabs con scroll suave, toggle de contraseña y desactivación con SweetAlert2
+    │   └── resenas.js              # Modal de reseña, selector de estrellas reactivo con feedback dinámico
     └── admin/
         ├── servicios.js            # Filtros en tiempo real, modales CRUD, confirmación de eliminación
         ├── citas.js                # DataTables, filtros, calendario reactivo y cambios de estado

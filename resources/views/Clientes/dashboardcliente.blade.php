@@ -2,8 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Mi Portal'])
 @include('layouts.sidebarcliente')
 
+@vite(['resources/js/modules/clientes/dashboardcliente.js'])
+
 <!-- Contenido Principal -->
-<div class="page-content">
+<div class="page-content" id="dashboardClienteContainer" data-session-success="{{ session('success') ?? '' }}">
 
     <!-- ══════════════════════════════════════════
          SECCIÓN 1: ACCIONES RÁPIDAS
@@ -324,54 +326,7 @@
     </div>
 </div>
 
-<!-- Scripts de Interacción para el Dashboard del Cliente -->
-<script>
-    function abrirModalAgenda() {
-        const modal = document.getElementById('modalAgenda');
-        if (modal) {
-            modal.classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function cerrarModalAgenda() {
-        const modal = document.getElementById('modalAgenda');
-        if (modal) {
-            modal.classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-    }
-
-    function filtrarAgendas() {
-        const input = document.getElementById('filtroAgenda');
-        if (!input) return;
-        const query = input.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('#contenedorAgendas .agenda-card');
-
-        cards.forEach(card => {
-            const searchData = (card.getAttribute('data-search') || '').toLowerCase();
-            card.style.display = (!query || searchData.includes(query)) ? 'flex' : 'none';
-        });
-    }
-
-    // Cerrar modal al hacer clic en fondo
-    const modalAgenda = document.getElementById('modalAgenda');
-    if (modalAgenda) {
-        modalAgenda.addEventListener('click', function(e) {
-            if (e.target === modalAgenda) cerrarModalAgenda();
-        });
-    }
-
-    @if(session('success'))
-        Swal.fire({
-            title: '¡Operación Exitosa!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonColor: '#7c1db8',
-            confirmButtonText: 'Entendido'
-        });
-    @endif
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/dashboardcliente.js -->
 
 @include('layouts.footer')
 

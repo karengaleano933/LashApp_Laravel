@@ -2,7 +2,10 @@
 @include('layouts.headercliente', ['titulo' => 'Mis Citas'])
 @include('layouts.sidebarcliente')
 
-@vite(['resources/css/miscitas.css'])
+@vite([
+    'resources/css/miscitas.css',
+    'resources/js/modules/clientes/miscitas.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -83,7 +86,9 @@
 @endphp
 
 <!-- Contenido Principal -->
-<div class="page-content">
+<div class="page-content" id="misCitasContainer" 
+    data-fechas-citas="{{ $fechasCitasJson ?? '[]' }}" 
+    data-session-success="{{ session('success') ?? '' }}">
 
     <!-- ══════════════════════════════════════════
          TOP HEADER: MIS CITAS
@@ -346,166 +351,7 @@
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCRIPTS DE CONTROL INTERACTIVO
-══════════════════════════════════════════ -->
-<script>
-    // 1. Filtrar citas por Pestañas (Próximas, Pendientes, Completadas, Canceladas)
-    function cambiarPestanaCitas(tab, btn) {
-        document.querySelectorAll('.miscitas-tab-btn').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-
-        // Actualizar título de la sección
-        const titulos = {
-            'proximas': 'Próximas citas',
-            'pendientes': 'Citas pendientes',
-            'completadas': 'Citas completadas',
-            'canceladas': 'Citas canceladas'
-        };
-        const tituloEl = document.getElementById('tituloPestanaActiva');
-        if (tituloEl && titulos[tab]) {
-            tituloEl.textContent = titulos[tab];
-        }
-
-        const cards = document.querySelectorAll('#listaCitasContenedor .cita-card-box');
-        let visibles = 0;
-
-        cards.forEach(card => {
-            const grupos = (card.getAttribute('data-tab-grupo') || '').split(' ');
-            if (grupos.includes(tab)) {
-                card.style.display = 'block';
-                visibles++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        const msgVacio = document.getElementById('citasVaciasMsg');
-        if (msgVacio) {
-            msgVacio.style.display = (visibles === 0) ? 'block' : 'none';
-        }
-    }
-
-    // 2. Calendario Rápido conectado a la base de datos
-    const fechasCitasBD = {!! $fechasCitasJson ?? '[]' !!};
-    let mesCal = (new Date()).getMonth();
-    let anioCal = (new Date()).getFullYear();
-
-    const nombresMesesCal = [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    ];
-
-    function renderizarMiniCalendario() {
-        const grid = document.getElementById('calRapidoGrid');
-        const mesNombre = document.getElementById('calRapidoMesNombre');
-        if (!grid || !mesNombre) return;
-
-        mesNombre.textContent = nombresMesesCal[mesCal] + " " + anioCal;
-        grid.innerHTML = "";
-
-        const primerDiaSem = new Date(anioCal, mesCal, 1).getDay(); // 0 = Dom
-        const offset = (primerDiaSem === 0) ? 6 : primerDiaSem - 1; // 0 = Lun
-        const diasEnMes = new Date(anioCal, mesCal + 1, 0).getDate();
-
-        // Celdas vacías previas
-        for (let i = 0; i < offset; i++) {
-            const empty = document.createElement('div');
-            empty.className = 'cal-day-cell empty';
-            grid.appendChild(empty);
-        }
-
-        // Días
-        for (let dia = 1; dia <= diasEnMes; dia++) {
-            const dayCell = document.createElement('div');
-            dayCell.className = 'cal-day-cell';
-            dayCell.textContent = dia;
-
-            const mStr = String(mesCal + 1).padStart(2, '0');
-            const dStr = String(dia).padStart(2, '0');
-            const fechaStr = `${anioCal}-${mStr}-${dStr}`;
-
-            if (fechasCitasBD.includes(fechaStr)) {
-                dayCell.classList.add('active-day');
-                dayCell.title = 'Tienes cita programada en la base de datos este día';
-            }
-
-            grid.appendChild(dayCell);
-        }
-    }
-
-    function cambiarMesRapido(delta) {
-        mesCal += delta;
-        if (mesCal < 0) {
-            mesCal = 11;
-            anioCal--;
-        } else if (mesCal > 11) {
-            mesCal = 0;
-            anioCal++;
-        }
-        renderizarMiniCalendario();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        renderizarMiniCalendario();
-    });
-
-    // 3. Modal Ver Detalles
-    function abrirModalDetalle(id, serv, prof, fecha, hora, precio, estado, pago) {
-        document.getElementById('detServicio').textContent = serv || 'Volumen Ruso';
-        document.getElementById('detProfesional').textContent = prof || 'Isabella Sifuentes Perdomo';
-        document.getElementById('detFecha').textContent = fecha || '30/09/2026';
-        document.getElementById('detHora').textContent = hora || '05:40 pm';
-        document.getElementById('detPrecio').textContent = '$' + precio;
-        document.getElementById('detEstado').textContent = estado || 'Confirmada';
-        document.getElementById('detMetodoPago').textContent = pago || 'Tarjeta';
-
-        const modal = document.getElementById('modalDetallesCita');
-        if (modal) modal.style.display = 'flex';
-    }
-
-    function cerrarModalDetalle() {
-        const modal = document.getElementById('modalDetallesCita');
-        if (modal) modal.style.display = 'none';
-    }
-
-    const modalDetEl = document.getElementById('modalDetallesCita');
-    if (modalDetEl) {
-        modalDetEl.addEventListener('click', (e) => {
-            if (e.target === modalDetEl) cerrarModalDetalle();
-        });
-    }
-
-    // 4. Confirmar Cancelación de Cita con SweetAlert2
-    function confirmarCancelarCita(event, url) {
-        event.preventDefault();
-        Swal.fire({
-            title: '¿Deseas cancelar esta cita?',
-            text: 'Esta acción liberará el espacio en la agenda de la especialista.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#7a5a90',
-            confirmButtonText: 'Sí, cancelar cita',
-            cancelButtonText: 'Volver'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url;
-            }
-        });
-        return false;
-    }
-
-    @if(session('success'))
-        Swal.fire({
-            title: '¡Operación Exitosa!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonColor: '#7c1db8',
-            confirmButtonText: 'Entendido'
-        });
-    @endif
-</script>
+<!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/miscitas.js -->
 
 @include('layouts.footer')
 
