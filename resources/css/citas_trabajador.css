@@ -301,6 +301,29 @@
 .estado-badge.estado-completado,
 .estado-badge.estado-finalizado { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
 
+/* Botón Acción Completar / Realizada */
+.btn-accion.btn-completar {
+    background: #d1fae5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
+    font-size: 11.5px;
+}
+
+.btn-accion.btn-completar:hover {
+    background: #059669;
+    color: #ffffff;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.28);
+}
+
 /* Botón Acción Cancelar */
 .btn-accion.btn-cancelar {
     background: #fee2e2;

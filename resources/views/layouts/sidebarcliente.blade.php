@@ -540,7 +540,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function cargarNotificaciones() {
         fetch("{{ route('notificaciones.index') }}")
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error de conexión con notificaciones');
+                return res.json();
+            })
             .then(data => {
                 if (notifCountBadge) {
                     if (data.count > 0) {
@@ -588,7 +591,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 notifContainer.innerHTML = html;
             })
-            .catch(() => {});
+            .catch(() => {
+                if (notifContainer) {
+                    notifContainer.innerHTML = `
+                        <div class="notif-empty">
+                            <i class="fa-regular fa-bell-slash"></i>
+                            <p>No tienes notificaciones pendientes.</p>
+                        </div>
+                    `;
+                }
+            });
     }
 
     if (btnMarcarLeidas) {

@@ -371,7 +371,40 @@ class CitaController extends Controller
         }
 
         return redirect()
-            ->route('citas.index')
+            ->back()
             ->with('success', 'La cita fue cancelada exitosamente.');
+    }
+
+    /**
+     * Marca una cita como realizada/finalizada ('finalizado').
+     */
+    public function completar($id)
+    {
+        $cita = Cita::findOrFail($id);
+        $user = auth()->user();
+
+        // Validar permisos si es trabajador o cliente
+        if ($user && $user->role_id === 2) {
+            $trabajador = $user->trabajador ?? Trabajador::where('user_id', $user->id)->first();
+            if ($trabajador && $cita->trabajador_id !== $trabajador->id) {
+                abort(403, 'No tienes permiso para gestionar esta cita.');
+            }
+        } elseif ($user && $user->role_id === 3) {
+            abort(403, 'Los clientes no pueden marcar citas como realizadas.');
+        }
+
+        $cita->estado = 'finalizado';
+        $cita->save();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => '¡La cita ha sido marcada como realizada exitosamente!'
+            ]);
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', '¡La cita ha sido marcada como realizada exitosamente!');
     }
 }

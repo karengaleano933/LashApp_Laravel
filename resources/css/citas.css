@@ -299,6 +299,15 @@
     transition: background .15s ease, transform .15s ease;
 }
 
+.btn-completar {
+    color: #059669;
+}
+
+.btn-completar:hover {
+    background: #d1fae5;
+    transform: scale(1.08);
+}
+
 .btn-cancelar {
     color: #dc2626;
 }

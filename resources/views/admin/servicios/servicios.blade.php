@@ -2,11 +2,14 @@
 @include('layouts.header', ['titulo' => 'Gestión de Servicios'])
 @include('layouts.sidebaradmin')
 
-<!-- Estilos específicos de servicios -->
-@vite(['resources/css/servicios.css'])
+<!-- Estilos y Scripts específicos de servicios -->
+@vite([
+    'resources/css/servicios.css',
+    'resources/js/modules/admin/servicios.js'
+])
 
 <!-- Contenido Principal -->
-<div class="page-content">
+<div class="page-content" id="serviciosContainer" data-base-url="{{ url('/admin/servicios') }}">
 
 <!-- ══════════════════ ALERTAS DE ACCIÓN ══════════════════ -->
 @if (session('success'))
@@ -467,147 +470,6 @@
 
     </div> <!-- Cierre de .main-content-wrapper -->
 </div> <!-- Cierre de .app-layout -->
-
-<!-- JAVASCRIPT BUSCADOR, MODALES Y ACCIONES -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // ── Buscador y filtro de categorías ──
-    const buscar = document.getElementById('buscarServicio');
-    const filtro = document.getElementById('filtroCategoria');
-    const filas = document.querySelectorAll('#tablaServicios tbody tr');
-
-    function filtrarServicios() {
-        const texto = (buscar ? buscar.value : '').toLowerCase().trim();
-        const categoria = (filtro ? filtro.value : '').toLowerCase().trim();
-
-        filas.forEach(function (fila) {
-            // Ignorar fila vacía
-            if (fila.querySelector('.tabla-vacia')) return;
-
-            const contenido = fila.textContent.toLowerCase();
-            const catFila = (fila.dataset.categoria || '').toLowerCase();
-
-            const coincideTexto = !texto || contenido.includes(texto);
-            const coincideCat = !categoria || catFila.includes(categoria);
-
-            fila.style.display = (coincideTexto && coincideCat) ? '' : 'none';
-        });
-    }
-
-    if (buscar) buscar.addEventListener('input', filtrarServicios);
-    if (filtro) filtro.addEventListener('change', filtrarServicios);
-
-    // ── Modal Crear Servicio ──
-    const modalCrear = document.getElementById('modalCrearServicio');
-    const abrirBtn = document.getElementById('abrirNuevoServicio');
-    const cerrarCrearBtn = document.getElementById('cerrarModalServicio');
-    const cancelarCrearBtn = document.getElementById('cancelarModalServicio');
-
-    function abrirModalCrear() {
-        if (modalCrear) {
-            modalCrear.classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function cerrarModalCrear() {
-        if (modalCrear) {
-            modalCrear.classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-    }
-
-    if (abrirBtn) abrirBtn.addEventListener('click', abrirModalCrear);
-    if (cerrarCrearBtn) cerrarCrearBtn.addEventListener('click', cerrarModalCrear);
-    if (cancelarCrearBtn) cancelarCrearBtn.addEventListener('click', cerrarModalCrear);
-
-    if (modalCrear) {
-        modalCrear.addEventListener('click', function (e) {
-            if (e.target === modalCrear) cerrarModalCrear();
-        });
-    }
-
-    // ── Modal Editar Servicio ──
-    const modalEditar = document.getElementById('modalEditarServicio');
-    const cerrarEditarBtn = document.getElementById('cerrarModalEditarServicio');
-    const cancelarEditarBtn = document.getElementById('cancelarModalEditarServicio');
-    const formEditar = document.getElementById('formEditarServicio');
-
-    function cerrarModalEditar() {
-        if (modalEditar) {
-            modalEditar.classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-    }
-
-    if (cerrarEditarBtn) cerrarEditarBtn.addEventListener('click', cerrarModalEditar);
-    if (cancelarEditarBtn) cancelarEditarBtn.addEventListener('click', cerrarModalEditar);
-
-    if (modalEditar) {
-        modalEditar.addEventListener('click', function (e) {
-            if (e.target === modalEditar) cerrarModalEditar();
-        });
-    }
-
-    // Cerrar con ESC
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            cerrarModalCrear();
-            cerrarModalEditar();
-        }
-    });
-
-    // Cargar datos en Modal Editar
-    document.querySelectorAll('.btn-editar-servicio').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
-            document.getElementById('edit_id_servicio').value = id || '';
-            document.getElementById('edit_nombre_servicio').value = this.dataset.nombre || '';
-            document.getElementById('edit_id_categoria').value = this.dataset.categoria || '';
-            document.getElementById('edit_precio_servicio').value = this.dataset.precio || '';
-            document.getElementById('edit_duracion_servicio').value = this.dataset.duracion || '';
-            document.getElementById('edit_descripcion_servicio').value = this.dataset.descripcion || '';
-            document.getElementById('edit_estado_servicio').value = (this.dataset.estado || 'activo').toLowerCase();
-
-            // Configurar ruta PUT del formulario
-            if (formEditar) {
-                formEditar.action = "{{ url('/admin/servicios') }}/" + id;
-            }
-
-            if (modalEditar) {
-                modalEditar.classList.add('activo');
-                document.body.style.overflow = 'hidden';
-            }
-        });
-    });
-
-    // ── Eliminar con confirmación SweetAlert2 ──
-    document.querySelectorAll('.btn-eliminar-servicio').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const nombre = this.dataset.nombre || 'este servicio';
-
-            Swal.fire({
-                title: '¿Eliminar servicio?',
-                text: `¿Estás seguro de eliminar "${nombre}"? Esta acción no se puede deshacer.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formEliminar = document.getElementById('formEliminarServicio');
-                    if (formEliminar) {
-                        formEliminar.action = "{{ url('/admin/servicios') }}/" + id;
-                        formEliminar.submit();
-                    }
-                }
-            });
-        });
-    });
-});
-</script>
 </body>
 </html>
+

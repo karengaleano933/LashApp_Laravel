@@ -161,6 +161,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/citas', [CitaController::class, 'index'])->middleware(['auth'])->name('citas.index');
 Route::post('/admin/citas', [CitaController::class, 'store'])->middleware(['auth'])->name('citas.store');
 Route::get('/admin/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth'])->name('citas.cancelar');
+Route::get('/admin/citas/completar/{id}', [CitaController::class, 'completar'])->middleware(['auth'])->name('citas.completar');
 
 // Gestión de Servicios (Admin y Trabajador)
 Route::middleware(['auth'])->group(function () {
@@ -226,8 +227,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Configuración del Sistema
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::post('/admin/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+});
 
-    // Notificaciones del Sistema
-    Route::get('/admin/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');
-    Route::post('/admin/notificaciones/marcar-leidas', [\App\Http\Controllers\NotificacionController::class, 'marcarTodasLeidas'])->name('notificaciones.marcarLeidas');
+// Notificaciones del Sistema (accesibles para todos los usuarios autenticados: admin, trabajador y cliente)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');
+    Route::post('/notificaciones/marcar-leidas', [\App\Http\Controllers\NotificacionController::class, 'marcarTodasLeidas'])->name('notificaciones.marcarLeidas');
 });

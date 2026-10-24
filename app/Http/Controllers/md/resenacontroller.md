@@ -1,97 +1,295 @@
-# Explicación de mi `ResenaController.php` (En mis palabras)
+# Explicación del código ResenaController.php
 
-En este archivo controlo todo el sistema de **calificaciones y opiniones** de mis clientas en **LashApp**. Es como el libro de visitas o las estrellas de Google del salón de pestañas: aquí veo qué tan felices salieron las clientas, qué comentarios dejaron y qué promedio de estrellas tiene cada especialista o el negocio en general.
+## 1. ¿Para qué sirve este archivo?
 
-Aquí te explico detalladamente cómo lo programé, paso a paso y sin enredos técnicos:
+Este archivo se llama `ResenaController.php` y se encarga de manejar las reseñas que los clientes dejan en LashApp sobre los servicios del salón de belleza.
 
----
+En este archivo puedo consultar las reseñas, ver las calificaciones de los clientes, calcular los promedios, registrar nuevas opiniones y eliminar las reseñas que ya están guardadas.
 
-## 1. Las herramientas que uso (Lo que importo arriba)
+También permite que el administrador y los trabajadores tengan una vista de las reseñas según su función dentro del sistema.
 
-Al iniciar el archivo llamo a estas tres cosas:
+## 2. Importación de las clases
 
 ```php
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\Resena;
 use App\Models\Cita;
 ```
 
-* **`Request`:** Me ayuda a atrapar lo que la clienta escribe al calificar: cuántas estrellas nos da y el mensajito que nos deja.
-* **`Resena`:** Es el modelo que habla directamente con mi tabla `resenas` en la base de datos (donde están guardadas las notas del 1 al 5 y las opiniones).
-* **`Cita`:** Es el modelo de las citas agendadas, porque cada reseña debe pertenecer obligatoriamente a una cita real que ya se atendió en el salón.
+En esta parte indico dónde se encuentra mi archivo y qué elementos necesito para que funcione.
 
----
+- `namespace App\Http\Controllers`: indica que este archivo pertenece a la carpeta de controladores de mi proyecto.
+- `use Illuminate\Http\Request`: me permite recibir la información que se envía desde los formularios.
+- `use App\Models\Resena`: me permite trabajar con las reseñas que están guardadas en la base de datos.
+- `use App\Models\Cita`: me permite consultar las citas que tienen registradas los clientes.
 
-## 2. La función `index()` — Ver todas las opiniones y calcular promedios
+## 3. Inicio de la clase
+
+```php
+class ResenaController extends Controller
+{
+```
+
+Aquí comienzo la clase llamada `ResenaController`.
+
+Esta clase reúne las instrucciones que necesito para manejar las reseñas de mi aplicación. Al utilizar `extends Controller`, aprovecho las funciones que Laravel ofrece para trabajar con los controladores.
+
+## 4. Método index()
 
 ```php
 public function index()
+{
+    $user = auth()->user();
 ```
 
-Esta función es el cerebro de la pantalla de reseñas. Hace algo muy inteligente: **se fija en quién está iniciando sesión**.
+Este método es el encargado de mostrar la página de las reseñas.
 
-### Caso A: Si es una Trabajadora (Rol 2)
-1. **Identifico a la empleada:** Con `auth()->user()` sé quién es, y busco su registro en la tabla de trabajadoras.
-2. **Filtro solo sus reseñas:** Busco únicamente las opiniones de citas que atendió ella misma (`whereHas('cita', ...)`).
-3. **Respaldo visual:** Si la chica es nueva y aún no tiene reseñas propias, le muestro las generales del salón para que su pantalla no se vea vacía y triste.
-4. **Calculo todas sus estadísticas:**
-   * **`totalResenas`:** Cuántas clientas se han tomado el tiempo de opinar sobre su trabajo.
-   * **`promedioCalificacion`:** El promedio de estrellas (por ejemplo: `4.8` o `5.0`).
-   * **`positivas` / `neutras` / `negativas`:** Las agrupo automáticamente para saber si las clientas están felices (4 o 5 estrellas), normales (3 estrellas) o inconformes (1 o 2 estrellas).
-   * **Distribución de estrellas (`c1` a `c5`) y porcentajes (`pct1` a `pct5`):** Cuento cuántas de 5 estrellas tiene, cuántas de 4, etc., y saco el porcentaje para que en la pantalla se dibuje una barrita de progreso visual como la de Amazon o Google Play.
-5. **Mando los datos a su vista:** Carga `trabajador.resenas.resenas_trabajador`.
+La primera instrucción obtiene los datos del usuario que ha iniciado sesión. De esta manera, puedo saber quién está utilizando el sistema y mostrarle la información que corresponde.
 
-### Caso B: Si es la Administradora
-1. **Traigo absolutamente todas las reseñas del salón:** Con los datos de la clienta y el servicio que se realizó.
-2. **Calculo las estadísticas globales:** El promedio general de todo el estudio de belleza y las barritas del 1 al 5 estrellas.
-3. **Busco qué citas faltan por calificar:** Con `whereDoesntHave('resena')` encuentro citas terminadas a las que aún no les han dejado reseña, para que el administrador pueda registrar la opinión si la clienta la dio en persona o por WhatsApp.
-4. **Mando todo a la vista del administrador:** Carga `admin.resenas.resenas`.
-
----
-
-## 3. La función `store()` — Guardar una nueva opinión
+### 4.1. Verificar si el usuario es trabajador
 
 ```php
-public function store(Request $request)
+if ($user && (int)$user->role_id === 2) {
 ```
 
-Se activa cuando alguien envía el formulario de calificación:
+Aquí verifico si existe un usuario que haya iniciado sesión y si su rol es el número 2, que en mi proyecto corresponde al trabajador.
 
-1. **Valido que los datos vengan bien:**
-   * La cita debe existir obligatoriamente en el sistema (`exists:citas,id`).
-   * La calificación debe ser un número entero entre 1 y 5 estrellas (`integer|min:1|max:5`).
-   * El comentario no puede estar vacío y máximo puede tener 1000 letras.
-2. **Asocio la cita:** Busco la cita con `Cita::findOrFail($request->input('id_cita'))`.
-3. **Guardo la reseña en la base de datos:**
-   ```php
-   Resena::create([
-       'cliente_id' => $cita->cliente_id,
-       'cita_id' => $cita->id,
-       'calificacion' => (int) $request->input('calificacion', 5),
-       'comentario' => $request->input('comentario'),
-       'fecha_resena' => now(),
-   ]);
-   ```
-   Automáticamente le coloco el ID de la clienta, la cita, sus estrellas, el mensaje y la fecha y hora exacta del momento (`now()`).
-4. **Redirecciono:** Regreso al listado con un mensajito verde de éxito: *"Valoración guardada exitosamente"*.
+Si cumple esta condición, el sistema ejecuta las instrucciones destinadas a mostrar la página de reseñas del trabajador.
 
----
-
-## 4. La función `destroy()` — Borrar una reseña
+### 4.2. Buscar al trabajador
 
 ```php
-public function destroy($id)
+$trabajador = $user->trabajador
+    ?? \App\Models\Trabajador::where('user_id', $user->id)->first();
+
+$trabajadorId = $trabajador?->id;
 ```
 
-Si por alguna razón hay una reseña spam o con contenido inapropiado, la administradora puede borrarla:
-1. Busca la reseña por su número de ID (`Resena::findOrFail($id)`).
-2. La elimina de la base de datos con `$resena->delete()`.
-3. Recarga la página avisando que la reseña fue eliminada correctamente.
+En esta parte busco los datos del trabajador relacionado con el usuario que inició sesión.
 
----
+Primero intento encontrarlo mediante la relación que existe entre el usuario y el trabajador. Si no lo encuentro de esa manera, realizo otra búsqueda usando su identificador.
 
-## En resumen: ¿Qué hace este controlador?
-* Le calcula la reputación y promedio de estrellas a las trabajadoras y al salón.
-* Separa la pantalla de la empleada de la del administrador.
-* Convierte las calificaciones en gráficos con porcentajes de satisfacción.
-* Permite calificar citas y borrar comentarios no deseados.
+Después guardo el número del trabajador en la variable `$trabajadorId`, porque lo necesito para identificar las reseñas relacionadas con sus citas.
+
+### 4.3. Consultar las reseñas
+
+```php
+$query = Resena::with([
+    'cliente.user',
+    'cita.servicio',
+    'cita.trabajador.user'
+]);
+```
+
+Aquí preparo la consulta de las reseñas y también solicito información relacionada con ellas.
+
+Por ejemplo, puedo obtener el nombre del cliente, el servicio que recibió y los datos del trabajador que atendió la cita.
+
+Esto me ayuda a mostrar información más completa en la página, en lugar de mostrar solamente el número de cada registro.
+
+### 4.4. Mostrar las reseñas relacionadas con el trabajador
+
+```php
+if ($trabajadorId) {
+    $query->whereHas('cita', function ($q) use ($trabajadorId) {
+        $q->where('trabajador_id', $trabajadorId);
+    });
+}
+```
+
+En este bloque verifico si encontré el número del trabajador.
+
+Si lo tengo, busco las reseñas que están relacionadas con las citas que le pertenecen. Así puedo identificar las opiniones que han dejado los clientes sobre sus servicios.
+
+### 4.5. Ordenar las reseñas
+
+```php
+$resenas = $query
+    ->orderByDesc('fecha_resena')
+    ->orderByDesc('id')
+    ->get();
+```
+
+Aquí obtengo las reseñas y las organizo para mostrar primero las más recientes.
+
+Si varias tienen la misma fecha, utilizo el número de cada reseña para establecer el orden.
+
+### 4.6. Mostrar otras reseñas si no hay ninguna del trabajador
+
+```php
+if ($resenas->isEmpty()) {
+    $resenas = Resena::with([
+        'cliente.user',
+        'cita.servicio',
+        'cita.trabajador.user'
+    ])
+    ->orderByDesc('fecha_resena')
+    ->orderByDesc('id')
+    ->get();
+}
+```
+
+En esta parte verifico si el trabajador no tiene reseñas relacionadas con sus propias citas.
+
+Si no encuentra ninguna, el sistema muestra las reseñas generales del salón. Esto permite que la página tenga información para mostrar.
+
+Sin embargo, en este caso también pueden aparecer opiniones de otros trabajadores, no solamente las del trabajador que inició sesión.
+
+## 5. Calcular las estadísticas de las reseñas
+
+### 5.1. Contar las reseñas
+
+```php
+$totalResenas = $resenas->count();
+```
+
+Esta instrucción cuenta cuántas reseñas hay y guarda el resultado en la variable `$totalResenas`.
+
+Por ejemplo, si existen 20 reseñas, la variable tendrá el valor 20.
+
+### 5.2. Calcular el promedio de las calificaciones
+
+```php
+$promedioCalificacion = $totalResenas > 0
+    ? round($resenas->avg('calificacion'), 1)
+    : 5.0;
+```
+
+Aquí calculo el promedio de las estrellas que han dejado los clientes.
+
+Si hay reseñas, sumo sus calificaciones y obtengo el promedio. Después lo redondeo a un decimal para que sea más fácil de leer.
+
+Si no hay reseñas, el código establece el promedio en 5.0. Esto es lo que hace actualmente, aunque sería mejor mostrar que todavía no hay calificaciones.
+
+### 5.3. Clasificar las opiniones
+
+```php
+$positivas = $resenas->where('calificacion', '>=', 4)->count();
+$neutras = $resenas->where('calificacion', 3)->count();
+$negativas = $resenas->where('calificacion', '<=', 2)->count();
+```
+
+En esta parte clasifico las reseñas según las estrellas que recibieron.
+
+- Las positivas son las que tienen 4 o 5 estrellas.
+- Las neutras son las que tienen 3 estrellas.
+- Las negativas son las que tienen 1 o 2 estrellas.
+
+Esto me permite conocer cómo están calificando los clientes los servicios del salón.
+
+### 5.4. Contar las estrellas de cada calificación
+
+```php
+$c5 = $resenas->where('calificacion', 5)->count();
+$c4 = $resenas->where('calificacion', 4)->count();
+$c3 = $resenas->where('calificacion', 3)->count();
+$c2 = $resenas->where('calificacion', 2)->count();
+$c1 = $resenas->where('calificacion', 1)->count();
+```
+
+Aquí cuento cuántas reseñas tienen cada cantidad de estrellas.
+
+Por ejemplo, `$c5` guarda la cantidad de reseñas de cinco estrellas, mientras que `$c1` guarda la cantidad de reseñas de una estrella.
+
+Con estos datos puedo mostrar cómo se distribuyen las calificaciones de los clientes.
+
+### 5.5. Calcular el porcentaje de cada calificación
+
+```php
+$pct5 = $totalResenas > 0
+    ? round(($c5 / $totalResenas) * 100, 1)
+    : 0;
+```
+
+Esta instrucción calcula qué porcentaje de las reseñas corresponde a las cinco estrellas.
+
+Primero divide la cantidad de reseñas de cinco estrellas entre el total. Después multiplica el resultado por 100 para obtener el porcentaje.
+
+El mismo cálculo se realiza con las variables `$pct4`, `$pct3`, `$pct2` y `$pct1`.
+
+Si no hay reseñas, el porcentaje queda en cero para estas estadísticas del trabajador.
+
+### 5.6. Mostrar la página del trabajador
+
+```php
+return view(
+    'trabajador.resenas.resenas_trabajador',
+    compact(
+        'resenas',
+        'totalResenas',
+        'promedioCalificacion',
+        'positivas',
+        'neutras',
+        'negativas',
+        'c5', 'c4', 'c3', 'c2', 'c1',
+        'pct5', 'pct4', 'pct3', 'pct2', 'pct1'
+    )
+);
+```
+
+Aquí envío toda la información que calculé a la página de reseñas del trabajador.
+
+Utilizo `compact()` para pasar las variables que la página necesita, como el total de reseñas, el promedio, las cantidades de estrellas y los porcentajes.
+
+De esta manera, el trabajador puede consultar las estadísticas desde su propia vista.
+
+## 6. Mostrar las reseñas del administrador
+
+```php
+$resenas = Resena::with(['cliente.user', 'cita.servicio'])
+    ->orderByDesc('fecha_resena')
+    ->orderByDesc('id')
+    ->get();
+```
+
+Si el usuario no entra en la condición del trabajador, el código continúa con la consulta que prepara las reseñas para la vista administrativa.
+
+Aquí obtengo las reseñas junto con los datos del cliente y del servicio. Después las organizo desde la más reciente hasta la más antigua.
+
+Esta parte permite preparar la información que se mostrará en la página del administrador.
+
+### 6.1. Calcular las estadísticas del administrador
+
+```php
+$totalResenas = $resenas->count();
+
+$promedioCalificacion = $totalResenas > 0
+    ? round($resenas->avg('calificacion'), 1)
+    : 5.0;
+```
+
+Estas instrucciones hacen lo mismo que en la parte del trabajador: cuentan las reseñas y calculan el promedio de las calificaciones.
+
+### 6.2. Contar las estrellas
+
+```php
+$c5 = $resenas->where('calificacion', 5)->count();
+$c4 = $resenas->where('calificacion', 4)->count();
+$c3 = $resenas->where('calificacion', 3)->count();
+$c2 = $resenas->where('calificacion', 2)->count();
+$c1 = $resenas->where('calificacion', 1)->count();
+```
+
+Aquí cuento las reseñas que recibieron una, dos, tres, cuatro y cinco estrellas.
+
+Esta información sirve para conocer las calificaciones que han dejado los clientes en el salón.
+
+### 6.3. Calcular los porcentajes
+
+```php
+$pct5 = $totalResenas > 0
+    ? round(($c5 / $totalResenas) * 100)
+    : 100;
+
+$pct4 = $totalResenas > 0
+    ? round(($c4 / $totalResenas) * 100)
+    : 0;
+```
+
+En esta parte calculo los porcentajes de las calificaciones para mostrarlos en la vista del administrador.
+
+El mismo procedimiento se repite con las tres, dos y una estrella.
+
+Cuando existen reseñas, los porcentajes se redondean a números enteros. Si no existen, el porcentaje de cinco estrellas queda en 100 y los demás en cero. Esto es lo que está

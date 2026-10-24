@@ -247,7 +247,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function cargarNotificaciones() {
         fetch("{{ route('notificaciones.index') }}")
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Error de conexión');
+                return res.json();
+            })
             .then(data => {
                 actualizarBadge(data.count || 0);
                 if (!notifContainer) return;

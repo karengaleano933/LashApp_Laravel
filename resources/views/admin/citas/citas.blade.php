@@ -3,7 +3,74 @@
 @include('layouts.sidebaradmin')
 
 <!-- Contenedor del contenido -->
-<div class="page-content">
+<div class="page-content" id="citasContainer" data-complete-url="{{ route('citas.completar', ':id') }}" data-cancel-url="{{ Route::has('citas.cancelar') ? route('citas.cancelar', ':id') : '' }}">
+
+<style>
+    .btn-accion.btn-completar {
+        background: #d1fae5 !important;
+        color: #059669 !important;
+        border: 1px solid #a7f3d0 !important;
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all .2s ease !important;
+        font-size: 11.5px !important;
+    }
+    .btn-accion.btn-completar:hover {
+        background: #059669 !important;
+        color: #ffffff !important;
+        transform: scale(1.08) !important;
+        box-shadow: 0 4px 10px rgba(5, 150, 105, 0.28) !important;
+    }
+    .btn-accion.btn-cancelar {
+        background: #fee2e2 !important;
+        color: #dc2626 !important;
+        border: 1px solid #fca5a5 !important;
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all .2s ease !important;
+        font-size: 11.5px !important;
+    }
+    .btn-accion.btn-cancelar:hover {
+        background: #dc2626 !important;
+        color: #ffffff !important;
+        transform: scale(1.08) !important;
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.28) !important;
+    }
+    .badge-realizada-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+    .badge-cancelada-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+</style>
 
 <!-- ══════════════════ ENCABEZADO ══════════════════ -->
 <div class="citas-header">
@@ -148,11 +215,28 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn-accion btn-cancelar"
-                                    onclick="confirmarCancelar({{ $idCita }})"
-                                    title="Cancelar Cita">
-                                    <i class="fa-solid fa-ban"></i>
-                                </button>
+                                <div style="display:inline-flex; gap:6px; justify-content:center; align-items:center;">
+                                    @if (!in_array(strtolower($estado), ['finalizado', 'completado', 'completada', 'realizada', 'cancelado', 'cancelada']))
+                                        <button type="button" class="btn-accion btn-completar"
+                                            onclick="confirmarCompletar({{ $idCita }})"
+                                            title="Marcar como Realizada">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        <button type="button" class="btn-accion btn-cancelar"
+                                            onclick="confirmarCancelar({{ $idCita }})"
+                                            title="Cancelar Cita">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    @elseif (in_array(strtolower($estado), ['finalizado', 'completado', 'completada', 'realizada']))
+                                        <span class="badge-realizada-pill" title="Cita realizada con éxito">
+                                            <i class="fa-solid fa-circle-check"></i> Realizada
+                                        </span>
+                                    @else
+                                        <span class="badge-cancelada-pill" title="Cita cancelada">
+                                            <i class="fa-solid fa-circle-xmark"></i> Cancelada
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -430,174 +514,10 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- DataTables -->
+<!-- DataTables y Módulo JS Modular (Vite) -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    // Inicialización DataTables
-    if ($.fn.DataTable.isDataTable('#citasTable')) {
-        $('#citasTable').DataTable().destroy();
-    }
-    $.fn.dataTable.ext.errMode = 'none';
-    const citasTableDt = $('#citasTable').DataTable({
-        language: { 
-            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
-            emptyTable: 'No hay citas próximas registradas',
-            zeroRecords: 'No se encontraron citas coincidentes'
-        },
-        responsive: true,
-        dom: 'rt',
-        searching: true,
-        lengthChange: false,
-        info: false,
-        paging: false
-    });
-
-    // Filtro búsqueda en tiempo real conectado a DataTables
-    const buscarCitaInput = document.getElementById('buscarCita');
-    if (buscarCitaInput) {
-        buscarCitaInput.addEventListener('input', function() {
-            citasTableDt.search(this.value).draw();
-        });
-    }
-
-    // Filtro por profesional
-    $('#filtroProfesional').on('change', function() {
-        citasTableDt.column(4).search(this.value).draw();
-    });
-
-    // Filtro por estado
-    $('#filtroEstado').on('change', function() {
-        citasTableDt.column(5).search(this.value).draw();
-    });
-});
-
-// Cancelar cita con SweetAlert2
-function confirmarCancelar(id) {
-    Swal.fire({
-        title: '¿Cancelar esta cita?',
-        text: 'Esta acción actualizará el estado de la cita.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Sí, cancelar',
-        cancelButtonText: 'No'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            @if (Route::has('citas.cancelar'))
-                window.location.href = "{{ route('citas.cancelar', ':id') }}".replace(':id', id);
-            @else
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Acción registrada',
-                    text: 'ID de cita ' + id + ' marcada para cancelación.',
-                    confirmButtonColor: '#7c1db8'
-                });
-            @endif
-        }
-    });
-}
-
-function cancelarSeleccionadas() {
-    Swal.fire({
-        icon: 'info',
-        title: 'Selecciona las citas',
-        text: 'Marca las citas que deseas cancelar en la tabla.',
-        confirmButtonColor: '#7c1db8'
-    });
-}
-
-// ── Calendario Dinámico ──
-const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-
-function renderCal() {
-    const grid  = document.getElementById('calGrid');
-    const label = document.getElementById('calMesAnio');
-    if (!grid || !label) return;
-
-    label.textContent = meses[calMonth] + ' ' + calYear;
-    grid.innerHTML = '';
-
-    const firstDay = (new Date(calYear, calMonth, 1).getDay() + 6) % 7; // Lunes = 0
-    const days     = new Date(calYear, calMonth + 1, 0).getDate();
-    const today    = new Date();
-
-    for (let i = 0; i < firstDay; i++) {
-        const el = document.createElement('div');
-        el.className = 'cal-cell cal-empty';
-        grid.appendChild(el);
-    }
-
-    for (let d = 1; d <= days; d++) {
-        const el = document.createElement('div');
-        const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === d;
-        el.className = 'cal-cell' + (isToday ? ' cal-today' : '');
-        el.textContent = d;
-        grid.appendChild(el);
-    }
-}
-
-const calPrevBtn = document.getElementById('calPrev');
-const calNextBtn = document.getElementById('calNext');
-
-if (calPrevBtn) {
-    calPrevBtn.addEventListener('click', () => {
-        calMonth--;
-        if (calMonth < 0) { calMonth = 11; calYear--; }
-        renderCal();
-    });
-}
-
-if (calNextBtn) {
-    calNextBtn.addEventListener('click', () => {
-        calMonth++;
-        if (calMonth > 11) { calMonth = 0; calYear++; }
-        renderCal();
-    });
-}
-
-renderCal();
-
-// ── Manejo del Modal Nueva Cita ──
-document.addEventListener('DOMContentLoaded', function () {
-    const modal    = document.getElementById('modalNuevaCita');
-    const abrir    = document.getElementById('abrirNuevaCita');
-    const cerrar   = document.getElementById('cerrarNuevaCita');
-    const cancelar = document.getElementById('cancelarNuevaCita');
-
-    if (!modal || !abrir || !cerrar || !cancelar) return;
-
-    function abrirModal() {
-        modal.classList.add('activo');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarModal() {
-        modal.classList.remove('activo');
-        document.body.style.overflow = '';
-    }
-
-    abrir.addEventListener('click', abrirModal);
-    cerrar.addEventListener('click', cerrarModal);
-    cancelar.addEventListener('click', cerrarModal);
-
-    modal.addEventListener('click', function (event) {
-        if (event.target === modal) {
-            cerrarModal();
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && modal.classList.contains('activo')) {
-            cerrarModal();
-        }
-    });
-});
-</script>
+@vite(['resources/js/modules/admin/citas.js'])
 </body>
 </html>
+

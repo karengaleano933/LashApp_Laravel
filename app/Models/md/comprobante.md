@@ -1,67 +1,159 @@
-# Explicación de mi modelo `Comprobante.php` (En mis palabras)
+# Explicación de mi modelo `Comprobante.php` (Código por código en mis palabras)
 
-En este archivo controlo los **archivos y fotos de las transferencias** en **LashApp**. Cada vez que una clienta o la administradora sube un pantallazo de Nequi, Daviplata o un recibo en PDF para respaldar un pago, la información de ese archivo se guarda en este modelo.
+En este archivo controlo y administro los **archivos, capturas de pantalla y soportes digitales de pago** de mi aplicación **LashApp**.
 
-Aquí te explico cómo funciona y para qué sirve:
-
----
-
-## 1. ¿Qué representa en la vida real?
-
-Es como el **archivador de recibos o tickets de pago**. Cuando una clienta transfiere por Nequi o por el banco, suele enviar el pantallazo de la transacción exitosa. Este modelo guarda la ruta en el servidor de esa imagen para que la administradora pueda abrirla y comprobar con sus propios ojos que el dinero sí entró antes de marcar la cita como pagada.
+Aquí explico, línea por línea y bloque por bloque, cómo construí este código, qué significa cada parte como si lo estuviera contando yo misma y para qué sirve en la validación real de los ingresos del salón.
 
 ---
 
-## 2. La tabla y los datos que guardo (`$table` y `$fillable`)
+## 1. ¿Qué representa este modelo en mi aplicación?
+
+Es el **archivo digital de evidencias y soportes bancarios**:
+- Cuando una clienta paga por transferencia bancaria (Nequi, Daviplata, Bancolombia, etc.), el sistema le permite adjuntar una foto o captura de pantalla del recibo exitoso.
+- Este modelo guarda los metadatos de esa imagen o PDF: el nombre original del archivo, su formato (`jpg`, `png`, `pdf`), la ruta física donde quedó almacenado en el servidor (`ruta_archivo`) y la fecha exacta de subida (`fecha_subida`).
+- Se conecta directamente con el registro de la transacción (`Pago`) para que la administradora pueda abrir la imagen en modal o pantalla completa y verificar la transferencia antes de aprobar el cobro.
+
+---
+
+## 2. Apertura del archivo y espacio de nombres (Namespace)
 
 ```php
-protected $table = 'comprobantes';
+<?php
 
-protected $fillable = [
-    'pago_id',
-    'nombre_archivo',
-    'tipo_archivo',
-    'ruta_archivo',
-    'fecha_subida',
-];
+namespace App\Models;
 ```
 
-* **`$table = 'comprobantes'`:** Se enlaza con la tabla `comprobantes` de la base de datos.
-* **`pago_id`:** El código del pago en la tabla `pagos` al que pertenece este archivo.
-* **`nombre_archivo`:** El nombre original que tenía la foto en el celular de la persona (ejemplo: `comprobante_nequi_valentina.jpg`).
-* **`tipo_archivo`:** La extensión del archivo (`jpg`, `png`, `webp` o `pdf`).
-* **`ruta_archivo`:** La ubicación física en la carpeta de nuestro servidor donde quedó guardada la foto (ejemplo: `img/comprobantes/1712345678_654321.jpg`).
-* **`fecha_subida`:** El día y la hora exacta en la que se subió el archivo.
+### Explicación de cada línea:
+* **`<?php`**:  
+  Es la etiqueta de apertura obligatoria de PHP. Le indica al servidor que el contenido a continuación debe ser ejecutado como código PHP.
+* **`namespace App\Models;`**:  
+  Declara el **espacio de nombres** de este modelo. Organiza la clase `Comprobante` dentro del paquete `App\Models`. Gracias a esto, puedo importarla en cualquier controlador (como `PagoController`) mediante la sentencia `use App\Models\Comprobante;`.
 
 ---
 
-## 3. Conversión de fechas (`$casts`)
+## 3. Importación de dependencias (`use`)
 
 ```php
-protected $casts = [
-    'fecha_subida' => 'datetime',
-];
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 ```
 
-* Hace que `fecha_subida` sea tratada como un objeto de fecha real para poder saber hace cuántos minutos o días se adjuntó el recibo.
+### Explicación de cada línea:
+* **`use Illuminate\Database\Eloquent\Factories\HasFactory;`**:  
+  Importo el trait `HasFactory`. Me permite asociar este modelo con una fábrica (`ComprobanteFactory`) para simular la subida de comprobantes en pruebas automatizadas y seeders.
+* **`use Illuminate\Database\Eloquent\Model;`**:  
+  Importo la clase base `Model` de Eloquent ORM. Al heredar de ella, el modelo adquiere todos los métodos para crear registros (`create()`), consultar rutas de archivos y relacionarse con los pagos.
 
 ---
 
-## 4. Su relación con el pago (`pago`)
+## 4. Declaración de la clase y uso del Trait
 
 ```php
-public function pago()
+class Comprobante extends Model
 {
-    return $this->belongsTo(Pago::class, 'pago_id');
-}
+    use HasFactory;
 ```
 
-* **Qué significa:** *"Un comprobante pertenece a un pago"* (`belongsTo`).
-* **Para qué me sirve:** Si estoy viendo una foto de comprobante, puedo acceder a `$comprobante->pago->monto` o `$comprobante->pago->cita->cliente->user->name` para saber de inmediato a qué clienta y a qué monto de dinero corresponde esa imagen.
+### Explicación de cada línea:
+* **`class Comprobante extends Model`**:  
+  Declaro la clase `Comprobante` y la hago **heredar** (`extends`) de `Model`. De esta forma, la clase se transforma en un modelo Eloquent activo que representa los soportes de pago en la base de datos.
+* **`use HasFactory;`**:  
+  Habilito el trait dentro de la clase para permitir el uso del método `Comprobante::factory()`.
 
 ---
 
-## En resumen: ¿Para qué sirve `Comprobante.php`?
-* Respalda visualmente los pagos digitales con fotos de transferencias reales.
-* Guarda la ruta exacta del archivo en el servidor para que se pueda ver en pantalla grande.
-* Se conecta directamente con el modelo de pagos (`Pago`).
+## 5. Definición explícita de la tabla (`$table`)
+
+```php
+    protected $table = 'comprobantes';
+```
+
+### ¿Por qué escribí esto?
+Por convención, Laravel busca tablas en inglés pluralizando el nombre del modelo. Con la propiedad protegida `$table = 'comprobantes'`, le indico a Laravel de manera explícita que trabaje sobre la tabla `comprobantes` en la base de datos, evitando que intente buscar nombres erróneos en inglés.
+
+---
+
+## 6. Atributos asignables de forma masiva (`$fillable`)
+
+```php
+    protected $fillable = [
+        'pago_id',
+        'nombre_archivo',
+        'tipo_archivo',
+        'ruta_archivo',
+        'fecha_subida',
+    ];
+```
+
+### ¿Qué significa y por qué lo uso?
+La propiedad protegida `$fillable` protege a mi aplicación contra ataques de asignación masiva (Mass Assignment). Funciona como una lista blanca que le indica a Laravel cuáles columnas sí pueden guardarse masivamente al procesar una subida de archivos mediante `Comprobante::create($datos)`.
+
+### Explicación de cada campo en mis palabras:
+* **`'pago_id'`**:  
+  Llave foránea que enlaza el soporte con el registro de la transacción en la tabla `pagos`.
+* **`'nombre_archivo'`**:  
+  El nombre original del archivo tal como estaba en el dispositivo de la clienta (por ejemplo: `comprobante_nequi_valentina.jpeg`).
+* **`'tipo_archivo'`**:  
+  El tipo MIME o extensión del archivo (por ejemplo: `image/jpeg`, `image/png` o `application/pdf`).
+* **`'ruta_archivo'`**:  
+  La ruta relativa de almacenamiento en el disco del servidor donde guardé el archivo físico (por ejemplo: `comprobantes/2026/10/pago_125_ref892.jpg`).
+* **`'fecha_subida'`**:  
+  Fecha y hora exacta en la que se completó la subida del soporte.
+
+---
+
+## 7. Conversión automática de tipos de datos (`$casts`)
+
+```php
+    protected $casts = [
+        'fecha_subida' => 'datetime',
+    ];
+```
+
+### ¿Por qué escribí esto?
+* **`'fecha_subida' => 'datetime'`**:  
+  Convierte el valor de texto de la base de datos en un objeto `Carbon`. Esto me permite usar métodos de fecha como `$comprobante->fecha_subida->diffForHumans()` para saber hace cuánto tiempo se subió el soporte, o formatearlo a `'d/m/Y H:i A'`.
+
+---
+
+## 8. Relación: Pago al que pertenece (`pago`)
+
+```php
+    public function pago()
+    {
+        return $this->belongsTo(Pago::class, 'pago_id');
+    }
+```
+
+### Explicación detallada:
+* **Tipo de relación:** `belongsTo` (Pertenece a).
+* **¿Qué significa en mis palabras?**  
+  Cada comprobante o archivo adjunto le pertenece a un registro de pago específico.
+* **Llave foránea:** Indico `'pago_id'`, que es la columna en la tabla `comprobantes` que apunta a la tabla `pagos`.
+* **¿Para qué me sirve en el código?**  
+  Si estoy revisando un archivo, puedo navegar hacia atrás y saber todo sobre la transacción, la cita y la persona que pagó:
+  ```php
+  // Saber el monto pagado que respalda este comprobante
+  $monto = $comprobante->pago->monto;
+
+  // Saber qué clienta envió este soporte
+  $nombreClienta = $comprobante->pago->cita->cliente->user->name;
+  ```
+
+---
+
+## 9. Resumen de las relaciones en una tabla
+
+| Método | Tipo de Relación Eloquent | Modelo Relacionado | Llave Foránea | ¿Qué me permite consultar? |
+| :--- | :--- | :--- | :--- | :--- |
+| **`pago()`** | `belongsTo` | `Pago` | `pago_id` | El registro de pago asociado al soporte, permitiendo conocer el monto, estado, cita y clienta. |
+
+---
+
+## 10. Conceptos técnicos clave que usé en este modelo
+
+1. **Eloquent ORM:** Mapea la tabla `comprobantes` como un objeto interactivo para manipular archivos de soporte de transferencias.
+2. **`$table`:** Declaración explícita para sobreescribir la pluralización en inglés y apuntar con exactitud a `comprobantes`.
+3. **`$casts`:** Transformación automática de `'fecha_subida'` a instancia de `Carbon` (`datetime`).
+4. **`$fillable`:** Lista de seguridad que autoriza los atributos que pueden ser asignados de forma masiva.
+5. **`belongsTo`:** Relación inversa de pertenencia que conecta el archivo de evidencia con su registro maestro en `Pago`.

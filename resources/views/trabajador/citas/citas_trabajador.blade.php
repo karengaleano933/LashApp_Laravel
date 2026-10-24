@@ -2,6 +2,53 @@
 @include('layouts.sidebar_trabajador')
 @vite(['resources/css/citas.css', 'resources/css/citas_trabajador.css'])
 
+<style>
+    .btn-accion.btn-completar {
+        background: #d1fae5 !important;
+        color: #059669 !important;
+        border: 1px solid #a7f3d0 !important;
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all .2s ease !important;
+        font-size: 11.5px !important;
+    }
+    .btn-accion.btn-completar:hover {
+        background: #059669 !important;
+        color: #ffffff !important;
+        transform: scale(1.08) !important;
+        box-shadow: 0 4px 10px rgba(5, 150, 105, 0.28) !important;
+    }
+    .badge-realizada-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+    .badge-cancelada-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+</style>
+
 @php
     // Fallback de inicialización para carga directa o en pruebas
     if (!isset($citasHoy)) {
@@ -262,11 +309,28 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn-accion btn-cancelar"
-                                        onclick="confirmarCancelar({{ $idCita }})"
-                                        title="Cancelar Cita">
-                                        <i class="fa-solid fa-ban"></i>
-                                    </button>
+                                    <div style="display:inline-flex; gap:6px; justify-content:center; align-items:center;">
+                                        @if (!in_array(strtolower($estado), ['finalizado', 'completado', 'completada', 'realizada', 'cancelado', 'cancelada']))
+                                            <button type="button" class="btn-accion btn-completar"
+                                                onclick="confirmarCompletar({{ $idCita }})"
+                                                title="Marcar como Realizada">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            <button type="button" class="btn-accion btn-cancelar"
+                                                onclick="confirmarCancelar({{ $idCita }})"
+                                                title="Cancelar Cita">
+                                                <i class="fa-solid fa-ban"></i>
+                                            </button>
+                                        @elseif (in_array(strtolower($estado), ['finalizado', 'completado', 'completada', 'realizada']))
+                                            <span class="badge-realizada-pill" title="Cita realizada con éxito">
+                                                <i class="fa-solid fa-circle-check"></i> Realizada
+                                            </span>
+                                        @else
+                                            <span class="badge-cancelada-pill" title="Cita cancelada">
+                                                <i class="fa-solid fa-circle-xmark"></i> Cancelada
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -667,6 +731,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (calPrev) calPrev.addEventListener('click', () => { currDate.setMonth(currDate.getMonth() - 1); renderCalendar(); });
     if (calNext) calNext.addEventListener('click', () => { currDate.setMonth(currDate.getMonth() + 1); renderCalendar(); });
 });
+
+function confirmarCompletar(idCita) {
+    Swal.fire({
+        title: '¿Marcar cita como realizada?',
+        text: 'La cita cambiará a estado Completada y la clienta podrá calificar el servicio.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#059669',
+        cancelButtonColor: '#7a5a90',
+        confirmButtonText: 'Sí, realizada',
+        cancelButtonText: 'Volver'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{{ route('citas.completar', ':id') }}".replace(':id', idCita);
+        }
+    });
+}
 
 function confirmarCancelar(idCita) {
     Swal.fire({

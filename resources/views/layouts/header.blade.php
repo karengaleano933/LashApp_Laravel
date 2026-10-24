@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="app-url" content="{{ url('/') }}">
     <title>{{ $titulo ?? 'Panel' }} | LashApp</title>
     
     <!-- Font Awesome -->
@@ -11,8 +13,9 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- Estilos generales -->
+    <!-- Estilos y Scripts Generales (Vite) -->
     @vite([
+        'resources/js/app.js',
         'resources/css/sidebaradmin.css',
         'resources/css/dashboardadmin.css',
         'resources/css/footer.css',
