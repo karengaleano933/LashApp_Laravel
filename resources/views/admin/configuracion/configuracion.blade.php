@@ -2,9 +2,11 @@
 @include('layouts.header', ['titulo' => 'Configuración del Sistema'])
 @include('layouts.sidebaradmin')
 
-<!-- Estilos específicos de configuración -->
-@vite(['resources/css/configuracion.css'])
-<link rel="stylesheet" href="{{ asset('css/configuracion.css') }}">
+<!-- Estilos y Scripts específicos de configuración -->
+@vite([
+    'resources/css/configuracion.css',
+    'resources/js/modules/admin/configuracion.js'
+])
 
 <!-- Contenido Principal -->
 <div class="page-content">
@@ -368,171 +370,7 @@
 
 </div> <!-- Cierre de page-content -->
 
-<!-- Scripts de interacción -->
-<script>
-    // Previsualización de logo cargado
-    function previewLogo(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('logoImgPreview');
-                const icon = document.getElementById('logoIconDefault');
-                const text = document.getElementById('logoTextDefault');
-                
-                img.src = e.target.result;
-                img.style.display = 'block';
-                if (icon) icon.style.display = 'none';
-                if (text) text.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        }
-    }
 
-    // Modal Impuestos y Tarifas
-    function mostrarModalImpuestos() {
-        Swal.fire({
-            title: 'Impuestos y Tarifas',
-            html: `
-                <div style="text-align: left; font-size: 13.5px; color: #2a0d3e; display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-                    <div>
-                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">IVA / Impuesto de Venta (%)</label>
-                        <input type="number" id="swalIva" value="19" class="swal2-input" style="width: 100%; margin: 0; box-sizing: border-box; border-radius: 12px; height: 42px;">
-                    </div>
-                    <div>
-                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Porcentaje de Retención en Citas (%)</label>
-                        <input type="number" id="swalRetencion" value="0" class="swal2-input" style="width: 100%; margin: 0; box-sizing: border-box; border-radius: 12px; height: 42px;">
-                    </div>
-                    <div>
-                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Propina sugerida por defecto (%)</label>
-                        <input type="number" id="swalPropina" value="10" class="swal2-input" style="width: 100%; margin: 0; box-sizing: border-box; border-radius: 12px; height: 42px;">
-                    </div>
-                </div>
-            `,
-            confirmButtonText: 'Guardar Tarifas',
-            confirmButtonColor: '#7c1db8',
-            showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#e5d8ee'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Tarifas guardadas!',
-                    text: 'Los cambios impositivos fueron aplicados correctamente.',
-                    confirmButtonColor: '#7c1db8'
-                });
-            }
-        });
-    }
-
-    // Modal Políticas del Negocio
-    function mostrarModalPoliticas() {
-        Swal.fire({
-            title: 'Políticas del Negocio',
-            html: `
-                <div style="text-align: left; font-size: 13px; color: #2a0d3e; display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-                    <div>
-                        <label style="font-weight: 600; display: block; margin-bottom: 4px;">Términos y Condiciones del Servicio</label>
-                        <textarea class="swal2-textarea" style="width: 100%; margin: 0; font-size: 12.5px; border-radius: 12px; min-height: 80px;" rows="3">Todos los servicios de pestañas y cejas requieren puntualidad. Se permite un margen de tolerancia máximo de 10 minutos.</textarea>
-                    </div>
-                    <div>
-                        <label style="font-weight: 600; display: block; margin-bottom: 4px;">Política de Privacidad y Tratamiento de Datos</label>
-                        <textarea class="swal2-textarea" style="width: 100%; margin: 0; font-size: 12.5px; border-radius: 12px; min-height: 80px;" rows="3">La información recopilada será utilizada únicamente para gestionar reservas, recordatorios y comprobantes de pago de Oh La Lash Studio.</textarea>
-                    </div>
-                </div>
-            `,
-            confirmButtonText: 'Guardar Políticas',
-            confirmButtonColor: '#7c1db8',
-            showCancelButton: true,
-            cancelButtonText: 'Cerrar',
-            cancelButtonColor: '#e5d8ee'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Políticas actualizadas!',
-                    text: 'Tus políticas y términos han sido actualizados con éxito.',
-                    confirmButtonColor: '#7c1db8'
-                });
-            }
-        });
-    }
-
-    // Realizar Copia de Seguridad
-    function realizarBackup() {
-        Swal.fire({
-            title: 'Generando Copia de Seguridad...',
-            text: 'Comprimiendo base de datos y archivos multimedia.',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Copia de Seguridad Lista!',
-                        text: 'Se ha creado el respaldo exitosamente: backup_ohlalash_' + new Date().toISOString().slice(0,10) + '.sql.gz',
-                        confirmButtonColor: '#7c1db8'
-                    });
-                }, 1500);
-            }
-        });
-    }
-
-    // Restablecer Configuración
-    function confirmarRestablecer() {
-        Swal.fire({
-            title: '¿Restablecer configuración?',
-            text: 'Se restablecerán todos los parámetros a sus valores predeterminados de fábrica.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#b59ec4',
-            confirmButtonText: 'Sí, restablecer',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Configuración restablecida!',
-                    text: 'Los valores por defecto han sido restaurados.',
-                    confirmButtonColor: '#7c1db8'
-                });
-            }
-        });
-    }
-
-    // Eliminar Cuenta
-    function confirmarEliminarCuenta() {
-        Swal.fire({
-            title: '¿Eliminar cuenta del negocio?',
-            text: 'Esta acción es irreversible y eliminará todos los registros asociados.',
-            icon: 'error',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#b59ec4',
-            confirmButtonText: 'Eliminar definitivamente',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Escribe "ELIMINAR" para confirmar',
-                    input: 'text',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc2626',
-                    cancelButtonColor: '#b59ec4',
-                    confirmButtonText: 'Confirmar eliminación',
-                    cancelButtonText: 'Cancelar',
-                    preConfirm: (valor) => {
-                        if (valor !== 'ELIMINAR') {
-                            Swal.showValidationMessage('La palabra no coincide con "ELIMINAR"');
-                        }
-                    }
-                });
-            }
-        });
-    }
-</script>
 
 @include('layouts.footer')
 

@@ -2,8 +2,11 @@
 @include('layouts.header', ['titulo' => 'Reportes y Rendimiento'])
 @include('layouts.sidebaradmin')
 
-<!-- Estilos específicos de reportes -->
-@vite(['resources/css/reportes.css'])
+<!-- Estilos y Scripts específicos de reportes -->
+@vite([
+    'resources/css/reportes.css',
+    'resources/js/modules/admin/reportes.js'
+])
 
 <!-- Chart.js para gráficos estadísticos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -119,7 +122,7 @@
             <span style="font-size:12px; color:#7a5f8c; font-weight:600;">Últimos 7 días</span>
         </div>
         <div class="chart-container">
-            <canvas id="chartIngresosDia"></canvas>
+            <canvas id="chartIngresosDia" data-labels="{{ json_encode($labelsDias ?? ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']) }}" data-values="{{ json_encode($datosIngresosDias ?? [350000, 420000, 390000, 510000, 680000, 920000, 280000]) }}"></canvas>
         </div>
     </div>
 
@@ -131,7 +134,7 @@
         </div>
         <div class="donut-legend-grid">
             <div style="width:140px; height:140px; position:relative;">
-                <canvas id="chartIngresosServicio"></canvas>
+                <canvas id="chartIngresosServicio" data-labels="{{ json_encode($labelsServicios ?? ['Ext. Pestañas', 'Lifting Pestañas', 'Cejas', 'Otros']) }}" data-values="{{ json_encode($datosServicios ?? [55, 25, 15, 5]) }}"></canvas>
             </div>
             <div class="donut-legend-list">
                 @php
@@ -235,7 +238,7 @@
             </div>
             <div class="donut-legend-grid">
                 <div style="width:130px; height:130px; position:relative;">
-                    <canvas id="chartCitasEstado"></canvas>
+                    <canvas id="chartCitasEstado" data-labels="{{ json_encode(['Completadas', 'Pendientes', 'Canceladas']) }}" data-values="{{ json_encode([(int)($citasCompletadas ?? 198), (int)($citasPendientes ?? 18), (int)($citasCanceladas ?? 14)]) }}"></canvas>
                 </div>
                 <div class="donut-legend-list">
                     <div class="legend-item">
@@ -294,100 +297,5 @@
     </div> <!-- Cierre de .main-content-wrapper -->
 </div> <!-- Cierre de .app-layout -->
 
-<!-- JAVASCRIPT INICIALIZACIÓN DE GRÁFICOS -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // 1. Gráfico Ingresos por Día (Línea)
-    const ctxIngresos = document.getElementById('chartIngresosDia');
-    if (ctxIngresos) {
-        new Chart(ctxIngresos, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($labelsDias ?? ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']) !!},
-                datasets: [{
-                    label: 'Ingresos ($)',
-                    data: {!! json_encode($datosIngresosDias ?? [350000, 420000, 390000, 510000, 680000, 920000, 280000]) !!},
-                    borderColor: '#7c1db8',
-                    backgroundColor: 'rgba(124, 29, 184, 0.08)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.35,
-                    pointBackgroundColor: '#7c1db8',
-                    pointRadius: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + (value / 1000) + 'k';
-                            }
-                        },
-                        grid: { color: '#f0e6f8' }
-                    },
-                    x: {
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-    }
-
-    // 2. Gráfico Ingresos por Servicio (Dona)
-    const ctxServicios = document.getElementById('chartIngresosServicio');
-    if (ctxServicios) {
-        new Chart(ctxServicios, {
-            type: 'doughnut',
-            data: {
-                labels: {!! json_encode($labelsServicios ?? ['Ext. Pestañas', 'Lifting Pestañas', 'Cejas', 'Otros']) !!},
-                datasets: [{
-                    data: {!! json_encode($datosServicios ?? [55, 25, 15, 5]) !!},
-                    backgroundColor: ['#7c1db8', '#ec4899', '#f59e0b', '#10b981', '#6366f1'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                cutout: '70%'
-            }
-        });
-    }
-
-    // 3. Gráfico Citas por Estado (Dona)
-    const ctxCitas = document.getElementById('chartCitasEstado');
-    if (ctxCitas) {
-        new Chart(ctxCitas, {
-            type: 'doughnut',
-            data: {
-                labels: ['Completadas', 'Pendientes', 'Canceladas'],
-                datasets: [{
-                    data: [{{ (int)($citasCompletadas ?? 198) }}, {{ (int)($citasPendientes ?? 18) }}, {{ (int)($citasCanceladas ?? 14) }}],
-                    backgroundColor: ['#7c1db8', '#f59e0b', '#ef4444'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                cutout: '70%'
-            }
-        });
-    }
-});
-</script>
 </body>
 </html>

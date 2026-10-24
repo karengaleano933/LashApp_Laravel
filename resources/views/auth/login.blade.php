@@ -19,7 +19,10 @@
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Poppins:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-   @vite(['resources/css/login.css'])
+    @vite([
+        'resources/css/login.css',
+        'resources/js/modules/auth/login.js'
+    ])
 </head>
 
 
@@ -316,43 +319,6 @@
     </main>
 
 
-
-    <!-- =========================
-         JAVASCRIPT
-    ========================== -->
-
-    <script>
-
-        function mostrarPassword() {
-
-            const password =
-                document.getElementById("password");
-
-            const ojo =
-                document.querySelector(".ojo");
-
-
-            if (password.type === "password") {
-
-                password.type = "text";
-
-                ojo.classList.remove("fa-eye");
-
-                ojo.classList.add("fa-eye-slash");
-
-            } else {
-
-                password.type = "password";
-
-                ojo.classList.remove("fa-eye-slash");
-
-                ojo.classList.add("fa-eye");
-
-            }
-
-        }
-
-    </script>
 
 </body>
 

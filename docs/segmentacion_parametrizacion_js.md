@@ -19,7 +19,6 @@ La **parametrización** consiste en desacoplar el comportamiento del código de 
 
 ## 2. Estructura de la Arquitectura Implementada
 
-```text
 resources/js/
 ├── app.js                          # Punto de entrada unificado y namespace global (window.LashApp)
 ├── common/                         # Capa de utilidades transversales parametrizadas
@@ -28,11 +27,20 @@ resources/js/
 │   └── http.js                     # Cliente HTTP (fetch) con inyección automática de CSRF y headers
 └── modules/                        # Módulos de lógica de negocio por dominio
     ├── layout/
-    │   └── sidebaradmin.js         # Sidebar responsivo, buscador Ctrl+K, notificaciones y perfil
+    │   ├── sidebaradmin.js         # Sidebar Admin, buscador Ctrl+K, notificaciones y perfil
+    │   ├── sidebartrabajador.js    # Sidebar Trabajador
+    │   └── sidebarcliente.js       # Sidebar Cliente
+    ├── auth/
+    │   ├── login.js                # Login y alternancia de contraseña
+    │   └── register.js             # Registro, efectos visuales y visibilidad de contraseña
     └── admin/
         ├── servicios.js            # Filtros en tiempo real, modales CRUD, confirmación de eliminación
-        └── citas.js                # DataTables, filtros, calendario reactivo y cambios de estado
-```
+        ├── citas.js                # DataTables, filtros, calendario reactivo y cambios de estado
+        ├── gusuarios.js            # Gestión de usuarios, toggle password, modales y confirmación
+        ├── pagos.js                # Filtros, autocompletar monto por cita, modales y eliminar
+        ├── resenas.js              # Selector de estrellas, filtros por valoración y eliminar
+        ├── reportes.js             # Gráficos estadísticos con Chart.js parametrizados por atributos
+        └── configuracion.js        # Preview de logo, modales de tarifas/políticas y acciones del sistema
 
 ---
 

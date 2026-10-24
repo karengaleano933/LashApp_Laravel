@@ -2,11 +2,14 @@
 @include('layouts.header', ['titulo' => 'Gestión de Pagos'])
 @include('layouts.sidebaradmin')
 
-<!-- Estilos específicos de pagos -->
-@vite(['resources/css/pagos.css'])
+<!-- Estilos y Scripts específicos de pagos -->
+@vite([
+    'resources/css/pagos.css',
+    'resources/js/modules/admin/pagos.js'
+])
 
 <!-- Contenido Principal -->
-<div class="page-content">
+<div class="page-content" id="pagosContainer" data-base-url="{{ url('/admin/pagos') }}">
 
 <!-- ══════════════════ ALERTAS DE ACCIÓN ══════════════════ -->
 @if (session('success'))
@@ -442,172 +445,5 @@
     </div> <!-- Cierre de .main-content-wrapper -->
 </div> <!-- Cierre de .app-layout -->
 
-<!-- JAVASCRIPT BUSCADOR, MODALES Y ACCIONES -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // ── Buscador y filtro por método ──
-    const buscar = document.getElementById('buscarPago');
-    const filtro = document.getElementById('filtroMetodo');
-    const filas = document.querySelectorAll('#tablaPagos tbody tr');
-
-    function filtrarPagos() {
-        const texto = (buscar ? buscar.value : '').toLowerCase().trim();
-        const metodo = (filtro ? filtro.value : '').toLowerCase().trim();
-
-        filas.forEach(function (fila) {
-            if (fila.querySelector('.tabla-vacia')) return;
-
-            const contenido = fila.textContent.toLowerCase();
-            const metodoFila = (fila.dataset.metodo || '').toLowerCase();
-
-            const coincideTexto = !texto || contenido.includes(texto);
-            const coincideMetodo = !metodo || metodoFila.includes(metodo);
-
-            fila.style.display = (coincideTexto && coincideMetodo) ? '' : 'none';
-        });
-    }
-
-    if (buscar) buscar.addEventListener('input', filtrarPagos);
-    if (filtro) filtro.addEventListener('change', filtrarPagos);
-
-    // ── Autocompletar monto según la cita seleccionada ──
-    const selectCita = document.getElementById('id_cita_pago');
-    const inputMonto = document.getElementById('monto_pago');
-
-    if (selectCita && inputMonto) {
-        selectCita.addEventListener('change', function () {
-            const opcion = selectCita.options[selectCita.selectedIndex];
-            const precio = opcion ? opcion.dataset.precio : '';
-            if (precio) {
-                inputMonto.value = precio;
-            }
-        });
-    }
-
-    // ── Modal Crear Pago ──
-    const modalCrear = document.getElementById('modalCrearPago');
-    const abrirBtn = document.getElementById('abrirNuevoPago');
-    const cerrarCrearBtn = document.getElementById('cerrarModalPago');
-    const cancelarCrearBtn = document.getElementById('cancelarModalPago');
-
-    function abrirModalCrear() {
-        if (modalCrear) {
-            modalCrear.classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    function cerrarModalCrear() {
-        if (modalCrear) {
-            modalCrear.classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-    }
-
-    if (abrirBtn) abrirBtn.addEventListener('click', abrirModalCrear);
-    if (cerrarCrearBtn) cerrarCrearBtn.addEventListener('click', cerrarModalCrear);
-    if (cancelarCrearBtn) cancelarCrearBtn.addEventListener('click', cerrarModalCrear);
-
-    if (modalCrear) {
-        modalCrear.addEventListener('click', function (e) {
-            if (e.target === modalCrear) cerrarModalCrear();
-        });
-    }
-
-    // Auto-completar monto según el precio del servicio de la cita
-    const selectCitaPago = document.getElementById('id_cita_pago');
-    const montoPagoInput = document.getElementById('monto_pago');
-    if (selectCitaPago && montoPagoInput) {
-        selectCitaPago.addEventListener('change', function () {
-            const opt = this.options[this.selectedIndex];
-            const precio = opt ? opt.getAttribute('data-precio') : null;
-            if (precio) {
-                montoPagoInput.value = parseFloat(precio).toFixed(2);
-            }
-        });
-    }
-
-    // ── Modal Editar Pago ──
-    const modalEditar = document.getElementById('modalEditarPago');
-    const cerrarEditarBtn = document.getElementById('cerrarModalEditarPago');
-    const cancelarEditarBtn = document.getElementById('cancelarModalEditarPago');
-    const formEditar = document.getElementById('formEditarPago');
-
-    function cerrarModalEditar() {
-        if (modalEditar) {
-            modalEditar.classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-    }
-
-    if (cerrarEditarBtn) cerrarEditarBtn.addEventListener('click', cerrarModalEditar);
-    if (cancelarEditarBtn) cancelarEditarBtn.addEventListener('click', cerrarModalEditar);
-
-    if (modalEditar) {
-        modalEditar.addEventListener('click', function (e) {
-            if (e.target === modalEditar) cerrarModalEditar();
-        });
-    }
-
-    // Cerrar modales con ESC
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            cerrarModalCrear();
-            cerrarModalEditar();
-        }
-    });
-
-    // ── Cargar datos en Modal Editar ──
-    document.querySelectorAll('.btn-editar-pago').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
-            document.getElementById('edit_id_pago').value = id || '';
-            document.getElementById('edit_metodo_pago').value = this.dataset.metodo || 'Efectivo';
-            document.getElementById('edit_monto_pago').value = this.dataset.monto || '';
-            document.getElementById('edit_referencia_pago').value = this.dataset.referencia || '';
-            
-            const estado = (this.dataset.estado || 'completado').toLowerCase();
-            document.getElementById('edit_estado_pago').value = estado;
-
-            // Configurar ruta PUT del formulario
-            if (formEditar) {
-                formEditar.action = "{{ url('/admin/pagos') }}/" + id;
-            }
-
-            if (modalEditar) {
-                modalEditar.classList.add('activo');
-                document.body.style.overflow = 'hidden';
-            }
-        });
-    });
-
-    // ── Eliminar con confirmación SweetAlert2 ──
-    document.querySelectorAll('.btn-eliminar-pago').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const cliente = this.dataset.cliente || 'este pago';
-
-            Swal.fire({
-                title: '¿Eliminar registro de pago?',
-                text: `¿Estás seguro de eliminar el pago de "${cliente}"? Esta acción no se puede deshacer.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formEliminar = document.getElementById('formEliminarPago');
-                    if (formEliminar) {
-                        formEliminar.action = "{{ url('/admin/pagos') }}/" + id;
-                        formEliminar.submit();
-                    }
-                }
-            });
-        });
-    });
-});
-</script>
 </body>
 </html>

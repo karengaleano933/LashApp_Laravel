@@ -11,7 +11,10 @@
     <!-- Font Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    @vite(['resources/css/register.css'])
+    @vite([
+        'resources/css/register.css',
+        'resources/js/modules/auth/register.js'
+    ])
 </head>
 
 <body class="login-page-body">
@@ -259,86 +262,6 @@
 
     </div>
 
-
-    <!-- =====================================
-         JAVASCRIPT
-    ====================================== -->
-
-    <script>
-
-        /* =================================
-           DESTELLOS DORADOS
-        ================================== */
-
-        const panel =
-            document.getElementById('leftPanel');
-
-        for (let i = 0; i < 55; i++) {
-
-            const sparkle =
-                document.createElement('div');
-
-            sparkle.classList.add('sparkle');
-
-            const size =
-                Math.random() * 5 + 2;
-
-            sparkle.style.width =
-                size + 'px';
-
-            sparkle.style.height =
-                size + 'px';
-
-            sparkle.style.left =
-                Math.random() * 100 + '%';
-
-            sparkle.style.top =
-                Math.random() * 100 + '%';
-
-            sparkle.style.animationDelay =
-                Math.random() * 3 + 's';
-
-            sparkle.style.animationDuration =
-                Math.random() * 2 + 2 + 's';
-
-            panel.appendChild(sparkle);
-
-        }
-
-
-        /* =================================
-           MOSTRAR / OCULTAR CONTRASEÑA
-        ================================== */
-
-        const toggle =
-            document.getElementById('togglePass');
-
-        const password =
-            document.getElementById('password');
-
-        toggle.addEventListener('click', function () {
-
-            if (password.type === 'password') {
-
-                password.type = 'text';
-
-                toggle.classList.remove('fa-eye');
-
-                toggle.classList.add('fa-eye-slash');
-
-            } else {
-
-                password.type = 'password';
-
-                toggle.classList.remove('fa-eye-slash');
-
-                toggle.classList.add('fa-eye');
-
-            }
-
-        });
-
-    </script>
 
 </body>
 

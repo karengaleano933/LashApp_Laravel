@@ -2,11 +2,14 @@
 @include('layouts.header', ['titulo' => 'Reseñas y Valoraciones'])
 @include('layouts.sidebaradmin')
 
-<!-- Estilos específicos de reseñas -->
-@vite(['resources/css/resenas.css'])
+<!-- Estilos y Scripts específicos de reseñas -->
+@vite([
+    'resources/css/resenas.css',
+    'resources/js/modules/admin/resenas.js'
+])
 
 <!-- Contenido Principal -->
-<div class="page-content">
+<div class="page-content" id="resenasContainer" data-base-url="{{ url('/admin/resenas') }}">
 
 <!-- ══════════════════ ALERTAS DE ACCIÓN ══════════════════ -->
 @if (session('success'))
@@ -353,82 +356,5 @@
     </div> <!-- Cierre de .main-content-wrapper -->
 </div> <!-- Cierre de .app-layout -->
 
-<!-- JAVASCRIPT FILTRO Y CALIFICACIÓN -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // ── Selector de estrellas interactivo en formulario ──
-    const starSelector = document.getElementById('starSelector');
-    const inputCalificacion = document.getElementById('input_calificacion');
-
-    if (starSelector && inputCalificacion) {
-        const stars = starSelector.querySelectorAll('i');
-        stars.forEach(function (star) {
-            star.addEventListener('click', function () {
-                const val = parseInt(this.dataset.value);
-                inputCalificacion.value = val;
-
-                stars.forEach(function (s) {
-                    const sVal = parseInt(s.dataset.value);
-                    if (sVal <= val) {
-                        s.classList.add('active');
-                    } else {
-                        s.classList.remove('active');
-                    }
-                });
-            });
-        });
-    }
-
-    // ── Buscador y filtro por estrellas en la tabla ──
-    const buscar = document.getElementById('buscarResena');
-    const filtro = document.getElementById('filtroEstrellas');
-    const filas = document.querySelectorAll('#tablaResenas tbody tr');
-
-    function filtrarResenas() {
-        const texto = (buscar ? buscar.value : '').toLowerCase().trim();
-        const estrellas = (filtro ? filtro.value : '').trim();
-
-        filas.forEach(function (fila) {
-            const contenido = fila.textContent.toLowerCase();
-            const filaEstrellas = (fila.dataset.estrellas || '').trim();
-
-            const coincideTexto = !texto || contenido.includes(texto);
-            const coincideEstrellas = !estrellas || filaEstrellas === estrellas;
-
-            fila.style.display = (coincideTexto && coincideEstrellas) ? '' : 'none';
-        });
-    }
-
-    if (buscar) buscar.addEventListener('input', filtrarResenas);
-    if (filtro) filtro.addEventListener('change', filtrarResenas);
-
-    // ── Eliminar con confirmación SweetAlert2 ──
-    document.querySelectorAll('.btn-eliminar-resena').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const cliente = this.dataset.cliente || 'este cliente';
-
-            Swal.fire({
-                title: '¿Eliminar reseña?',
-                text: `¿Estás seguro de eliminar la reseña de "${cliente}"? Esta acción no se puede deshacer.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formEliminar = document.getElementById('formEliminarResena');
-                    if (formEliminar) {
-                        formEliminar.action = "{{ url('/admin/resenas') }}/" + id;
-                        formEliminar.submit();
-                    }
-                }
-            });
-        });
-    });
-});
-</script>
 </body>
 </html>
