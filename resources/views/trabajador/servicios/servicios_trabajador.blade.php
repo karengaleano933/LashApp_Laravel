@@ -1,6 +1,10 @@
 @include('layouts.header_trabajador', ['titulo' => 'Servicios'])
 @include('layouts.sidebar_trabajador')
-@vite(['resources/css/servicios.css', 'resources/css/servicio_trabajador.css'])
+@vite([
+    'resources/css/servicios.css',
+    'resources/css/servicio_trabajador.css',
+    'resources/js/modules/trabajador/servicios.js'
+])
 
 @php
     // Fallback de inicialización para carga directa o en pruebas
@@ -43,36 +47,12 @@
     }
 @endphp
 
-<!-- ══════════════════ ALERTAS SWEETALERT ══════════════════ -->
-@if (session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'success',
-        title: '¡Operación Exitosa!',
-        text: "{{ session('success') }}",
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#7c1db8'
-    });
-});
-</script>
-@endif
-
-@if (session('error') || (isset($errors) && $errors->any()))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: "{{ session('error') ?? $errors->first() }}",
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#7c1db8'
-    });
-});
-</script>
-@endif
-
-<div class="page-content">
+<div class="page-content" id="serviciosTrabajadorContainer"
+    data-url-update="{{ route('servicios.update', ':id') }}"
+    data-url-destroy="{{ route('servicios.destroy', ':id') }}"
+    data-session-success="{{ session('success') ?? '' }}"
+    data-session-error="{{ session('error') ?? ($errors->any() ? $errors->first() : '') }}"
+    data-total-servicios="{{ $totalServicios ?? 0 }}">
 
     <!-- ══════════════════ TARJETAS MÉTRICAS ══════════════════ -->
     <div class="servicios-cards-grid">
@@ -469,154 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
     @method('DELETE')
 </form>
 
-<!-- ══════════════════ JAVASCRIPT DE INTERACTIVIDAD ══════════════════ -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    // ── Modal Nuevo Servicio ──
-    const modalNuevo  = document.getElementById('modalNuevoServicio');
-    const btnAbrir    = document.getElementById('abrirNuevoServicio');
-    const btnCerrar   = document.getElementById('cerrarNuevoServicio');
-    const btnCancelar = document.getElementById('cancelarNuevoServicio');
-
-    function abrirModalNuevo() {
-        if (modalNuevo) {
-            modalNuevo.classList.add('activo');
-            modalNuevo.setAttribute('aria-hidden', 'false');
-        }
-    }
-
-    function cerrarModalNuevo() {
-        if (modalNuevo) {
-            modalNuevo.classList.remove('activo');
-            modalNuevo.setAttribute('aria-hidden', 'true');
-        }
-    }
-
-    if (btnAbrir) btnAbrir.addEventListener('click', abrirModalNuevo);
-    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModalNuevo);
-    if (btnCancelar) btnCancelar.addEventListener('click', cerrarModalNuevo);
-
-    // ── Modal Editar Servicio ──
-    const modalEditar = document.getElementById('modalEditarServicio');
-    const btnCerrarEd = document.getElementById('cerrarEditarServicio');
-    const btnCancEd   = document.getElementById('cancelarEditarServicio');
-    const formEditar  = document.getElementById('formEditarServicio');
-
-    function cerrarModalEditar() {
-        if (modalEditar) {
-            modalEditar.classList.remove('activo');
-            modalEditar.setAttribute('aria-hidden', 'true');
-        }
-    }
-
-    if (btnCerrarEd) btnCerrarEd.addEventListener('click', cerrarModalEditar);
-    if (btnCancEd) btnCancEd.addEventListener('click', cerrarModalEditar);
-
-    // Cerrar con Escape o clic fuera
-    [modalNuevo, modalEditar].forEach(modal => {
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('activo');
-                    modal.setAttribute('aria-hidden', 'true');
-                }
-            });
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            cerrarModalNuevo();
-            cerrarModalEditar();
-        }
-    });
-
-    // Abrir Modal Editar con Datos
-    window.abrirModalEditar = function(servicio) {
-        if (!modalEditar || !formEditar) return;
-
-        formEditar.action = "{{ route('servicios.update', ':id') }}".replace(':id', servicio.id);
-
-        document.getElementById('edit_id_servicio').value = servicio.id;
-        document.getElementById('edit_nombre').value = servicio.nombre || '';
-        document.getElementById('edit_categoria_id').value = servicio.categoria_id || '';
-        document.getElementById('edit_precio').value = Math.round(servicio.precio || 0);
-
-        // Convertir formato de duración HH:MM:SS a minutos para el input
-        let minutos = 60;
-        if (servicio.duracion_minuto) {
-            const partes = String(servicio.duracion_minuto).split(':');
-            minutos = (parseInt(partes[0], 10) * 60) + parseInt(partes[1], 10);
-        }
-        document.getElementById('edit_duracion_minuto').value = minutos;
-        document.getElementById('edit_estado').value = (servicio.estado || 'activo').toLowerCase();
-        document.getElementById('edit_descripcion').value = servicio.descripcion || '';
-
-        modalEditar.classList.add('activo');
-        modalEditar.setAttribute('aria-hidden', 'false');
-    };
-
-    // ── Filtro y Buscador en Tiempo Real ──
-    const buscarInput = document.getElementById('buscarServicio');
-    const filtroCat   = document.getElementById('filtroCategoria');
-    const tbody       = document.getElementById('serviciosTbody');
-    const filas       = tbody ? tbody.querySelectorAll('tr[data-nombre]') : [];
-    const infoConteo  = document.getElementById('infoConteoServicios');
-
-    function filtrarServicios() {
-        const query = (buscarInput ? buscarInput.value : '').toLowerCase().trim();
-        const cat   = (filtroCat ? filtroCat.value : '').toLowerCase().trim();
-
-        let visibles = 0;
-
-        filas.forEach(row => {
-            const nombre    = (row.getAttribute('data-nombre') || '').toLowerCase();
-            const categoria = (row.getAttribute('data-categoria') || '').toLowerCase();
-            const precio    = (row.getAttribute('data-precio') || '').toLowerCase();
-
-            const matchQuery = !query || nombre.includes(query) || categoria.includes(query) || precio.includes(query);
-            const matchCat   = !cat || categoria === cat;
-
-            if (matchQuery && matchCat) {
-                row.style.display = '';
-                visibles++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        if (infoConteo) {
-            infoConteo.textContent = `Mostrando ${visibles} de {{ $totalServicios }} servicios`;
-        }
-    }
-
-    if (buscarInput) buscarInput.addEventListener('input', filtrarServicios);
-    if (filtroCat) filtroCat.addEventListener('change', filtrarServicios);
-});
-
-// Confirmación para Eliminar Servicio
-function confirmarEliminarServicio(idServicio) {
-    Swal.fire({
-        title: '¿Eliminar servicio?',
-        text: "Esta acción no se puede deshacer.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#7a5a90',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.getElementById('formEliminarServicio');
-            if (form) {
-                form.action = "{{ route('servicios.destroy', ':id') }}".replace(':id', idServicio);
-                form.submit();
-            }
-        }
-    });
-}
-</script>
 
 @include('layouts.footer')
 

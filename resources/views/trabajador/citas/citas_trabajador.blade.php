@@ -1,6 +1,10 @@
 @include('layouts.header_trabajador', ['titulo' => 'Mis Citas'])
 @include('layouts.sidebar_trabajador')
-@vite(['resources/css/citas.css', 'resources/css/citas_trabajador.css'])
+@vite([
+    'resources/css/citas.css',
+    'resources/css/citas_trabajador.css',
+    'resources/js/modules/trabajador/citas.js'
+])
 
 <style>
     .btn-accion.btn-completar {
@@ -133,36 +137,11 @@
     }
 @endphp
 
-<!-- ══════════════════ ALERTAS SWEETALERT ══════════════════ -->
-@if (session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'success',
-        title: '¡Operación Exitosa!',
-        text: "{{ session('success') }}",
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#7c1db8'
-    });
-});
-</script>
-@endif
-
-@if (session('error'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: "{{ session('error') }}",
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#7c1db8'
-    });
-});
-</script>
-@endif
-
-<div class="page-content">
+<div class="page-content" id="citasTrabajadorContainer"
+    data-url-completar="{{ route('citas.completar', ':id') }}"
+    data-url-cancelar="{{ route('citas.cancelar', ':id') }}"
+    data-session-success="{{ session('success') ?? '' }}"
+    data-session-error="{{ session('error') ?? '' }}">
 
     <!-- ══════════════════ ENCABEZADO ══════════════════ -->
     <div class="citas-header">
@@ -577,195 +556,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<!-- ══════════════════ JAVASCRIPT DE INTERACTIVIDAD & FILTROS ══════════════════ -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    // ── Abrir/Cerrar Modal Nueva Cita ──
-    const modalNueva = document.getElementById('modalNuevaCita');
-    const btnAbrir   = document.getElementById('abrirNuevaCita');
-    const btnCerrar  = document.getElementById('cerrarNuevaCita');
-    const btnCancel  = document.getElementById('cancelarNuevaCita');
-
-    function abrirModal() {
-        if (modalNueva) {
-            modalNueva.classList.add('activo');
-            modalNueva.setAttribute('aria-hidden', 'false');
-        }
-    }
-
-    function cerrarModal() {
-        if (modalNueva) {
-            modalNueva.classList.remove('activo');
-            modalNueva.setAttribute('aria-hidden', 'true');
-        }
-    }
-
-    if (btnAbrir)  btnAbrir.addEventListener('click', abrirModal);
-    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
-    if (btnCancel) btnCancel.addEventListener('click', cerrarModal);
-
-    // Cerrar al dar clic fuera del contenido o con tecla Escape
-    if (modalNueva) {
-        modalNueva.addEventListener('click', function(e) {
-            if (e.target === modalNueva) cerrarModal();
-        });
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modalNueva && modalNueva.classList.contains('activo')) {
-            cerrarModal();
-        }
-    });
-
-    // ── Filtrar Tabla en Tiempo Real y Paginación ──
-    const buscarTabla     = document.getElementById('buscarTabla');
-    const buscarCita      = document.getElementById('buscarCita');
-    const filtroProf      = document.getElementById('filtroProfesional');
-    const filtroEst       = document.getElementById('filtroEstado');
-    const filtroFec       = document.getElementById('filtroFecha');
-    const selectRegistros = document.getElementById('selectRegistros');
-    const infoPaginacion  = document.getElementById('infoPaginacion');
-    const tbody           = document.getElementById('citasTbody');
-    const filas           = tbody ? Array.from(tbody.querySelectorAll('tr[data-cliente]')) : [];
-
-    function filtrar() {
-        const queryT = (buscarTabla ? buscarTabla.value : '').toLowerCase().trim();
-        const queryC = (buscarCita ? buscarCita.value : '').toLowerCase().trim();
-        const query  = queryT || queryC;
-
-        const prof = (filtroProf ? filtroProf.value : '').toLowerCase().trim();
-        const est  = (filtroEst ? filtroEst.value : '').toLowerCase().trim();
-        const fec  = (filtroFec ? filtroFec.value : '').trim();
-        const limite = selectRegistros ? parseInt(selectRegistros.value, 10) : 10;
-
-        let coincidentes = 0;
-
-        filas.forEach(row => {
-            const cliente     = (row.getAttribute('data-cliente') || '').toLowerCase();
-            const servicio    = (row.getAttribute('data-servicio') || '').toLowerCase();
-            const profesional = (row.getAttribute('data-profesional') || '').toLowerCase();
-            const estado      = (row.getAttribute('data-estado') || '').toLowerCase();
-            const fecha       = (row.getAttribute('data-fecha') || '').trim();
-
-            const matchQuery = !query || cliente.includes(query) || servicio.includes(query);
-            const matchProf  = !prof || profesional.includes(prof);
-            const matchEst   = !est || estado.includes(est);
-            const matchFec   = !fec || fecha === fec;
-
-            if (matchQuery && matchProf && matchEst && matchFec) {
-                coincidentes++;
-                row.style.display = coincidentes <= limite ? '' : 'none';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        if (infoPaginacion) {
-            const mostrados = Math.min(coincidentes, limite);
-            infoPaginacion.textContent = `Mostrando ${mostrados} de ${coincidentes} registros`;
-        }
-    }
-
-    if (buscarTabla)     buscarTabla.addEventListener('input', filtrar);
-    if (buscarCita)      buscarCita.addEventListener('input', filtrar);
-    if (filtroProf)      filtroProf.addEventListener('change', filtrar);
-    if (filtroEst)       filtroEst.addEventListener('change', filtrar);
-    if (filtroFec)       filtroFec.addEventListener('change', filtrar);
-    if (selectRegistros) selectRegistros.addEventListener('change', filtrar);
-
-    window.limpiarFiltros = function() {
-        if (buscarTabla)     buscarTabla.value = '';
-        if (buscarCita)      buscarCita.value = '';
-        if (filtroProf)      filtroProf.value = '';
-        if (filtroEst)       filtroEst.value = '';
-        if (filtroFec)       filtroFec.value = '';
-        if (selectRegistros) selectRegistros.value = '10';
-        filtrar();
-    };
-
-    // Aplicar límite inicial
-    filtrar();
-
-    // ── Mini Calendario ──
-    const calGrid    = document.getElementById('calGrid');
-    const calMesAnio = document.getElementById('calMesAnio');
-    const calPrev    = document.getElementById('calPrev');
-    const calNext    = document.getElementById('calNext');
-
-    let currDate = new Date();
-
-    function renderCalendar() {
-        if (!calGrid || !calMesAnio) return;
-
-        const year  = currDate.getFullYear();
-        const month = currDate.getMonth();
-
-        const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-        calMesAnio.textContent = `${nombresMeses[month]} ${year}`;
-
-        const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
-        const totalDays = new Date(year, month + 1, 0).getDate();
-
-        calGrid.innerHTML = '';
-
-        for (let i = 0; i < firstDay; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'cal-cell cal-empty';
-            calGrid.appendChild(emptyCell);
-        }
-
-        const today = new Date();
-
-        for (let d = 1; d <= totalDays; d++) {
-            const dayCell = document.createElement('div');
-            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-            dayCell.className = 'cal-cell' + (isToday ? ' cal-today' : '');
-            dayCell.textContent = d;
-            calGrid.appendChild(dayCell);
-        }
-    }
-
-    renderCalendar();
-
-    if (calPrev) calPrev.addEventListener('click', () => { currDate.setMonth(currDate.getMonth() - 1); renderCalendar(); });
-    if (calNext) calNext.addEventListener('click', () => { currDate.setMonth(currDate.getMonth() + 1); renderCalendar(); });
-});
-
-function confirmarCompletar(idCita) {
-    Swal.fire({
-        title: '¿Marcar cita como realizada?',
-        text: 'La cita cambiará a estado Completada y la clienta podrá calificar el servicio.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#059669',
-        cancelButtonColor: '#7a5a90',
-        confirmButtonText: 'Sí, realizada',
-        cancelButtonText: 'Volver'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "{{ route('citas.completar', ':id') }}".replace(':id', idCita);
-        }
-    });
-}
-
-function confirmarCancelar(idCita) {
-    Swal.fire({
-        title: '¿Cancelar cita?',
-        text: "La cita cambiará a estado Cancelada.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#7a5a90',
-        confirmButtonText: 'Sí, cancelar',
-        cancelButtonText: 'Volver'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "{{ route('citas.cancelar', ':id') }}".replace(':id', idCita);
-        }
-    });
-}
-</script>
 
 @include('layouts.footer')
 

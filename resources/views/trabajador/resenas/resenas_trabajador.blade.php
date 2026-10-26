@@ -1,6 +1,9 @@
 @include('layouts.header_trabajador', ['titulo' => 'Reseñas'])
 @include('layouts.sidebar_trabajador')
-@vite(['resources/css/resenas_trabajador.css'])
+@vite([
+    'resources/css/resenas_trabajador.css',
+    'resources/js/modules/trabajador/resenas.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -40,7 +43,7 @@
     }
 @endphp
 
-<main class="resenas-page-container">
+<main class="resenas-page-container" id="resenasTrabajadorContainer">
 
     <!-- ── Encabezado de Reseñas ── -->
     <div class="resenas-header-bar">
@@ -268,29 +271,5 @@
 
 </main>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tabBtns = document.querySelectorAll('.tab-pill-item');
-    const items = document.querySelectorAll('#resenasList .resena-row-item');
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-
-            const filter = this.getAttribute('data-filter') || 'all';
-
-            items.forEach(item => {
-                const itemRating = item.getAttribute('data-rating-type');
-                if (filter === 'all' || itemRating === filter) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-});
-</script>
 
 @include('layouts.footer')

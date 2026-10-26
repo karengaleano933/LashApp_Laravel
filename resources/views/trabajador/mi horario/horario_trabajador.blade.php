@@ -1,6 +1,9 @@
 @include('layouts.header_trabajador', ['titulo' => 'Mi Horario'])
 @include('layouts.sidebar_trabajador')
-@vite(['resources/css/horario_trabajador.css'])
+@vite([
+    'resources/css/horario_trabajador.css',
+    'resources/js/modules/trabajador/horario.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -22,36 +25,9 @@
     }
 @endphp
 
-<!-- ══════════════════ ALERTAS SWEETALERT ══════════════════ -->
-@if (session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'success',
-        title: '¡Operación Exitosa!',
-        text: "{{ session('success') }}",
-        confirmButtonColor: '#7c1db8',
-        confirmButtonText: 'Aceptar'
-    });
-});
-</script>
-@endif
-
-@if (session('error'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Aviso',
-        text: "{{ session('error') }}",
-        confirmButtonColor: '#7c1db8',
-        confirmButtonText: 'Entendido'
-    });
-});
-</script>
-@endif
-
-<main class="horario-page-container">
+<main class="horario-page-container" id="horarioTrabajadorContainer"
+    data-session-success="{{ session('success') ?? '' }}"
+    data-session-error="{{ session('error') ?? '' }}">
 
     <!-- ── Encabezado y Botón de Acción ── -->
     <div class="horario-header-bar">
@@ -274,86 +250,5 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // 1. Control del Modal
-    const modal = document.getElementById('modalNuevoHorario');
-    const btnAbrir = document.getElementById('btnAbrirModalHorario');
-    const btnCerrar = document.getElementById('btnCerrarModalHorario');
-    const btnCancelar = document.getElementById('btnCancelarModalHorario');
-
-    function abrirModal() {
-        if (modal) modal.classList.add('activo');
-    }
-
-    function cerrarModal() {
-        if (modal) modal.classList.remove('activo');
-    }
-
-    if (btnAbrir) btnAbrir.addEventListener('click', abrirModal);
-    if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
-    if (btnCancelar) btnCancelar.addEventListener('click', cerrarModal);
-
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) cerrarModal();
-        });
-    }
-
-    // 2. Filtros por Tabs (Todos / Disponibles / Ocupados)
-    const tabBtns = document.querySelectorAll('.horario-tab-btn');
-    const searchInput = document.getElementById('horarioSearchInput');
-    const tableRows = document.querySelectorAll('#tablaHorarios tbody tr');
-
-    let currentFilter = 'all';
-
-    function aplicarFiltros() {
-        const query = (searchInput?.value || '').trim().toLowerCase();
-
-        tableRows.forEach(row => {
-            const filterType = row.getAttribute('data-filter-type');
-            const searchText = row.getAttribute('data-search-text') || '';
-
-            if (!filterType) return; // Fila de estado vacío
-
-            const matchesFilter = (currentFilter === 'all') || (filterType === currentFilter);
-            const matchesSearch = !query || searchText.includes(query);
-
-            row.style.display = (matchesFilter && matchesSearch) ? '' : 'none';
-        });
-    }
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilter = this.getAttribute('data-filter') || 'all';
-            aplicarFiltros();
-        });
-    });
-
-    if (searchInput) {
-        searchInput.addEventListener('input', aplicarFiltros);
-    }
-
-    // 3. Confirmación SweetAlert para eliminar horario
-    window.confirmarEliminarHorario = function(btn) {
-        Swal.fire({
-            title: '¿Eliminar este bloque horario?',
-            text: 'Esta acción no se puede deshacer si no tiene citas asignadas.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#7a5a90',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                btn.closest('form').submit();
-            }
-        });
-    };
-});
-</script>
 
 @include('layouts.footer')

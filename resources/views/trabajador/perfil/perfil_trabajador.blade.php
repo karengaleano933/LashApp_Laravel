@@ -1,6 +1,9 @@
 @include('layouts.header_trabajador', ['titulo' => 'Mi Perfil'])
 @include('layouts.sidebar_trabajador')
-@vite(['resources/css/perfil_trabajador.css'])
+@vite([
+    'resources/css/perfil_trabajador.css',
+    'resources/js/modules/trabajador/perfil.js'
+])
 
 @php
     use Carbon\Carbon;
@@ -50,42 +53,15 @@
     $rolNombre = ucfirst($user?->role?->nombre ?? 'Especialista');
 @endphp
 
-<!-- ══════════════════ ALERTAS SWEETALERT ══════════════════ -->
-@if (session('success'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'success',
-        title: '¡Operación Exitosa!',
-        text: "{{ session('success') }}",
-        confirmButtonColor: '#7c1db8',
-        confirmButtonText: 'Aceptar'
-    });
-});
-</script>
-@endif
-
-@if (session('error'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Aviso',
-        text: "{{ session('error') }}",
-        confirmButtonColor: '#7c1db8',
-        confirmButtonText: 'Entendido'
-    });
-});
-</script>
-@endif
-
 <!-- Formulario Oculto para Subir Foto de Perfil -->
 <form method="POST" action="{{ route('trabajador.perfil.foto') }}" enctype="multipart/form-data" id="formFotoTrabajador" style="display:none;">
     @csrf
-    <input type="file" name="foto_perfil" id="inputFotoTrabajador" accept="image/*" onchange="document.getElementById('formFotoTrabajador').submit();">
+    <input type="file" name="foto_perfil" id="inputFotoTrabajador" accept="image/*">
 </form>
 
-<main class="perfil-page-container">
+<main class="perfil-page-container" id="perfilTrabajadorContainer"
+    data-session-success="{{ session('success') ?? '' }}"
+    data-session-error="{{ session('error') ?? '' }}">
 
     <!-- ── Hero Banner del Especialista ── -->
     <div class="perfil-hero-card">
@@ -291,23 +267,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </main>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('.perfil-tab-btn');
-    const panels = document.querySelectorAll('.perfil-tab-panel');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            tabs.forEach(t => t.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-
-            this.classList.add('active');
-            const targetId = this.getAttribute('data-tab');
-            const targetPanel = document.getElementById(targetId);
-            if (targetPanel) targetPanel.classList.add('active');
-        });
-    });
-});
-</script>
 
 @include('layouts.footer')
