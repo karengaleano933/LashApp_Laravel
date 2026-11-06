@@ -186,7 +186,7 @@
         @csrf
         <input type="hidden" name="id_cliente" id="inputClienteId" value="{{ $clienteId }}">
         <input type="hidden" name="id_servicio" id="inputServicioId" value="{{ $servicioInicial['id'] }}">
-        <input type="hidden" name="id_trabajador" id="inputTrabajadorId" value="{{ $trabajadorIdInicial }}">
+        <input type="hidden" name="id_trabajador" id="inputTrabajadorId" value="">
         <input type="hidden" name="fecha_cita" id="inputFechaCita" value="{{ $fechaHoy->format('Y-m-d') }}">
         <input type="hidden" name="hora_inicio" id="inputHoraInicio" value="08:00">
         <input type="hidden" name="metodo_pago" id="inputMetodoPago" value="tarjeta">
@@ -240,7 +240,7 @@
 
                 <div class="specialist-label">Selecciona la especialista:</div>
                 <select class="specialist-select-box" id="selectEspecialista" onchange="cambiarEspecialista(this)">
-                    <option value="{{ $trabajadorIdInicial }}" data-nombre="Cualquier Profesional" selected>✦ Cualquier Profesional disponible</option>
+                    <option value="" data-nombre="Cualquier Profesional" selected>✦ Cualquier Profesional disponible</option>
                     @if(isset($trabajadores) && $trabajadores->count() > 0)
                         @foreach($trabajadores as $trab)
                             @php
@@ -495,22 +495,92 @@
                 </div>
 
                 @php
-                    $horariosDisponibles = [
-                        '08:00 am', '09:00 am', '10:00 am', '11:00 am', 
-                        '12:00 pm', '01:00 pm', '02:00 pm', '03:00 pm', 
-                        '04:00 pm', '05:00 pm'
+                    $franjasBase = [
+                        '08:00' => '08:00 am',
+                        '09:00' => '09:00 am',
+                        '10:00' => '10:00 am',
+                        '11:00' => '11:00 am', 
+                        '12:00' => '12:00 pm',
+                        '13:00' => '01:00 pm',
+                        '14:00' => '02:00 pm',
+                        '15:00' => '03:00 pm', 
+                        '16:00' => '04:00 pm',
+                        '17:00' => '05:00 pm'
                     ];
+
+                    $fechaHoyStr = $fechaHoy->format('Y-m-d');
+                    $citasHoy = \App\Models\Cita::whereDate('fecha', $fechaHoyStr)
+                        ->whereNotIn('estado', ['cancelado', 'cancelada'])
+                        ->get(['id', 'trabajador_id', 'hora_inicio', 'hora_fin', 'estado']);
+
+                    $trabajadoresList = (isset($trabajadores) && $trabajadores->count() > 0)
+                        ? $trabajadores
+                        : \App\Models\Trabajador::where('estado', 'activo')->get();
+                    if ($trabajadoresList->isEmpty()) {
+                        $trabajadoresList = \App\Models\Trabajador::all();
+                    }
+
+                    $primeraHoraLibre24 = null;
+                    $primeraHoraLibre12 = null;
+
+                    $slotsCalculados = [];
+                    foreach ($franjasBase as $h24 => $h12) {
+                        $slotIni = Carbon::parse($fechaHoyStr . ' ' . $h24 . ':00');
+                        $slotFin = (clone $slotIni)->addMinutes(45);
+                        $slotIniStr = $h24 . ':00';
+                        $slotFinStr = $slotFin->format('H:i:s');
+
+                        $esPasado = $slotIni->isPast();
+                        $algunLibre = false;
+
+                        if (!$esPasado) {
+                            foreach ($trabajadoresList as $t) {
+                                $ocupado = $citasHoy->first(function ($c) use ($t, $slotIniStr, $slotFinStr) {
+                                    if ($c->trabajador_id != $t->id) return false;
+                                    $cIni = $c->hora_inicio;
+                                    $cFin = ($c->hora_fin && $c->hora_fin > $c->hora_inicio)
+                                        ? $c->hora_fin
+                                        : Carbon::parse($cIni)->addMinutes(45)->format('H:i:s');
+                                    return ($cIni < $slotFinStr && $cFin > $slotIniStr);
+                                });
+                                if (!$ocupado) {
+                                    $algunLibre = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        $disp = !$esPasado && $algunLibre;
+                        if ($disp && !$primeraHoraLibre24) {
+                            $primeraHoraLibre24 = $h24;
+                            $primeraHoraLibre12 = $h12;
+                        }
+
+                        $slotsCalculados[] = [
+                            'h24' => $h24,
+                            'h12' => $h12,
+                            'disponible' => $disp,
+                            'motivo' => $esPasado ? 'Pasado' : 'Ocupado'
+                        ];
+                    }
                 @endphp
 
                 <div class="time-slots-list">
-                    @foreach ($horariosDisponibles as $index => $hora)
-                        <div class="time-slot-btn {{ $index === 0 ? 'selected' : '' }}"
-                             data-hora="{{ $hora }}"
-                             data-hora-24="{{ Carbon::parse($hora)->format('H:i') }}"
-                             onclick="seleccionarHora(this)">
-                            <span>{{ $hora }}</span>
-                            <div class="slot-radio-dot"></div>
-                        </div>
+                    @foreach ($slotsCalculados as $slot)
+                        @if ($slot['disponible'])
+                            <div class="time-slot-btn {{ $slot['h24'] === $primeraHoraLibre24 ? 'selected' : '' }}"
+                                 data-hora="{{ $slot['h12'] }}"
+                                 data-hora-24="{{ $slot['h24'] }}"
+                                 onclick="seleccionarHora(this)">
+                                <span class="slot-time-text">{{ $slot['h12'] }}</span>
+                                <div class="slot-radio-dot"></div>
+                            </div>
+                        @else
+                            <div class="time-slot-btn ocupado disabled" title="{{ $slot['motivo'] === 'Pasado' ? 'Horario pasado' : 'Horario ya reservado / no disponible' }}">
+                                <span class="slot-time-text" style="text-decoration: line-through; opacity: 0.7;">{{ $slot['h12'] }}</span>
+                                <span class="slot-ocupado-tag">{{ $slot['motivo'] }}</span>
+                            </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
@@ -546,7 +616,7 @@
                         <i class="fa-regular fa-clock"></i>
                         <div class="resumen-detail-content">
                             <strong>Hora</strong>
-                            <span id="resumenHoraTexto">08:00 am</span>
+                            <span id="resumenHoraTexto">{{ $primeraHoraLibre12 ?? '08:00 am' }}</span>
                         </div>
                     </div>
 
@@ -649,6 +719,8 @@
         </div>
     </div>
 </div>
+
+@include('components.modal-ticket-pos')
 
 <!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/agendarcitas.js -->
 

@@ -175,6 +175,10 @@
                         </div>
 
                         <div class="cita-card-actions">
+                            <button type="button" class="btn-card-action" onclick="abrirModalTicketPOS('{{ route('ticket.ver', $item['id']) }}?embed=1')" style="color: #7c1db8; border-color: #d8b4e2; background: #faf5fc; cursor: pointer;">
+                                <i class="fa-solid fa-receipt"></i> Ticket POS
+                            </button>
+
                             <button type="button" class="btn-card-action" onclick="abrirModalDetalle('{{ $item['id'] }}', '{{ addslashes($item['servicio']) }}', '{{ addslashes($item['profesional']) }}', '{{ $item['fecha_fmt'] }}', '{{ $item['hora_fmt'] }}', '{{ number_format($item['precio'], 0, ',', '.') }}', '{{ $item['estado_label'] }}', '{{ $item['metodo_pago'] }}')">
                                 Ver detalles
                             </button>
@@ -342,7 +346,10 @@
                 <span class="detalles-val" id="detMetodoPago">Tarjeta de Crédito</span>
             </div>
 
-            <div style="margin-top: 20px; text-align: right;">
+            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" id="btnModalTicketPos" onclick="abrirModalTicketPOS(this.dataset.url)" class="btn-card-action" style="background: #f6effb; color: #7c1db8; border-color: #d8b4e2; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <i class="fa-solid fa-receipt"></i> Ver Ticket POS
+                </button>
                 <button type="button" class="btn-card-action" onclick="cerrarModalDetalle()" style="background: #7c1db8; color: #fff; border-color: #7c1db8;">
                     Cerrar
                 </button>
@@ -350,6 +357,8 @@
         </div>
     </div>
 </div>
+
+@include('components.modal-ticket-pos')
 
 <!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/miscitas.js -->
 

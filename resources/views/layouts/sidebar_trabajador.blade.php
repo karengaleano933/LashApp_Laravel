@@ -24,7 +24,7 @@
 
         <!-- 3. BOTÓN DE NOTIFICACIONES -->
         <div class="notif-wrapper" id="notifWrapperMain" data-notif-url="{{ route('notificaciones.index') }}" data-mark-read-url="{{ route('notificaciones.marcarLeidas') }}">
-            <button type="button" class="icon-btn-circle" title="Notificaciones" id="btnNotifToggle">
+            <button type="button" class="icon-btn-circle" title="Notificaciones" id="btnNotifToggle" onclick="toggleMenuNotificaciones(event)">
                 <i class="fa-solid fa-bell"></i>
                 <span class="notif-badge-count" id="notifBadgeCount" style="display: none;">0</span>
             </button>
@@ -33,7 +33,7 @@
                     <div class="notif-header-title">
                         <i class="fa-solid fa-bell"></i> Notificaciones
                     </div>
-                    <button type="button" class="btn-marcar-leidas" id="btnMarcarTodasLeidas">
+                    <button type="button" class="btn-marcar-leidas" id="btnMarcarTodasLeidas" onclick="marcarTodasNotificacionesLeidas(event)">
                         <i class="fa-solid fa-check-double"></i> Leídas
                     </button>
                 </div>
@@ -45,7 +45,7 @@
 
         <!-- 4. BOTÓN MI CUENTA / PERFIL -->
         <div class="user-menu-wrapper" id="userMenuWrapperMain">
-            <button type="button" class="icon-btn-circle" title="Mi Cuenta" id="btnUserMenuToggle">
+            <button type="button" class="icon-btn-circle" title="Mi Cuenta" id="btnUserMenuToggle" onclick="toggleMenuUsuario(event)">
                 <i class="fa-solid fa-user"></i>
             </button>
             <div class="user-profile-dropdown" id="userProfileDropdown">
@@ -90,6 +90,189 @@
         </div>
     </div>
 </header>
+
+<style>
+.icon-btn-circle * { pointer-events: none !important; }
+.notif-wrapper { position: relative !important; display: inline-block !important; }
+.notif-dropdown { position: absolute !important; top: 48px !important; right: 0 !important; width: 340px !important; max-width: 90vw !important; background: #fff !important; border: 1px solid #e9d5ff !important; border-radius: 16px !important; box-shadow: 0 12px 35px rgba(53, 20, 78, 0.22) !important; z-index: 999999 !important; }
+.notif-dropdown.show { display: block !important; z-index: 999999 !important; }
+.user-menu-wrapper { position: relative !important; display: inline-block !important; }
+.user-profile-dropdown { position: absolute !important; top: calc(100% + 10px) !important; right: 0 !important; width: 290px !important; background: #fff !important; border: 1px solid #ebdcf5 !important; border-radius: 18px !important; box-shadow: 0 14px 40px rgba(53, 20, 78, 0.2) !important; z-index: 999999 !important; }
+.user-profile-dropdown.show { display: block !important; z-index: 999999 !important; }
+</style>
+
+<script>
+(function() {
+    window.toggleMenuNotificaciones = function(e) {
+        if (e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        }
+        var notifMenu = document.getElementById('notifDropdownMenu');
+        var userMenu = document.getElementById('userProfileDropdown');
+        if (userMenu) userMenu.classList.remove('show');
+        
+        if (!notifMenu) return;
+        var isOpen = notifMenu.classList.contains('show');
+        if (isOpen) {
+            notifMenu.classList.remove('show');
+        } else {
+            notifMenu.classList.add('show');
+            if (typeof window.cargarNotificacionesHeader === 'function') {
+                window.cargarNotificacionesHeader();
+            }
+        }
+    };
+
+    window.toggleMenuUsuario = function(e) {
+        if (e) {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        }
+        var notifMenu = document.getElementById('notifDropdownMenu');
+        if (notifMenu) notifMenu.classList.remove('show');
+        
+        var userMenu = document.getElementById('userProfileDropdown');
+        if (!userMenu) return;
+        userMenu.classList.toggle('show');
+    };
+
+    window.marcarTodasNotificacionesLeidas = async function(e) {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        try {
+            var wrapper = document.getElementById('notifWrapperMain');
+            var url = wrapper ? wrapper.getAttribute('data-mark-read-url') : '{{ route("notificaciones.marcarLeidas") }}';
+            var metaCsrf = document.querySelector('meta[name="csrf-token"]');
+            var token = metaCsrf ? metaCsrf.getAttribute('content') : '';
+
+            var resp = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                }
+            });
+
+            var badge = document.getElementById('notifBadgeCount');
+            if (badge) badge.style.display = 'none';
+
+            document.querySelectorAll('.notif-item.noleida').forEach(function(el) {
+                el.classList.remove('noleida');
+            });
+            document.querySelectorAll('.notif-unread-dot').forEach(function(el) {
+                el.remove();
+            });
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Notificaciones leídas',
+                    text: 'Todas las notificaciones han sido marcadas como leídas.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+        } catch(err) {
+            console.error('Error al marcar leídas:', err);
+        }
+    };
+
+    window.cargarNotificacionesHeader = async function() {
+        try {
+            var wrapper = document.getElementById('notifWrapperMain');
+            var url = wrapper ? wrapper.getAttribute('data-notif-url') : '{{ route("notificaciones.index") }}';
+            var list = document.getElementById('notifListContainer');
+            var badge = document.getElementById('notifBadgeCount');
+
+            var resp = await fetch(url, {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!resp.ok) return;
+            var data = await resp.json();
+
+            var count = data ? (data.count || 0) : 0;
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count > 9 ? '9+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            if (!list) return;
+            if (!data || !data.notificaciones || data.notificaciones.length === 0) {
+                list.innerHTML = '<div class="notif-empty"><i class="fa-regular fa-bell-slash"></i><p>No tienes notificaciones pendientes.</p></div>';
+                return;
+            }
+
+            var html = '';
+            data.notificaciones.forEach(function(n) {
+                var iconClass = n.tipo === 'cancelada' 
+                    ? 'fa-circle-xmark' 
+                    : (n.tipo === 'info' ? 'fa-circle-info' : 'fa-calendar-check');
+                var noLeidaClass = !n.leida ? 'noleida' : '';
+                var dotHtml = !n.leida ? '<span class="notif-unread-dot"></span>' : '';
+
+                html += '<div class="notif-item ' + noLeidaClass + '" onclick="window.location.href=\'' + (n.enlace || '#') + '\'" style="cursor: pointer;">' +
+                    '<div class="notif-icon ' + (n.tipo || 'agendada') + '">' +
+                        '<i class="fa-solid ' + iconClass + '"></i>' +
+                    '</div>' +
+                    '<div class="notif-content">' +
+                        '<div class="notif-item-title">' +
+                            '<span>' + n.titulo + '</span>' +
+                            dotHtml +
+                        '</div>' +
+                        '<div class="notif-item-text">' + n.mensaje + '</div>' +
+                        '<div class="notif-item-time"><i class="fa-regular fa-clock"></i> ' + n.tiempo + '</div>' +
+                    '</div>' +
+                '</div>';
+            });
+            list.innerHTML = html;
+        } catch(err) {
+            console.error('Error al cargar notificaciones:', err);
+        }
+    };
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        var notifWrap = document.getElementById('notifWrapperMain');
+        var userWrap = document.getElementById('userMenuWrapperMain');
+        if (notifWrap && !notifWrap.contains(e.target)) {
+            var nm = document.getElementById('notifDropdownMenu');
+            if (nm) nm.classList.remove('show');
+        }
+        if (userWrap && !userWrap.contains(e.target)) {
+            var um = document.getElementById('userProfileDropdown');
+            if (um) um.classList.remove('show');
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var nm = document.getElementById('notifDropdownMenu');
+            if (nm) nm.classList.remove('show');
+            var um = document.getElementById('userProfileDropdown');
+            if (um) um.classList.remove('show');
+        }
+    });
+
+    // Carga inicial
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', window.cargarNotificacionesHeader);
+    } else {
+        window.cargarNotificacionesHeader();
+    }
+})();
+</script>
 
 <!-- ══════ MODAL DE BÚSQUEDA RÁPIDA ══════ -->
 <div class="modal-quicksearch-overlay" id="modalQuickSearchOverlay" style="display:none;">

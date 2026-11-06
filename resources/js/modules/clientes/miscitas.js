@@ -159,6 +159,11 @@ export function abrirModalDetalle(id, serv, prof, fecha, hora, precio, estado, p
     const elPago = document.getElementById('detMetodoPago');
     if (elPago) elPago.textContent = pago || 'Tarjeta';
 
+    const elBtnTicket = document.getElementById('btnModalTicketPos');
+    if (elBtnTicket) {
+        elBtnTicket.dataset.url = '/citas/' + id + '/ticket?embed=1';
+    }
+
     const modal = document.getElementById('modalDetallesCita');
     if (modal) modal.style.display = 'flex';
 }

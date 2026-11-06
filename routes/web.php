@@ -159,6 +159,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/admin/citas', [CitaController::class, 'index'])->middleware(['auth'])->name('citas.index');
+Route::get('/citas/horas-disponibles', [CitaController::class, 'horasDisponibles'])->middleware(['auth'])->name('citas.horas-disponibles');
 Route::post('/admin/citas', [CitaController::class, 'store'])->middleware(['auth'])->name('citas.store');
 Route::get('/admin/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth'])->name('citas.cancelar');
 Route::get('/admin/citas/completar/{id}', [CitaController::class, 'completar'])->middleware(['auth'])->name('citas.completar');
@@ -223,14 +224,25 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Reportes y Rendimiento
     Route::get('/admin/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('/admin/reportes/ingresos-mensuales/imprimir', [ReporteController::class, 'imprimirReporteMensual'])->name('reportes.ingresos.imprimir');
 
     // Configuración del Sistema
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::post('/admin/configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
 });
 
+// Comprobantes y Facturación POS (Cliente, Trabajador y Admin)
+use App\Http\Controllers\TicketController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/citas/{id}/ticket', [TicketController::class, 'verTicket'])->name('ticket.ver');
+    Route::get('/pagos/{id}/ticket', [TicketController::class, 'verTicketPorPago'])->name('ticket.pago');
+});
+
 // Notificaciones del Sistema (accesibles para todos los usuarios autenticados: admin, trabajador y cliente)
 Route::middleware(['auth'])->group(function () {
     Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::post('/notificaciones/marcar-leidas', [\App\Http\Controllers\NotificacionController::class, 'marcarTodasLeidas'])->name('notificaciones.marcarLeidas');
+    Route::get('/admin/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index']);
+    Route::post('/admin/notificaciones/marcar-leidas', [\App\Http\Controllers\NotificacionController::class, 'marcarTodasLeidas']);
 });

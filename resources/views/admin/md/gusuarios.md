@@ -1,80 +1,99 @@
-# Explicación de mi Vista de Gestión de Usuarios (`gusuarios/gusuarios.blade.php`) (En mis palabras)
+# Explicación de mi Vista de Gestión de Usuarios (`gusuarios/gusuarios.blade.php`)
 
-Esta vista es el **panel de administración de usuarios y seguridad** de **LashApp**. Permite controlar todas las cuentas registradas en el sistema (administradoras, trabajadoras/lashistas y clientas), asignar permisos, crear nuevos empleados, editar sus datos personales o desactivar cuentas.
-
----
-
-## 1. Tarjetas de Estadísticas de Usuarios
-
-En la parte superior agregué 5 tarjetas que muestran la composición de la comunidad de usuarios:
-
-1. **Usuarios Totales (`$usuariosTotales`):** Cantidad global de cuentas creadas en el sistema.
-2. **Usuarios Activos (`$usuariosActivos`):** Cuentas habilitadas con permiso para iniciar sesión y operar.
-3. **Usuarios Inactivos (`$usuariosInactivos`):** Cuentas suspendidas o dadas de baja.
-4. **Administradores (`$administradores`):** Cuentas con privilegios totales de administración.
-5. **Último acceso:** Indicador visual de monitoreo en tiempo real del sistema.
+Esta vista es el centro donde controlo todos los usuarios registrados en LashApp (administradoras, trabajadoras/lashistas y clientas). Me permite monitorear cuántos usuarios tengo activos o inactivos, buscar personas en tiempo real, filtrar por su rol en el sistema, registrar nuevos usuarios con contraseña segura mediante una ventana modal, editar sus datos o estado, y eliminarlos tras una confirmación de seguridad.
 
 ---
 
-## 2. Tabla Interactiva de Usuarios
+### 1. Inclusión de estructura y alertas
 
-La tabla principal centraliza la información de cada persona con un diseño muy intuitivo:
-
-* **Columna Usuario:** Incluye un avatar circular con la inicial del nombre en mayúscula y el nombre completo con apellido.
-* **Documento y Teléfono:** Cédula/DNI y número de WhatsApp o móvil para contacto directo.
-* **Correo electrónico:** El correo con el que la persona inicia sesión.
-* **Badge de Rol:** Una etiqueta con colores según su función:
-  * `Administrador`: Morado / Azul oscuro.
-  * `Trabajador / Lashista`: Morado claro / Fucsia.
-  * `Cliente`: Rosado suave.
-* **Estado:** Insignia verde para *"Activo"* y roja para *"Inactivo"*.
-* **Fecha de Registro:** Formato legible con día, mes, año y hora exacta de creación.
-* **Botones de acción:**
-  * **Editar (`.btn-editar-usuario`):** Almacena en atributos `data-*` toda la información de la fila para abrir el modal de edición al instante.
-  * **Eliminar (`.btn-eliminar-usuario`):** Abre una ventana de confirmación para evitar borrados accidentales.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `@include('layouts.header')` | Cargo los estilos, tipografías e íconos generales del sistema. |
+| `@include('layouts.sidebaradmin')` | Cargo el menú lateral de administración. |
+| `<div class="page-content" id="usuariosContainer" data-base-url="{{ url('/admin/usuarios') }}">` | Contenedor principal donde guardo en `data-base-url` la ruta base de usuarios para que el script JavaScript sepa a dónde enviar las peticiones de edición o eliminación. |
+| `@if (session('success')) ... @endif` | Muestro un recuadro verde con un chulito cuando un usuario se crea, edita o elimina con éxito. |
+| `@if (session('error')) ... @endif` | Muestro un recuadro rojo si ocurre algún fallo en el servidor. |
+| `@if (isset($errors) && $errors->any()) ... @endif` | Muestro la lista de campos faltantes o errores de validación si algo no cumple con los requisitos del formulario. |
 
 ---
 
-## 3. Panel Lateral: Resumen de Roles y Permisos
+### 2. Tarjetas de estadísticas de usuarios
 
-A la derecha de la tabla, diseñé una tarjeta informativa que explica las responsabilidades de cada rol en el estudio:
-
-* **Administrador:** Acceso completo al sistema, finanzas, métricas, configuración y catálogo.
-* **Trabajador:** Especialistas que consultan su agenda diaria, confirman citas de sus clientas y revisan sus calificaciones.
-* **Cliente:** Usuarias que pueden agendar citas, consultar su historial y dejar opiniones sobre los tratamientos.
-* Cada ítem muestra cuántos usuarios pertenecen a esa categoría en tiempo real.
-
----
-
-## 4. Modal para Crear Nuevo Usuario
-
-Al presionar el botón **"+ Nuevo Usuario"**, se abre un formulario modal con validaciones:
-
-* **Ruta de destino:** Envía un `POST` a `route('usuarios.store')` con `@csrf`.
-* **Datos básicos:** Nombre, apellido, número de documento y teléfono.
-* **Credenciales:** Correo electrónico y contraseña segura.
-* **Asignación de Rol:** Menú desplegable que lista dinámicamente los roles existentes en la base de datos (`$roles`).
-* **Estado:** Selector para dejarlo activo o inactivo desde el inicio.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="usuario-card"> ... {{ $usuariosTotales ?? 0 }} ... </div>` | Tarjeta morada que muestra la suma total de usuarios registrados en el sistema. |
+| `<div class="usuario-card"> ... {{ $usuariosActivos ?? 0 }} ... </div>` | Tarjeta verde que muestra cuántos usuarios tienen su cuenta habilitada y activa. |
+| `<div class="usuario-card"> ... {{ $usuariosInactivos ?? 0 }} ... </div>` | Tarjeta roja que muestra los usuarios que han sido dados de baja o desactivados. |
+| `<div class="usuario-card"> ... {{ $administradores ?? 0 }} ... </div>` | Tarjeta azul con ícono de escudo que muestra cuántos administradores existen en la plataforma. |
+| `<div class="usuario-card"> ... <strong class="ultimo-acceso">Hoy</strong> ... </div>` | Tarjeta morada que indica el monitoreo del sistema en tiempo real. |
 
 ---
 
-## 5. Modal Dinámico para Editar Usuario
+### 3. Filtro por rol, botón nuevo y buscador
 
-En lugar de recargar la página o crear vistas separadas, el botón de editar reutiliza un modal dinámico:
-
-* Mediante JavaScript, escucha el clic del botón de editar, extrae los valores (`data-id`, `data-nombre`, `data-correo`, `data-rol`, etc.) y los inyecta en los campos del formulario.
-* Actualiza la ruta del formulario a `usuarios.update` usando el método `PUT`.
-* Permite cambiar el rol de un usuario o cambiar su estado a inactivo si ya no trabaja en el salón.
-
----
-
-## 6. Interactividad y Búsqueda en Vivo
-
-* **Filtro por Rol:** Un desplegable en la cabecera que permite aislar en pantalla únicamente a las trabajadoras, clientas o administradoras.
-* **Buscador en tiempo real:** Filtra automáticamente filas por nombre, cédula o correo mientras se escribe.
-* **Confirmación con SweetAlert2:** Para el borrado o desactivación de cuentas, protegiendo contra pérdida involuntaria de información.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<select id="filtroRol"> ... </select>` | Menú desplegable que lista dinámicamente los roles existentes (Administrador, Trabajador, Cliente) para filtrar la tabla al instante. |
+| `<button type="button" class="btn-nuevo-usuario" id="abrirNuevoUsuario">` | Botón morado con ícono `+` para desplegar la ventana modal de crear usuario. |
+| `<input type="text" id="buscarUsuario" placeholder="Buscar por nombre, correo o rol...">` | Campo de búsqueda en vivo que va filtrando la tabla a medida que escribo cualquier palabra. |
 
 ---
 
-## En resumen: ¿Qué función cumple esta vista?
-Garantiza el control total de accesos al sistema, protege la privacidad de la información y permite gestionar al equipo de trabajo y clientas de forma rápida y segura.
+### 4. Tabla de usuarios y acciones
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<table id="tablaUsuarios" class="usuarios-table">` | Tabla principal con columnas para Usuario, Documento, Teléfono, Correo, Rol, Estado, Fecha Registro y Acciones. |
+| `@forelse ($usuarios ?? [] as $usuario) ... @empty ... @endforelse` | Recorro cada usuario de la base de datos; si la tabla está vacía, muestro un mensaje avisando que no hay registros. |
+| `<div class="usuario-avatar">{{ $inicial }}</div> <span>{{ $nombreCompleto }}</span>` | Muestro la inicial de su nombre en un círculo morado y su nombre completo con apellido. |
+| `<td>{{ $usuario->documento ?? 'N/A' }}</td>` | Muestro el número de identificación o cédula del usuario. |
+| `<td>{{ $usuario->telefono ?? 'N/A' }}</td>` | Muestro el teléfono de contacto. |
+| `<td>{{ $usuario->email ?? '' }}</td>` | Muestro su correo electrónico. |
+| `<span class="rol-badge rol-{{ $rolClase }}">{{ ucfirst($rolNombre) }}</span>` | Pastilla de color para identificar visualmente si es Administrador, Trabajador o Cliente. |
+| `<span class="estado-badge estado-{{ $estadoClase }}">{{ ucfirst($estado) }}</span>` | Etiqueta en verde si está "Activo" o gris/rojo si está "Inactivo". |
+| `{{ $usuario->created_at ? $usuario->created_at->format('d/m/Y, h:i a') : 'Sin fecha' }}` | Fecha y hora en que se creó la cuenta en formato legible. |
+| `<button class="btn-accion btn-editar-usuario" data-id="..." data-nombre="..." ...>` | Botón con ícono de lápiz que almacena todos los datos del usuario en atributos `data-*` para rellenar automáticamente la ventana de edición. |
+| `<button class="btn-accion btn-eliminar-usuario" data-id="..." data-nombre="...">` | Botón con ícono de basurero para solicitar la eliminación segura del usuario mediante una confirmación con SweetAlert2. |
+
+---
+
+### 5. Panel lateral de desglose de roles
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="roles-permisos-card"> ... </div>` | Tarjeta lateral que resume cuántos usuarios pertenecen a cada uno de los 3 perfiles principales. |
+| `<div class="rol-permiso"> ... <strong>Administrador</strong> ... <b>{{ $administradores ?? 0 }}</b> </div>` | Muestra el total de usuarios con acceso completo a todo el sistema. |
+| `<div class="rol-permiso"> ... <strong>Trabajador</strong> ... <b>{{ $trabajadores ?? 0 }}</b> </div>` | Muestra la cantidad de empleadas que atienden citas y prestan servicios. |
+| `<div class="rol-permiso"> ... <strong>Cliente</strong> ... <b>{{ $clientes ?? 0 }}</b> </div>` | Muestra la cantidad de clientas que reservan citas en la aplicación. |
+
+---
+
+### 6. Modal para crear un nuevo usuario
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="modal-usuario-overlay" id="modalCrearUsuario" ...>` | Ventana emergente con fondo oscuro para el registro manual de usuarios por parte de la administradora. |
+| `<form action="{{ route('usuarios.store') }}" method="POST" id="formCrearUsuario"> @csrf` | Formulario protegido con token CSRF que envía los datos por el método POST a la ruta de almacenamiento de usuarios. |
+| `<input type="text" name="name" placeholder="Ej. Ana" required>` | Campo obligatorio para el nombre del nuevo usuario. |
+| `<input type="text" name="apellido" ... required>` | Campo obligatorio para el apellido. |
+| `<input type="text" name="documento" ... required>` | Campo obligatorio para la cédula o documento de identidad. |
+| `<input type="text" name="telefono" ... required>` | Campo para el número telefónico de contacto. |
+| `<input type="email" name="email" ... required>` | Campo obligatorio para su correo electrónico. |
+| `<select name="role_id" required> ... </select>` | Menú desplegable para asignarle su rol (Administrador, Trabajador o Cliente). |
+| `<input type="password" name="password" id="passwordUsuario" minlength="6" required>` | Campo para asignarle una contraseña inicial de mínimo 6 letras o números. |
+| `<i class="fa-solid fa-eye" id="mostrarPassword"></i>` | Botón con forma de ojito para ver o esconder la contraseña mientras se escribe. |
+| `<button type="submit" class="btn-crear-usuario"> Crear Usuario </button>` | Botón final para guardar el nuevo usuario en el sistema. |
+
+---
+
+### 7. Modal para editar usuario existente y formulario de eliminación
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="modal-usuario-overlay" id="modalEditarUsuario" ...>` | Ventana emergente para modificar los datos de un usuario ya existente. |
+| `<form id="formEditarUsuario" method="POST" action=""> @csrf @method('PUT')` | Formulario configurado con `@method('PUT')` para actualizar la información en Laravel. |
+| `<input type="text" name="name" id="edit_nombre" required> ...` | Campos donde JavaScript inyecta automáticamente el nombre, apellido, documento, teléfono y correo actuales. |
+| `<select name="estado" id="edit_estado" required> <option value="activo">Activo</option> <option value="inactivo">Inactivo</option> </select>` | Menú para activar o suspender el acceso de este usuario a la plataforma. |
+| `<input type="password" name="password" id="edit_password" placeholder="Nueva contraseña (opcional)">` | Campo opcional: si se deja en blanco se conserva la contraseña anterior; si se escribe una nueva, se actualiza. |
+| `<form id="formEliminarUsuario" method="POST" style="display: none;"> @csrf @method('DELETE') </form>` | Formulario invisible con método `DELETE` que se dispara automáticamente cuando la administradora confirma la eliminación en la alerta. |
+| `@vite(['resources/js/modules/admin/gusuarios.js'])` | Cargo mediante Vite el módulo JavaScript que da vida a los modales, filtros y confirmaciones de esta vista. |

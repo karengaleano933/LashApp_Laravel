@@ -114,8 +114,8 @@
             <a href="{{ route('cliente.agendar') }}" class="btn-agendar-hist-empty" style="margin: 0; padding: 8px 18px; font-size: 12px;">
                 <i class="fa-solid fa-calendar-plus"></i> Agendar Cita
             </a>
-            <button type="button" class="icon-btn-circle" title="Descargar o Imprimir Historial" onclick="descargarHistorialPDF()">
-                <i class="fa-solid fa-print"></i>
+            <button type="button" class="icon-btn-circle" title="Descargar Historial en PDF" onclick="descargarHistorialPDF()">
+                <i class="fa-solid fa-download"></i>
             </button>
         </div>
     </div>
@@ -197,9 +197,14 @@
                         <div class="hist-item-right">
                             <span class="{{ $item['estado_badge'] }}">{{ $item['estado'] }}</span>
                             <div class="hist-price-tag">{{ $item['precio_fmt'] }}</div>
-                            <a href="{{ route('cliente.agendar') }}?servicio_id={{ $item['servicio_id'] }}" class="hist-arrow-btn" title="Agendar este servicio de nuevo">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </a>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <button type="button" onclick="abrirModalTicketPOS('{{ route('ticket.ver', $item['id']) }}?embed=1')" class="hist-arrow-btn" title="Ver / Descargar Ticket POS" style="background: #f6effb; color: #7c1db8; border: none; cursor: pointer;">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </button>
+                                <a href="{{ route('cliente.agendar') }}?servicio_id={{ $item['servicio_id'] }}" class="hist-arrow-btn" title="Agendar este servicio de nuevo">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -350,6 +355,8 @@
     </div>
 
 </div>
+
+@include('components.modal-ticket-pos')
 
 <!-- Scripts interactivos extraídos al módulo Vite: resources/js/modules/clientes/historial.js -->
 

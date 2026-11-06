@@ -8,6 +8,92 @@
     'resources/js/modules/admin/pagos.js'
 ])
 
+<style>
+.pagos-main-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 300px !important;
+    gap: 20px !important;
+    align-items: start !important;
+}
+.pagos-tabla-card {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+.table-responsive {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+.pagos-table {
+    width: 100% !important;
+    min-width: 890px !important;
+    border-collapse: collapse !important;
+}
+.td-acciones {
+    text-align: center !important;
+    white-space: nowrap !important;
+    width: 130px !important;
+    min-width: 130px !important;
+}
+.acciones-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+}
+.btn-accion {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 13px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+.btn-ticket-pago {
+    color: #7c1db8 !important;
+    background: #f6effb !important;
+    border: 1px solid #ead6f6 !important;
+}
+.btn-ticket-pago:hover {
+    background: #edd8f7 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 3px 8px rgba(124, 29, 184, 0.2) !important;
+}
+.btn-editar-pago {
+    color: #0284c7 !important;
+    background: #e0f2fe !important;
+    border: 1px solid #bae6fd !important;
+}
+.btn-editar-pago:hover {
+    background: #bae6fd !important;
+    color: #0369a1 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.2) !important;
+}
+.btn-eliminar-pago {
+    color: #dc2626 !important;
+    background: #fee2e2 !important;
+    border: 1px solid #fecaca !important;
+}
+.btn-eliminar-pago:hover {
+    background: #fecaca !important;
+    color: #b91c1c !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2) !important;
+}
+@media (max-width: 1200px) {
+    .pagos-main-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
 <!-- Contenido Principal -->
 <div class="page-content" id="pagosContainer" data-base-url="{{ url('/admin/pagos') }}">
 
@@ -141,19 +227,19 @@
         </div>
 
         <!-- TABLA -->
-        <div class="table-responsive">
-            <table id="tablaPagos" class="pagos-table">
+        <div class="table-responsive" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+            <table id="tablaPagos" class="pagos-table" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th>Cliente</th>
-                        <th>Servicio</th>
-                        <th>Método</th>
-                        <th>Monto</th>
-                        <th>Referencia</th>
-                        <th>Comprobante</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                        <th class="text-center" style="text-align: center;">Acciones</th>
+                        <th style="min-width: 140px; padding-left: 20px;">Cliente</th>
+                        <th style="min-width: 110px;">Servicio</th>
+                        <th style="min-width: 100px;">Método</th>
+                        <th style="min-width: 95px; white-space: nowrap;">Monto</th>
+                        <th style="min-width: 130px; max-width: 180px;">Referencia</th>
+                        <th style="min-width: 110px;">Comprobante</th>
+                        <th style="min-width: 95px;">Estado</th>
+                        <th style="min-width: 125px; white-space: nowrap;">Fecha</th>
+                        <th class="text-center" style="text-align: center; min-width: 130px; width: 130px; white-space: nowrap;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,8 +269,8 @@
                             $fechaFormateada = $rawFecha ? \Carbon\Carbon::parse($rawFecha)->format('d/m/Y, h:i a') : 'Sin fecha';
                         @endphp
                         <tr data-metodo="{{ $metodo }}">
-                            <td>
-                                <strong>{{ $clienteNombre }}</strong>
+                            <td style="min-width: 140px; padding-left: 20px;">
+                                <strong style="color: #2a0d3e;">{{ $clienteNombre }}</strong>
                             </td>
 
                             <td>{{ $servicioNombre }}</td>
@@ -196,12 +282,12 @@
                                 </span>
                             </td>
 
-                            <td>
+                            <td style="white-space: nowrap;">
                                 <strong>${{ number_format((float)$monto, 0, ',', '.') }}</strong>
                             </td>
 
-                            <td>
-                                <small>{{ !empty($referencia) ? $referencia : 'N/A' }}</small>
+                            <td style="max-width: 180px; font-size: 11.5px; line-height: 1.35; word-break: break-word;">
+                                <small style="color: #64748b;">{{ !empty($referencia) ? $referencia : 'N/A' }}</small>
                             </td>
 
                             <td>
@@ -223,28 +309,38 @@
                                 </span>
                             </td>
 
-                            <td>
+                            <td style="white-space: nowrap; font-size: 12px; color: #555;">
                                 {{ $fechaFormateada }}
                             </td>
 
-                            <td style="text-align: center;">
-                                <button type="button" class="btn-accion btn-editar-pago" 
-                                    data-id="{{ $pagoId }}" 
-                                    data-cita="{{ $citaId }}"
-                                    data-metodo="{{ $metodo }}"
-                                    data-monto="{{ $monto }}"
-                                    data-estado="{{ $estado }}"
-                                    data-referencia="{{ $referencia }}"
-                                    title="Editar Pago">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
+                            <td class="td-acciones" style="text-align: center; white-space: nowrap; width: 130px; min-width: 130px;">
+                                <div class="acciones-wrapper" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">
+                                    @if(!empty($citaId))
+                                        <button type="button" onclick="abrirModalTicketPOS('{{ route('ticket.ver', $citaId) }}?embed=1')" class="btn-accion btn-ticket-pago" title="Ver / Descargar Factura POS" style="width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: #7c1db8; background: #f6effb; border: 1px solid #ead6f6; cursor: pointer; transition: all 0.2s ease;">
+                                            <i class="fa-solid fa-receipt"></i>
+                                        </button>
+                                    @endif
 
-                                <button type="button" class="btn-accion btn-eliminar-pago" 
-                                    data-id="{{ $pagoId }}" 
-                                    data-cliente="{{ $clienteNombre }}"
-                                    title="Eliminar Pago">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                    <button type="button" class="btn-accion btn-editar-pago" 
+                                        data-id="{{ $pagoId }}" 
+                                        data-cita="{{ $citaId }}"
+                                        data-metodo="{{ $metodo }}"
+                                        data-monto="{{ $monto }}"
+                                        data-estado="{{ $estado }}"
+                                        data-referencia="{{ $referencia }}"
+                                        title="Editar Pago"
+                                        style="width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: #0284c7; background: #e0f2fe; border: 1px solid #bae6fd; cursor: pointer; transition: all 0.2s ease;">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+
+                                    <button type="button" class="btn-accion btn-eliminar-pago" 
+                                        data-id="{{ $pagoId }}" 
+                                        data-cliente="{{ $clienteNombre }}"
+                                        title="Eliminar Pago"
+                                        style="width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: #dc2626; background: #fee2e2; border: 1px solid #fecaca; cursor: pointer; transition: all 0.2s ease;">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -437,6 +533,8 @@
     @csrf
     @method('DELETE')
 </form>
+
+@include('components.modal-ticket-pos')
 
 </div> <!-- Cierre de page-content -->
 

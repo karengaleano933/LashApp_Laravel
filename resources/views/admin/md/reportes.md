@@ -1,70 +1,70 @@
-# Explicación de mi Vista de Reportes y Rendimiento (`reportes/reportes.blade.php`) (En mis palabras)
+# Explicación de mi Vista de Reportes y Rendimiento (`reportes/reportes.blade.php`)
 
-Esta vista es la herramienta de **Business Intelligence (Inteligencia de Negocios)** de **LashApp**. Convierte todos los datos de citas, pagos y calificaciones en gráficas interactivas, tablas comparativas y métricas de tendencia para que la dueña del salón pueda tomar decisiones estratégicas basadas en números reales.
-
----
-
-## 1. Barra de Períodos y Exportación
-
-En la parte superior agregué controles para definir qué lapso de tiempo se está analizando:
-
-* **Selector de período:** Muestra por defecto el rango de fechas del último mes (`d/m/Y - d/m/Y`) usando `Carbon`.
-* **Comparador:** Permite contrastar los resultados actuales contra el *período anterior* o contra el *mismo mes del año anterior*.
-* **Botón "Exportar Reporte":** Ejecuta `window.print()`, que gracias a las reglas CSS `@media print` genera un documento PDF limpio y estilizado listo para imprimir o enviar a un contador.
+Esta vista es el centro de analítica y estadísticas de LashApp. Me permite evaluar cómo le está yendo al negocio en dinero y clientas: muestra gráficos interactivos de ingresos diarios, participación por tipo de servicio, tarjetas de métricas clave, comparaciones porcentuales respecto al mes o año anterior, distribución de citas por estado y un botón para exportar todo el informe a PDF o imprimirlo.
 
 ---
 
-## 2. Tarjetas de KPIs con Tendencias de Crecimiento
+### 1. Inclusiones, estilos y motor de gráficos
 
-En la primera fila se destacan 4 indicadores clave de desempeño (KPIs):
-
-1. **Ingresos Totales (`$totalIngresos`):** La facturación global acumulada con un indicador de porcentaje de crecimiento (`+12% vs período anterior`).
-2. **Total de Citas (`$totalCitas`):** Volumen de servicios prestados con su indicador de tendencia.
-3. **Nuevos Clientes (`$totalClientes`):** Cuántas personas nuevas conocieron el estudio y agendaron por primera vez.
-4. **Calificación Promedio (`$promedioEstrellas`):** El nivel de satisfacción global sobre 5 estrellas (ej. `4.8 / 5`).
-
----
-
-## 3. Gráficos Estadísticos con Chart.js
-
-Incluyo la librería **Chart.js** para renderizar gráficos visuales y dinámicos:
-
-### A. Ingresos por Día (Gráfico de Líneas)
-* Muestra la curva de ventas de los últimos 7 días.
-* Diseñado con un gradiente suave en tonos morados característicos de la marca.
-* Permite identificar rápidamente qué días de la semana son los más rentables.
-
-### B. Ingresos por Servicio (Gráfico de Dona)
-* Muestra la cuota de participación de cada tratamiento en los ingresos totales (Lifting, Pelo a Pelo, Cejas, etc.).
-* Al lado del gráfico hay una lista de leyendas personalizada con puntos de color y el porcentaje exacto calculado dinámicamente con `@php`:
-  ```blade
-  $pctServ = round(($valorServ / $sumaServ) * 100);
-  ```
-
-### C. Citas por Estado (Gráfico de Distribución)
-* Representa visualmente la proporción entre citas *Completadas*, *Pendientes* y *Canceladas*.
-* Ayuda a detectar si la tasa de cancelaciones está dentro de los límites saludables.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `@include('layouts.header', ['titulo' => 'Reportes y Rendimiento'])` | Cargo la cabecera general con el título de la pestaña. |
+| `@include('layouts.sidebaradmin')` | Cargo el menú lateral de administración. |
+| `@vite(['resources/css/reportes.css', 'resources/js/modules/admin/reportes.js'])` | Conecto los estilos específicos de reportes y el script interactivo mediante Vite. |
+| `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>` | Cargo la librería externa Chart.js encargada de dibujar los gráficos de líneas y de dona en pantalla. |
 
 ---
 
-## 4. Tabla de Resumen Comparativo por Período
+### 2. Barra de filtros temporales y exportación
 
-Debajo de los gráficos coloqué una tabla comparativa muy detallada que muestra:
-* La métrica analizada (Ingresos, Citas, Clientes nuevos, Completadas, Canceladas, Promedio de estrellas).
-* El valor del **Período Actual**.
-* El valor del **Período Anterior**.
-* La **Variación porcentual** con flechitas verdes hacia arriba (`trend-up`) para incrementos positivos y rojas hacia abajo (`trend-down`) para reducciones.
-
----
-
-## 5. Tarjetas de Información Destacada (Highlights)
-
-En la esquina inferior derecha creé dos bloques que sintetizan los mejores momentos comerciales del estudio:
-
-* **Mejor Día de la Semana:** Identifica el día con el pico más alto de asistencia (ej. *Sábado*).
-* **Mejor Franja Horaria:** Señala las horas de mayor concurrencia (ej. *11:00 am - 1:00 pm*), permitiendo planificar mejor los turnos del personal.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<input type="text" value="{{ now()->subMonth()->format('d/m/Y') }} - {{ now()->format('d/m/Y') }}" readonly>` | Muestra el rango de fechas analizado (los últimos 30 días hasta hoy). |
+| `<select> <option value="anterior">Período anterior</option> ... </select>` | Permite elegir contra qué período quiero comparar los resultados (contra el mes inmediatamente anterior o contra el año pasado). |
+| `<button type="button" class="btn-exportar-reporte" onclick="window.print()">` | Botón con ícono de PDF que abre la ventana de impresión para guardar o imprimir el reporte. |
 
 ---
 
-## En resumen: ¿Por qué es tan valiosa esta vista?
-Permite saber exactamente qué servicios dejan más ganancias, cuáles días conviene lanzar promociones y cómo evoluciona el crecimiento del salón mes a mes.
+### 3. Tarjetas de métricas superiores (Indicadores clave)
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="rep-metric-card"> ... ${{ number_format((float)($totalIngresos ?? 0), 0, ',', '.') }} ... </div>` | Tarjeta morada que muestra el total de ingresos recaudados en el período con su porcentaje de crecimiento (+12%). |
+| `<div class="rep-metric-card"> ... {{ $totalCitas ?? 0 }} ... </div>` | Tarjeta dorada que muestra el total de citas gestionadas en el período. |
+| `<div class="rep-metric-card"> ... {{ $totalClientes ?? 0 }} ... </div>` | Tarjeta verde con el número de clientes nuevos que llegaron al estudio. |
+| `<div class="rep-metric-card"> ... {{ $promedioEstrellas ?? 4.8 }} / 5 ... </div>` | Tarjeta rosada con ícono de estrella que muestra la calificación promedio de satisfacción del negocio. |
+
+---
+
+### 4. Gráficos interactivos de ingresos
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<canvas id="chartIngresosDia" data-labels="..." data-values="..."></canvas>` | Lienzo donde Chart.js dibuja una curva de líneas moradas mostrando la evolución de las ventas día a día durante la última semana. |
+| `<canvas id="chartIngresosServicio" data-labels="..." data-values="..."></canvas>` | Lienzo donde Chart.js dibuja un gráfico circular tipo dona mostrando qué porcentaje de los ingresos proviene de cada servicio (Extensiones, Lifting, Cejas, etc.). |
+| `@forelse ($labelsServicios ?? [] as $idx => $labelServ) ... @endforelse` | Bucle que calcula el porcentaje de participación de cada tratamiento y dibuja la lista de etiquetas con sus puntos de color y porcentajes exactos (ej. 55%). |
+
+---
+
+### 5. Tabla comparativa de períodos
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<table class="resumen-tabla"> ... </table>` | Tabla que compara lado a lado las cifras del período actual contra el período anterior. |
+| `<td>Ingresos Totales</td> <td>${{ number_format(...) }}</td> <td>$3.160.000</td> <td class="trend-up">+12.3%</td>` | Fila comparativa de dinero facturado con flecha verde de incremento. |
+| `<td>Total de Citas</td> <td>{{ $totalCitas }}</td> <td>213</td> <td class="trend-up">+8.0%</td>` | Comparativa del volumen de citas atendidas. |
+| `<td>Clientes Nuevos</td> <td>{{ $totalClientes }}</td> <td>23</td> <td class="trend-up">+21.7%</td>` | Comparativa de adquisición de clientas. |
+| `<td>Citas Canceladas</td> <td>{{ $citasCanceladas }}</td> <td>37</td> <td class="trend-down">-13.5%</td>` | Comparativa de cancelaciones con flecha roja de disminución favorable. |
+| `<td>Calificación Promedio</td> <td>{{ $promedioEstrellas }} / 5</td> <td>4.2 / 5</td> <td>+0.3</td>` | Comparativa de la reputación en estrellas. |
+
+---
+
+### 6. Gráfico de citas por estado y datos destacados
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<canvas id="chartCitasEstado" data-labels="..." data-values="..."></canvas>` | Gráfico circular pequeño que ilustra visualmente la proporción entre citas completadas (morado), pendientes (amarillo) y canceladas (rojo). |
+| `<div class="highlight-box"> ... <label>Mejor Día de la Semana</label> <strong>Sábado</strong> ... </div>` | Cuadro destacado que resalta cuál es el día con más clientas e ingresos de la semana. |
+| `<div class="highlight-box"> ... <label>Mejor Franja Horaria</label> <strong>11:00 am - 1:00 pm</strong> ... </div>` | Cuadro destacado que identifica las horas de mayor concurrencia en el salón. |
+| `<div class="reportes-info-banner"> ... </div>` | Mensaje informativo al pie de página recordando que estos datos sirven para la toma estratégica de decisiones. |
+| `@include('layouts.footer')` | Pie de página del sistema. |

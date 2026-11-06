@@ -58,7 +58,8 @@ function setupSidebar(config) {
     const toggleBtn = document.querySelector(config.selectors.sidebarToggle);
     const sidebar = document.querySelector(config.selectors.sidebar);
 
-    if (toggleBtn && sidebar) {
+    if (toggleBtn && sidebar && !toggleBtn.dataset.sidebarBound) {
+        toggleBtn.dataset.sidebarBound = 'true';
         toggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             sidebar.classList.toggle(config.classes.active);
@@ -210,26 +211,32 @@ function setupNotifications(config, userMenuControls) {
         if (menu) menu.classList.remove(config.classes.show);
     }
 
-    if (btnToggle) {
-        btnToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleDropdown();
-        });
+    if (btnToggle && !btnToggle.dataset.notifBound) {
+        btnToggle.dataset.notifBound = 'true';
+        if (!btnToggle.hasAttribute('onclick')) {
+            btnToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown();
+            });
+        }
     }
 
-    if (btnMarkAll) {
-        btnMarkAll.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            try {
-                await http.post(config.endpoints.notificationsMarkRead, {});
-                updateBadge(0);
-                document.querySelectorAll('.notif-item.noleida').forEach((el) => el.classList.remove('noleida'));
-                document.querySelectorAll('.notif-unread-dot').forEach((el) => el.remove());
-                showToast({ title: 'Notificaciones marcadas como leídas', icon: 'success' });
-            } catch (err) {
-                console.error('[Notificaciones] Error al marcar como leídas:', err);
-            }
-        });
+    if (btnMarkAll && !btnMarkAll.dataset.markBound) {
+        btnMarkAll.dataset.markBound = 'true';
+        if (!btnMarkAll.hasAttribute('onclick')) {
+            btnMarkAll.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                try {
+                    await http.post(config.endpoints.notificationsMarkRead, {});
+                    updateBadge(0);
+                    document.querySelectorAll('.notif-item.noleida').forEach((el) => el.classList.remove('noleida'));
+                    document.querySelectorAll('.notif-unread-dot').forEach((el) => el.remove());
+                    showToast({ title: 'Notificaciones marcadas como leídas', icon: 'success' });
+                } catch (err) {
+                    console.error('[Notificaciones] Error al marcar como leídas:', err);
+                }
+            });
+        }
     }
 
     // Carga inicial pasiva del badge
@@ -254,11 +261,14 @@ function setupUserMenu(config) {
         if (menu) menu.classList.remove(config.classes.show);
     }
 
-    if (btnToggle) {
-        btnToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleMenu();
-        });
+    if (btnToggle && !btnToggle.dataset.userBound) {
+        btnToggle.dataset.userBound = 'true';
+        if (!btnToggle.hasAttribute('onclick')) {
+            btnToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu();
+            });
+        }
     }
 
     return { toggleMenu, closeMenu };
@@ -268,6 +278,11 @@ function setupUserMenu(config) {
  * Inicializador principal del layout administrativo
  */
 export function initSidebarAdmin(customConfig = {}) {
+    if (window.__lashAppSidebarAdminInit) {
+        return;
+    }
+    window.__lashAppSidebarAdminInit = true;
+
     // Parámetros leídos desde atributos data-* del wrapper
     const notifWrapper = document.querySelector(DEFAULT_CONFIG.selectors.notifWrapper);
     const domNotifUrl = notifWrapper?.dataset?.notifUrl;

@@ -230,6 +230,133 @@ class CitaController extends Controller
     }
 
     /**
+     * Consulta los horarios disponibles para una fecha, servicio y especialista determinados.
+     * Retorna una lista con el estado (disponible / ocupado) de cada franja horaria.
+     */
+    public function horasDisponibles(Request $request)
+    {
+        $fecha = $request->query('fecha', Carbon::today()->format('Y-m-d'));
+        $idTrabajador = $request->query('id_trabajador');
+        $idServicio = $request->query('id_servicio');
+
+        // Determinar duración del servicio solicitado
+        $minutos = 45;
+        if (!empty($idServicio)) {
+            $servicio = Servicio::find($idServicio);
+            if ($servicio) {
+                $duracion = $servicio->duracion_minuto;
+                if (is_string($duracion) && str_contains($duracion, ':')) {
+                    $partes = explode(':', $duracion);
+                    $minutos = ((int)$partes[0] * 60) + (int)$partes[1];
+                } elseif (is_numeric($duracion) && $duracion > 0) {
+                    $minutos = (int)$duracion;
+                }
+            }
+        }
+        if ($minutos <= 0) $minutos = 45;
+
+        // Franjas horarias operativas estándar del estudio (8:00 AM a 5:00 PM)
+        $franjas = [
+            '08:00' => '08:00 am',
+            '09:00' => '09:00 am',
+            '10:00' => '10:00 am',
+            '11:00' => '11:00 am',
+            '12:00' => '12:00 pm',
+            '13:00' => '01:00 pm',
+            '14:00' => '02:00 pm',
+            '15:00' => '03:00 pm',
+            '16:00' => '04:00 pm',
+            '17:00' => '05:00 pm',
+        ];
+
+        // Obtener citas activas para la fecha (excluyendo canceladas)
+        $citasDelDia = Cita::whereDate('fecha', $fecha)
+            ->whereNotIn('estado', ['cancelado', 'cancelada'])
+            ->get(['id', 'trabajador_id', 'hora_inicio', 'hora_fin', 'estado']);
+
+        // Trabajadores activos
+        $trabajadoresActivos = Trabajador::where('estado', 'activo')->get();
+        if ($trabajadoresActivos->isEmpty()) {
+            $trabajadoresActivos = Trabajador::all();
+        }
+
+        $ahora = Carbon::now();
+        $esFechaPasada = Carbon::parse($fecha)->endOfDay()->isPast();
+        $esHoy = Carbon::parse($fecha)->isToday();
+
+        $resultadoHorarios = [];
+
+        foreach ($franjas as $hora24 => $hora12) {
+            $slotInicio = Carbon::parse($fecha . ' ' . $hora24 . ':00');
+            $slotFin = (clone $slotInicio)->addMinutes($minutos);
+            $slotIniStr = $slotInicio->format('H:i:s');
+            $slotFinStr = $slotFin->format('H:i:s');
+
+            // 1. Si la fecha es pasada o si es hoy y la hora ya pasó
+            if ($esFechaPasada || ($esHoy && $slotInicio->lessThanOrEqualTo($ahora))) {
+                $resultadoHorarios[] = [
+                    'hora_24' => $hora24,
+                    'hora_12' => $hora12,
+                    'disponible' => false,
+                    'motivo' => 'pasado',
+                ];
+                continue;
+            }
+
+            // 2. Si se eligió un especialista específico
+            if (!empty($idTrabajador) && $idTrabajador > 0 && Trabajador::where('id', $idTrabajador)->exists()) {
+                $ocupado = $citasDelDia->first(function ($c) use ($idTrabajador, $slotIniStr, $slotFinStr) {
+                    if ($c->trabajador_id != $idTrabajador) return false;
+                    $citaIni = $c->hora_inicio;
+                    $citaFin = ($c->hora_fin && $c->hora_fin > $c->hora_inicio)
+                        ? $c->hora_fin
+                        : Carbon::parse($citaIni)->addMinutes(45)->format('H:i:s');
+                    return ($citaIni < $slotFinStr && $citaFin > $slotIniStr);
+                });
+
+                $resultadoHorarios[] = [
+                    'hora_24' => $hora24,
+                    'hora_12' => $hora12,
+                    'disponible' => !$ocupado,
+                    'motivo' => $ocupado ? 'ocupado' : null,
+                ];
+            } else {
+                // 3. "Cualquier Profesional": disponible si AL MENOS UN trabajador activo está libre
+                $algunLibre = false;
+                foreach ($trabajadoresActivos as $t) {
+                    $ocupadoTrab = $citasDelDia->first(function ($c) use ($t, $slotIniStr, $slotFinStr) {
+                        if ($c->trabajador_id != $t->id) return false;
+                        $citaIni = $c->hora_inicio;
+                        $citaFin = ($c->hora_fin && $c->hora_fin > $c->hora_inicio)
+                            ? $c->hora_fin
+                            : Carbon::parse($citaIni)->addMinutes(45)->format('H:i:s');
+                        return ($citaIni < $slotFinStr && $citaFin > $slotIniStr);
+                    });
+
+                    if (!$ocupadoTrab) {
+                        $algunLibre = true;
+                        break;
+                    }
+                }
+
+                $resultadoHorarios[] = [
+                    'hora_24' => $hora24,
+                    'hora_12' => $hora12,
+                    'disponible' => $algunLibre,
+                    'motivo' => $algunLibre ? null : 'ocupado',
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'fecha' => $fecha,
+            'duracion_minutos' => $minutos,
+            'horarios' => $resultadoHorarios,
+        ]);
+    }
+
+    /**
      * Guarda una nueva cita en la base de datos (con registro de pago).
      */
     public function store(Request $request)
@@ -242,16 +369,10 @@ class CitaController extends Controller
             $request->merge(['id_cliente' => $cliente->id]);
         }
 
-        // Si no se especificó trabajador o se seleccionó "Cualquier profesional", asignar el primer trabajador activo
-        if (empty($request->id_trabajador) || !Trabajador::where('id', $request->id_trabajador)->exists()) {
-            $primerTrabajador = Trabajador::where('estado', 'activo')->first();
-            $request->merge(['id_trabajador' => $primerTrabajador?->id ?? 1]);
-        }
-
         $request->validate([
             'id_cliente' => 'required|exists:clientes,id',
             'id_servicio' => 'required|exists:servicios,id',
-            'id_trabajador' => 'required|exists:trabajadores,id',
+            'id_trabajador' => 'nullable',
             'fecha_cita' => 'required|date',
             'hora_inicio' => 'required',
             'estado' => 'nullable|string',
@@ -270,9 +391,80 @@ class CitaController extends Controller
         } elseif (is_numeric($duracion) && $duracion > 0) {
             $minutos = (int)$duracion;
         }
+        if ($minutos <= 0) $minutos = 45;
 
         $horaInicio = Carbon::parse($request->hora_inicio);
         $horaFin = (clone $horaInicio)->addMinutes($minutos)->format('H:i:s');
+        $horaInicioStr = $horaInicio->format('H:i:s');
+        $fechaCita = $request->fecha_cita;
+
+        // Validar que la fecha y hora no hayan pasado
+        $fechaHoraInicio = Carbon::parse($fechaCita . ' ' . $horaInicioStr);
+        if ($fechaHoraInicio->isPast()) {
+            $errorMsg = 'No puedes agendar una cita en una fecha u hora que ya ha pasado.';
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $errorMsg], 422);
+            }
+            return redirect()->back()->withInput()->withErrors(['hora_inicio' => $errorMsg])->with('error', $errorMsg);
+        }
+
+        // VALIDACIÓN DE DISPONIBILIDAD: Que la hora no esté reservada por nadie más
+        $idTrabajador = $request->id_trabajador;
+        $trabajadorAsignadoId = null;
+
+        if (!empty($idTrabajador) && $idTrabajador > 0 && Trabajador::where('id', $idTrabajador)->exists()) {
+            // Verificar si el especialista seleccionado ya tiene una cita en ese rango
+            $solapada = Cita::where('trabajador_id', $idTrabajador)
+                ->whereDate('fecha', $fechaCita)
+                ->whereNotIn('estado', ['cancelado', 'cancelada'])
+                ->where(function ($q) use ($horaInicioStr, $horaFin) {
+                    $q->where('hora_inicio', '<', $horaFin)
+                      ->where('hora_fin', '>', $horaInicioStr);
+                })
+                ->exists();
+
+            if ($solapada) {
+                $errorMsg = 'La hora seleccionada (' . $horaInicio->format('g:i A') . ') ya no está disponible para esta especialista porque fue reservada previamente. Por favor selecciona otro horario.';
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => $errorMsg], 422);
+                }
+                return redirect()->back()->withInput()->withErrors(['hora_inicio' => $errorMsg])->with('error', $errorMsg);
+            }
+
+            $trabajadorAsignadoId = $idTrabajador;
+        } else {
+            // "Cualquier Profesional": buscar qué especialista activo está libre en ese horario
+            $trabajadoresActivos = Trabajador::where('estado', 'activo')->get();
+            if ($trabajadoresActivos->isEmpty()) {
+                $trabajadoresActivos = Trabajador::all();
+            }
+
+            foreach ($trabajadoresActivos as $t) {
+                $ocupado = Cita::where('trabajador_id', $t->id)
+                    ->whereDate('fecha', $fechaCita)
+                    ->whereNotIn('estado', ['cancelado', 'cancelada'])
+                    ->where(function ($q) use ($horaInicioStr, $horaFin) {
+                        $q->where('hora_inicio', '<', $horaFin)
+                          ->where('hora_fin', '>', $horaInicioStr);
+                    })
+                    ->exists();
+
+                if (!$ocupado) {
+                    $trabajadorAsignadoId = $t->id;
+                    break;
+                }
+            }
+
+            if (!$trabajadorAsignadoId) {
+                $errorMsg = 'La hora seleccionada (' . $horaInicio->format('g:i A') . ') ya no está disponible ya que todos nuestros profesionales se encuentran ocupados en ese horario. Por favor selecciona otro horario.';
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => $errorMsg], 422);
+                }
+                return redirect()->back()->withInput()->withErrors(['hora_inicio' => $errorMsg])->with('error', $errorMsg);
+            }
+        }
+
+        $request->merge(['id_trabajador' => $trabajadorAsignadoId]);
 
         // Mapear estado al enum de la base de datos ('pendiente','confirmado','cancelado','finalizado')
         $estadoInput = strtolower($request->estado ?? 'pendiente');
@@ -317,32 +509,77 @@ class CitaController extends Controller
             $detallePago .= ' - ' . $request->cuotas_pago . ' cuota(s)';
         }
 
-        Pago::create([
+        // Generar número de ticket consecutivo único tipo POS
+        $ultimoPagoId = Pago::max('id') ?? 0;
+        $numeroTicket = 'POS-' . date('Y') . '-' . str_pad($ultimoPagoId + 1, 5, '0', STR_PAD_LEFT);
+
+        $datosPago = [
             'cita_id' => $cita->id,
             'metodo_pago' => ucfirst($metodo),
             'monto' => $servicio->precio,
             'estado' => $estadoPago,
             'fecha_pago' => now(),
             'observaciones' => $detallePago,
-        ]);
+        ];
+
+        if (\Illuminate\Support\Facades\Schema::hasColumn('pagos', 'numero_ticket')) {
+            $datosPago['numero_ticket'] = $numeroTicket;
+        }
+
+        $pago = Pago::create($datosPago);
+
+        // Notificar a los administradores del nuevo pago y factura POS
+        $clienteUser = $cita->cliente?->user ?? $user;
+        $clienteNombre = $clienteUser ? trim($clienteUser->name . ' ' . ($clienteUser->apellido ?? '')) : 'Cliente';
+        
+        $admins = \App\Models\User::where('role_id', 1)->get();
+        foreach ($admins as $admin) {
+            \App\Models\Notificacion::create([
+                'user_id' => $admin->id,
+                'cita_id' => $cita->id,
+                'tipo' => 'pago',
+                'titulo' => 'Nueva Factura POS #' . $pago->numero_ticket,
+                'mensaje' => 'El cliente ' . $clienteNombre . ' agendó "' . $servicio->nombre . '" y generó el ticket POS #' . $pago->numero_ticket . ' por valor de $' . number_format($pago->monto, 0, ',', '.') . ' (' . $pago->metodo_pago . ').',
+                'leida' => false,
+                'fecha_envio' => now(),
+            ]);
+        }
+
+        // Notificar también al cliente con su comprobante
+        if ($clienteUser) {
+            \App\Models\Notificacion::create([
+                'user_id' => $clienteUser->id,
+                'cita_id' => $cita->id,
+                'tipo' => 'pago',
+                'titulo' => 'Ticket POS #' . $pago->numero_ticket . ' Generado',
+                'mensaje' => '¡Tu reserva para ' . $servicio->nombre . ' está confirmada! Tu comprobante tipo POS #' . $pago->numero_ticket . ' ya está disponible para descargar.',
+                'leida' => false,
+                'fecha_envio' => now(),
+            ]);
+        }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => '¡Tu cita para "' . $servicio->nombre . '" ha sido agendada con éxito y tu pago procesado!',
+                'message' => '¡Tu cita para "' . $servicio->nombre . '" ha sido agendada con éxito y se generó tu Factura POS #' . $pago->numero_ticket . '!',
                 'cita' => $cita,
+                'pago' => $pago,
+                'ticket_numero' => $pago->numero_ticket,
+                'ticket_url' => route('ticket.ver', $cita->id),
             ]);
         }
 
         if ($user && $user->role_id === 3) {
             return redirect()
-                ->route('cliente.dashboard')
-                ->with('success', '¡Tu cita para "' . $servicio->nombre . '" ha sido agendada con éxito y tu pago procesado!');
+                ->route('cliente.citas')
+                ->with('success', '¡Tu cita para "' . $servicio->nombre . '" ha sido agendada con éxito!')
+                ->with('ticket_url', route('ticket.ver', $cita->id))
+                ->with('ticket_numero', $pago->numero_ticket);
         }
 
         return redirect()
             ->route('citas.index')
-            ->with('success', '¡Cita agendada correctamente!');
+            ->with('success', '¡Cita agendada correctamente! Ticket #' . $pago->numero_ticket);
     }
 
     /**

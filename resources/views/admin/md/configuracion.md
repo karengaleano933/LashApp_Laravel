@@ -1,80 +1,89 @@
-# Explicación de mi Vista de Configuración (`configuracion/configuracion.blade.php`) (En mis palabras)
+# Explicación de mi Vista de Configuración (`configuracion/configuracion.blade.php`)
 
-Esta vista es el **panel de control de los ajustes de LashApp**. Permite que la dueña del negocio o la administradora configure toda la información de la marca, los horarios, las políticas de reserva, la moneda, el logotipo y las reglas del salón sin tener que tocar una sola línea de código en el servidor.
-
----
-
-## 1. El formulario principal y envío de archivos
-
-Toda la pantalla está envuelta en un formulario que apunta a la ruta `configuracion.update`:
-
-```blade
-<form action="{{ route('configuracion.update') }}" method="POST" enctype="multipart/form-data" id="configForm">
-    @csrf
-```
-
-* **`enctype="multipart/form-data"`:** Indispensable porque permite subir el archivo de imagen del logo del salón.
-* **`@csrf`:** Token de seguridad obligatorio de Laravel para evitar ataques de falsificación de petición.
-* **Gestión de alertas:** Muestra mensajes de éxito (`session('success')`) tras guardar cambios, o listas de errores en caso de datos inválidos.
+Esta vista es el panel de ajustes generales de LashApp. Desde aquí puedo personalizar la información de mi negocio (nombre, teléfono, correo, dirección, zona horaria y subir el logo oficial), definir las preferencias de la plataforma (idioma, moneda, formato de hora y fecha), establecer las políticas de agendamiento y cancelación de citas, y gestionar copias de seguridad o acciones avanzadas del sistema.
 
 ---
 
-## 2. Bloque: Información del Negocio y Logotipo
+### 1. Inclusiones, estilos y alertas de estado
 
-En esta sección se configuran los datos de contacto visibles para las clientas:
-
-* **Nombre del negocio:** Nombre comercial (ej. *Oh La Lash by Lorena Ayala Studio*).
-* **Teléfono y Correo:** Los canales oficiales de contacto y soporte.
-* **Dirección física:** La ubicación exacta de la sede o estudio.
-* **Zona horaria:** Menú desplegable para sincronizar los calendarios y horas (Bogotá, Ciudad de México, Caracas, Santiago, Madrid).
-* **Carga interactiva de Logo:**
-  * Un cuadro de vista previa (`logoPreviewBox`) que muestra el logo actual o un diseño por defecto con una corona dorada.
-  * Un botón *"Cambiar logo"* conectado a un `input type="file"` invisible.
-  * Una función JavaScript `previewLogo(event)` que lee la imagen seleccionada y la muestra inmediatamente en pantalla antes de enviar el formulario.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `@include('layouts.header', ['titulo' => 'Configuración del Sistema'])` | Cargo la cabecera general asignándole como título de pestaña "Configuración del Sistema". |
+| `@include('layouts.sidebaradmin')` | Cargo el menú lateral izquierdo de administración. |
+| `@vite(['resources/css/configuracion.css', 'resources/js/modules/admin/configuracion.js'])` | Conecto los estilos visuales propios y el módulo JavaScript de configuración mediante Vite. |
+| `@if (session('success')) ... @endif` | Muestro una alerta verde si los ajustes se guardaron correctamente en la base de datos. |
+| `@if (session('error')) ... @endif` | Muestro una alerta roja si ocurrió algún problema al guardar. |
+| `@if (isset($errors) && $errors->any()) ... @endif` | Muestro un recuadro rojo listando errores de validación si algún campo obligatorio se envió incorrectamente. |
 
 ---
 
-## 3. Bloque: Accesos de Configuración Rápida
+### 2. Formulario y datos del negocio
 
-Al lado de la información del negocio, preparé cuatro accesos directos con íconos estilizados:
-
-1. **Configuración de Citas:** Enlaza a la gestión principal de citas.
-2. **Métodos de Pago:** Enlaza a la configuración de pasarelas, transferencias y bancos.
-3. **Impuestos y Tarifas:** Abre una ventana modal para fijar porcentajes de IVA o recargos por festivos.
-4. **Políticas del Negocio:** Abre un modal para redactar términos y condiciones de servicio o políticas de cancelación.
-
----
-
-## 4. Bloque: Preferencias Generales de la Plataforma
-
-Permite adaptar el sistema al país o preferencia operativa:
-
-* **Idioma:** Español, Inglés o Portugués.
-* **Moneda principal:** Peso Colombiano (COP), Dólar (USD) o Euro (EUR).
-* **Formatos de Fecha y Hora:** `DD/MM/YYYY`, `MM/DD/YYYY`, formato de 12 horas con AM/PM o formato militar de 24 horas.
-* **Interruptores (Switches tipo Toggle):**
-  * *Permitir reservas online a clientes:* Activa o pausa si las clientas pueden agendar solas desde su portal.
-  * *Enviar recordatorios automáticos:* Activa el envío de notificaciones automáticas previas a la cita.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<form action="{{ route('configuracion.update') }}" method="POST" enctype="multipart/form-data" id="configForm"> @csrf` | Formulario general con `@csrf` y `multipart/form-data` que permite enviar tanto textos como el archivo de imagen del logo a la ruta de actualización en Laravel. |
+| `<input type="text" id="nombre_estudio" name="nombre_estudio" value="{{ old('nombre_estudio', $configuracion->nombre_estudio ?? '...') }}" required>` | Campo para escribir el nombre comercial del salón o estudio de pestañas. |
+| `<input type="text" id="telefono" name="telefono" ... required>` | Campo para el número telefónico o WhatsApp de contacto oficial del negocio. |
+| `<input type="email" id="email_contacto" name="email_contacto" ... required>` | Campo para el correo electrónico del negocio. |
+| `<input type="text" id="direccion" name="direccion" ... required>` | Campo para la dirección física del local comercial. |
+| `<select id="zona_horaria" name="zona_horaria"> ... </select>` | Selector para definir la zona horaria del sistema (por defecto Bogotá GMT-05:00) para que las citas y recordatorios se sincronicen a la hora exacta de Colombia. |
 
 ---
 
-## 5. Bloque: Políticas de Citas y Agendamiento
+### 3. Subida y previsualización del logo oficial
 
-Aquí se definen las reglas de negocio para cuidar el tiempo de las especialistas:
-
-* **Antelación mínima para reservar:** Desde 1 hora hasta 24 horas antes, evitando que alguien agende con 5 minutos de aviso sin dar tiempo de preparación.
-* **Antelación mínima para cancelar:** Exige a la clienta avisar con 6, 12 o 24 horas de antelación si no podrá asistir.
-* **Tiempo entre citas (Buffer time):** Espacio de 5 a 15 minutos entre servicio y servicio para que la lashista limpie la camilla, desinfecte pinzas y prepare sus materiales.
-* **Duración predeterminada:** Tiempo base sugerido para los tratamientos.
-
----
-
-## 6. Modales y Comportamiento Dinámico
-
-* **Previsualización instantánea:** La imagen del logo cambia al instante en el navegador usando `FileReader` de JavaScript, permitiendo ver cómo queda antes de guardar.
-* **Modales interactivos:** Para impuestos y políticas, permitiendo modificar cláusulas legales y porcentajes sin abandonar la pantalla principal.
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="logo-display-card" id="logoPreviewBox">` | Cajita cuadrada donde se previsualiza el logo actual del negocio o el ícono de corona dorada si aún no hay logo subido. |
+| `<input type="file" id="logoFileInput" name="logo" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="previewLogo(event)">` | Campo de selección de archivos oculto que solo acepta imágenes PNG, JPG o WEBP. |
+| `<button type="button" class="btn-cambiar-logo" onclick="document.getElementById('logoFileInput').click()">` | Botón con ícono de nube que al presionarlo abre la ventana para que elija una imagen desde mi computador. |
+| `<button type="submit" class="btn-guardar-cambios-p"> <i class="fa-solid fa-bookmark"></i> Guardar cambios </button>` | Botón morado principal para guardar la información del negocio en la base de datos. |
 
 ---
 
-## En resumen: ¿Qué beneficios da esta vista?
-Hace que el sistema **LashApp** sea 100% personalizable y adaptable a cualquier sede de belleza, manteniendo centralizados el logo, las reglas de reserva y los datos comerciales.
+### 4. Tarjeta de configuración rápida y accesos a políticas
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<a href="{{ route('citas.index') }}" class="quick-cfg-item"> ... <strong>Configuración de Citas</strong> ... </a>` | Tarjeta de acceso rápido que me lleva al módulo de citas. |
+| `<a href="{{ route('pagos.index') }}" class="quick-cfg-item"> ... <strong>Métodos de Pago</strong> ... </a>` | Acceso rápido para administrar las pasarelas y métodos de pago. |
+| `<a href="javascript:void(0)" onclick="mostrarModalImpuestos()" class="quick-cfg-item"> ... <strong>Impuestos y Tarifas</strong> ... </a>` | Abre una ventana modal emergente para configurar tarifas e impuestos aplicables. |
+| `<a href="javascript:void(0)" onclick="mostrarModalPoliticas()" class="quick-cfg-item"> ... <strong>Políticas del Negocio</strong> ... </a>` | Abre una ventana emergente para revisar y redactar términos y condiciones del salón. |
+
+---
+
+### 5. Preferencias generales de la plataforma
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<select id="idioma" name="idioma"> ... </select>` | Menú para seleccionar el idioma del sistema (Español, Inglés o Portugués). |
+| `<select id="moneda" name="moneda"> ... </select>` | Menú para seleccionar la moneda principal (Peso Colombiano COP, Dólar USD o Euro EUR). |
+| `<select id="formato_fecha" name="formato_fecha"> ... </select>` | Permite escoger el formato de fecha preferido (ej. `DD/MM/YYYY`). |
+| `<select id="formato_hora" name="formato_hora"> ... </select>` | Permite alternar entre formato de 12 horas con am/pm o formato de 24 horas militar. |
+| `<input type="checkbox" name="reservas_online" value="1" {{ ... ? 'checked' : '' }}>` | Interruptor tipo switch para encender o apagar la posibilidad de que las clientas reserven solas desde la web. |
+| `<input type="checkbox" name="recordatorios_auto" value="1" {{ ... ? 'checked' : '' }}>` | Interruptor tipo switch para habilitar el envío automático de notificaciones de recordatorio antes de cada cita. |
+
+---
+
+### 6. Políticas y reglas de agendamiento de citas
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<select id="antelacion_reservar" name="antelacion_reservar"> ... </select>` | Tiempo mínimo de anticipación con el que una clienta puede reservar (ej. 1h, 2h, 4h o 24 horas antes). |
+| `<select id="antelacion_cancelar" name="antelacion_cancelar"> ... </select>` | Tiempo límite antes de la cita para poder cancelar sin penalidad (ej. 6h, 12h, 24h o 48 horas antes). |
+| `<select id="tiempo_entre_citas" name="tiempo_entre_citas"> ... </select>` | Espacio de descanso o desinfección entre cita y cita de una especialista (5, 10, 15 o 30 minutos). |
+| `<select id="duracion_predeterminada" name="duracion_predeterminada"> ... </select>` | Duración promedio por defecto asignada a nuevos servicios (45, 60, 90 o 120 minutos). |
+| `<textarea id="politica_cancelacion" name="politica_cancelacion" rows="3"> ... </textarea>` | Cuadro de texto donde redacto las reglas claras de cancelación que verán las clientas al reservar. |
+
+---
+
+### 7. Copias de seguridad y zona peligrosa
+
+| Código | ¿Qué hace? |
+| :--- | :--- |
+| `<div class="backup-dates"> ... </div>` | Muestra la fecha y hora exacta de la última copia de seguridad guardada y cuándo se ejecutará la siguiente copia automática. |
+| `<button type="button" class="btn-backup-now" onclick="realizarBackup()"> ... Realizar copia ahora </button>` | Botón que genera un respaldo inmediato de la base de datos y archivos del sistema. |
+| `<div class="danger-zone"> ... </div>` | Sección destacada en rojo para advertir que contiene acciones irreversibles. |
+| `<button type="button" class="btn-danger-reset" onclick="confirmarRestablecer()"> ... Restablecer configuración </button>` | Botón que devuelve todos los ajustes a los valores iniciales de fábrica tras pedir confirmación de seguridad. |
+| `<button type="button" class="btn-danger-delete" onclick="confirmarEliminarCuenta()"> ... Eliminar cuenta </button>` | Botón de máxima seguridad para solicitar la baja o eliminación de la cuenta administradora. |
+| `@include('layouts.footer')` | Cargo el pie de página común del sistema. |

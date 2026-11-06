@@ -309,21 +309,69 @@
 .estado-rechazado,
 .estado-cancelado  { background: #fee2e2; color: #dc2626; }
 
-.btn-accion {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    transition: background .15s ease, transform .15s ease;
+.td-acciones {
+    text-align: center;
+    white-space: nowrap;
+    width: 130px;
+    min-width: 130px;
 }
 
-.btn-editar-pago { color: var(--morado, #7c1db8); }
-.btn-editar-pago:hover { background: #f3e6fa; transform: scale(1.1); }
+.acciones-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
 
-.btn-eliminar-pago { color: #dc2626; }
-.btn-eliminar-pago:hover { background: #fee2e2; transform: scale(1.1); }
+.btn-accion {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-ticket-pago {
+    color: #7c1db8;
+    background: #f6effb;
+    border: 1px solid #ead6f6;
+}
+.btn-ticket-pago:hover {
+    background: #edd8f7;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(124, 29, 184, 0.2);
+}
+
+.btn-editar-pago {
+    color: #0284c7;
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+}
+.btn-editar-pago:hover {
+    background: #bae6fd;
+    color: #0369a1;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.2);
+}
+
+.btn-eliminar-pago {
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
+.btn-eliminar-pago:hover {
+    background: #fecaca;
+    color: #b91c1c;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2);
+}
 
 .tabla-vacia {
     text-align: center;

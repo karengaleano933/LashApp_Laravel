@@ -333,6 +333,20 @@
     background: #10b981;
     margin-top: 2px;
 }
+.cal-day-dot.gray {
+    background: #cbd5e1;
+}
+.cal-day-dot.green {
+    background: #10b981;
+}
+.cal-day-dot.orange {
+    background: #f59e0b;
+}
+.cal-day-item.past-day {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 .cal-day-item.selected .cal-day-dot {
     background: #fff;
 }
@@ -471,6 +485,63 @@
     height: 5px;
     border-radius: 50%;
     background: #fff;
+}
+
+.time-slot-btn.disabled,
+.time-slot-btn.ocupado {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed !important;
+    opacity: 0.72;
+    pointer-events: none;
+    box-shadow: none !important;
+}
+
+.time-slot-btn.disabled:hover,
+.time-slot-btn.ocupado:hover {
+    border-color: #e2e8f0 !important;
+    background: #f8fafc !important;
+}
+
+.slot-ocupado-tag {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 3px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+}
+
+.slots-no-disponibles {
+    background: #fdf2f8;
+    border: 1.5px dashed #f472b6;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    color: #9d174d;
+    margin: 10px 0;
+}
+
+.slots-no-disponibles i {
+    font-size: 30px;
+    color: #db2777;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.slots-no-disponibles p {
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #831843;
+}
+
+.slots-no-disponibles span {
+    font-size: 11.5px;
+    color: #be185d;
 }
 
 /* ── COLUMNA 4: RESUMEN DE TU CITA ── */
