@@ -531,26 +531,19 @@
                         $slotFinStr = $slotFin->format('H:i:s');
 
                         $esPasado = $slotIni->isPast();
-                        $algunLibre = false;
+                        $ocupado = false;
 
                         if (!$esPasado) {
-                            foreach ($trabajadoresList as $t) {
-                                $ocupado = $citasHoy->first(function ($c) use ($t, $slotIniStr, $slotFinStr) {
-                                    if ($c->trabajador_id != $t->id) return false;
-                                    $cIni = $c->hora_inicio;
-                                    $cFin = ($c->hora_fin && $c->hora_fin > $c->hora_inicio)
-                                        ? $c->hora_fin
-                                        : Carbon::parse($cIni)->addMinutes(45)->format('H:i:s');
-                                    return ($cIni < $slotFinStr && $cFin > $slotIniStr);
-                                });
-                                if (!$ocupado) {
-                                    $algunLibre = true;
-                                    break;
-                                }
-                            }
+                            $ocupado = $citasHoy->first(function ($c) use ($slotIniStr, $slotFinStr) {
+                                $cIni = $c->hora_inicio;
+                                $cFin = ($c->hora_fin && $c->hora_fin > $c->hora_inicio)
+                                    ? $c->hora_fin
+                                    : Carbon::parse($cIni)->addMinutes(45)->format('H:i:s');
+                                return ($cIni < $slotFinStr && $cFin > $slotIniStr);
+                            }) !== null;
                         }
 
-                        $disp = !$esPasado && $algunLibre;
+                        $disp = !$esPasado && !$ocupado;
                         if ($disp && !$primeraHoraLibre24) {
                             $primeraHoraLibre24 = $h24;
                             $primeraHoraLibre12 = $h12;
