@@ -511,25 +511,158 @@
     font-weight: 700;
 }
 
-/* ══════ RESPONSIVE ══════ */
+/* ══════ RESPONSIVE (TABLETS & CELULARES) ══════ */
 @media(max-width: 1080px) {
     .miscitas-layout-grid {
         grid-template-columns: 1fr;
+        gap: 18px;
     }
 }
-@media(max-width: 650px) {
+
+@media(max-width: 768px) {
+    .miscitas-header {
+        margin-bottom: 14px;
+        gap: 10px;
+    }
+    .miscitas-header-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        border-radius: 12px;
+    }
+    .miscitas-header-text h1 {
+        font-size: 21px;
+    }
+    .miscitas-header-text p {
+        font-size: 12px;
+    }
+
+    .miscitas-tabs-bar {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 6px;
+        padding-bottom: 6px;
+        margin-bottom: 16px;
+    }
+    .miscitas-tabs-bar::-webkit-scrollbar {
+        display: none;
+    }
+    .miscitas-tab-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    .cita-card-box {
+        padding: 16px 14px;
+        border-radius: 18px;
+    }
+    .cita-card-price {
+        font-size: 19px;
+    }
+    .cita-card-title {
+        font-size: 17px;
+    }
+    .cita-card-meta {
+        gap: 10px 14px;
+        font-size: 12px;
+    }
+}
+
+@media(max-width: 600px) {
     .cita-card-main {
         flex-direction: column;
+        gap: 12px;
     }
     .cita-card-img-wrap {
         width: 100%;
-        height: 150px;
+        height: 140px;
+        border-radius: 14px;
     }
+    .cita-card-top-row {
+        align-items: center;
+    }
+    .badge-cita-status {
+        padding: 3px 10px;
+        font-size: 11px;
+    }
+    .cita-card-price {
+        font-size: 18px;
+    }
+    .cita-card-title {
+        font-size: 16px;
+        margin: 2px 0 6px 0;
+    }
+    .cita-card-meta {
+        gap: 8px 12px;
+        font-size: 11.5px;
+        margin-bottom: 8px;
+    }
+    .cita-card-notice {
+        font-size: 11px;
+        padding: 6px 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Botones de acción organizados en cuadrícula de 2 columnas en celular */
     .cita-card-actions {
-        flex-wrap: wrap;
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px dashed #f0e6f8;
     }
-    .miscitas-tabs-bar {
-        overflow-x: auto;
+    .btn-card-action {
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: center;
+        padding: 8px 8px;
+        font-size: 11.5px;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
+
+    /* Modal de detalles tipo Bottom Sheet en móvil */
+    .modal-detalles-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .modal-detalles-container {
+        width: 100%;
+        max-width: 100vw;
+        max-height: 90vh;
+        border-radius: 20px 20px 0 0;
+    }
+    .modal-detalles-header {
+        padding: 14px 18px;
+    }
+    .modal-detalles-body {
+        padding: 14px 16px;
+    }
+    .detalles-servicio-card {
+        padding: 12px;
+    }
+    .detalles-serv-thumb {
+        width: 44px;
+        height: 44px;
+    }
+    .detalles-grid-info {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+@media(max-width: 380px) {
+    .cita-card-actions {
+        grid-template-columns: 1fr;
+    }
+    .btn-card-action {
+        font-size: 11px;
+        padding: 7px 6px;
     }
 }
