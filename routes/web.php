@@ -161,8 +161,18 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/citas', [CitaController::class, 'index'])->middleware(['auth'])->name('citas.index');
 Route::get('/citas/horas-disponibles', [CitaController::class, 'horasDisponibles'])->middleware(['auth'])->name('citas.horas-disponibles');
 Route::post('/admin/citas', [CitaController::class, 'store'])->middleware(['auth'])->name('citas.store');
-Route::get('/admin/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth'])->name('citas.cancelar');
-Route::get('/admin/citas/completar/{id}', [CitaController::class, 'completar'])->middleware(['auth'])->name('citas.completar');
+
+// Rutas unificadas para cancelar citas (Cliente, Trabajador y Admin)
+Route::match(['get', 'post'], '/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->middleware(['auth'])->name('citas.cancelar');
+Route::match(['get', 'post'], '/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth']);
+Route::match(['get', 'post'], '/admin/citas/{id}/cancelar', [CitaController::class, 'cancelar'])->middleware(['auth']);
+Route::match(['get', 'post'], '/admin/citas/cancelar/{id}', [CitaController::class, 'cancelar'])->middleware(['auth']);
+
+// Rutas unificadas para completar citas (Trabajador y Admin)
+Route::match(['get', 'post'], '/citas/{id}/completar', [CitaController::class, 'completar'])->middleware(['auth'])->name('citas.completar');
+Route::match(['get', 'post'], '/citas/completar/{id}', [CitaController::class, 'completar'])->middleware(['auth']);
+Route::match(['get', 'post'], '/admin/citas/{id}/completar', [CitaController::class, 'completar'])->middleware(['auth']);
+Route::match(['get', 'post'], '/admin/citas/completar/{id}', [CitaController::class, 'completar'])->middleware(['auth']);
 
 // Gestión de Servicios (Admin y Trabajador)
 Route::middleware(['auth'])->group(function () {

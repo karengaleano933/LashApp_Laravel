@@ -571,14 +571,27 @@ class CitaController extends Controller
         $cita->estado = 'cancelado';
         $cita->save();
 
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'La cita fue cancelada exitosamente.'
+            ]);
+        }
+
         if ($user && $user->role_id === 3) {
             return redirect()
-                ->back()
+                ->route('cliente.citas')
+                ->with('success', 'La cita fue cancelada exitosamente.');
+        }
+
+        if ($user && $user->role_id === 2) {
+            return redirect()
+                ->route('trabajador.citas')
                 ->with('success', 'La cita fue cancelada exitosamente.');
         }
 
         return redirect()
-            ->back()
+            ->back(fallback: route('citas.index'))
             ->with('success', 'La cita fue cancelada exitosamente.');
     }
 
